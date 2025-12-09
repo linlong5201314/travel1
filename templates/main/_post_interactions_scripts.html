@@ -1,0 +1,92 @@
+{# 帖子互动脚本局部模板 #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 点赞功能
+        const likeBtn = document.getElementById('like-btn');
+        const likeCount = document.getElementById('like-count');
+        
+        if (likeBtn) {
+            likeBtn.addEventListener('click', function() {
+                {% if current_user.is_authenticated %}
+                fetch('{{ url_for("main.like_post", post_id=post.id) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'liked') {
+                        likeBtn.classList.add('active', 'text-red-500');
+                        likeBtn.querySelector('i').classList.remove('far');
+                        likeBtn.querySelector('i').classList.add('fas');
+                    } else {
+                        likeBtn.classList.remove('active', 'text-red-500');
+                        likeBtn.querySelector('i').classList.remove('fas');
+                        likeBtn.querySelector('i').classList.add('far');
+                    }
+                    likeCount.textContent = data.likes;
+                });
+                {% else %}
+                window.location.href = '{{ url_for("auth.login", next=request.path) }}';
+                {% endif %}
+            });
+        }
+        
+        // 收藏功能
+        const bookmarkBtn = document.getElementById('bookmark-btn');
+        if (bookmarkBtn) {
+            bookmarkBtn.addEventListener('click', function() {
+                {% if current_user.is_authenticated %}
+                fetch('{{ url_for("main.bookmark_post", post_id=post.id) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'bookmarked') {
+                        bookmarkBtn.classList.add('active', 'text-primary');
+                        bookmarkBtn.querySelector('i').classList.remove('far');
+                        bookmarkBtn.querySelector('i').classList.add('fas');
+                        bookmarkBtn.querySelector('span').textContent = '已收藏';
+                    } else {
+                        bookmarkBtn.classList.remove('active', 'text-primary');
+                        bookmarkBtn.querySelector('i').classList.remove('fas');
+                        bookmarkBtn.querySelector('i').classList.add('far');
+                        bookmarkBtn.querySelector('span').textContent = '收藏';
+                    }
+                });
+                {% else %}
+                window.location.href = '{{ url_for("auth.login", next=request.path) }}';
+                {% endif %}
+            });
+        }
+        
+        // 回复功能
+        const replyButtons = document.querySelectorAll('.reply-button');
+        const cancelButtons = document.querySelectorAll('.cancel-reply');
+        
+        replyButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.id;
+                const replyForm = document.getElementById(`reply-form-${commentId}`);
+                if (replyForm) {
+                    replyForm.classList.remove('hidden');
+                }
+            });
+        });
+        
+        cancelButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const form = this.closest('.reply-form');
+                if (form) {
+                    form.classList.add('hidden');
+                }
+            });
+        });
+    });
+</script> 

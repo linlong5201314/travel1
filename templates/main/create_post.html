@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}分享旅行故事 - 环球旅记{% endblock %}
+
+{% block content %}
+<!-- 页面标题 -->
+<div class="bg-gray-50 py-12 mb-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-dark mb-3">分享您的旅行故事</h1>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto">与志同道合的旅行爱好者分享您的旅行经历、见闻和感受</p>
+    </div>
+</div>
+
+<!-- 表单内容 -->
+<div class="container mx-auto px-4 max-w-4xl mb-16">
+    <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+            
+            <div class="mb-6">
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">标题</label>
+                {{ form.title(class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent", placeholder="一个吸引人的标题（例如：探索巴厘岛的隐秘海滩）") }}
+                {% if form.title.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in form.title.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-6">
+                <label for="location" class="block text-sm font-medium text-gray-700 mb-1">地点</label>
+                {{ form.location(class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent", placeholder="您旅行的地点（例如：巴厘岛，印度尼西亚）") }}
+                {% if form.location.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in form.location.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-6">
+                <label for="featured_image" class="block text-sm font-medium text-gray-700 mb-1">封面图片</label>
+                <div id="featured-dropzone" class="relative mt-1 flex flex-col items-center justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary transition-all">
+                    {{ form.featured_image(id='featured_image', class='absolute inset-0 opacity-0 cursor-pointer') }}
+                    <div id="featured-preview" class="flex flex-col items-center space-y-2">
+                        <svg class="h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <p class="text-sm text-gray-600"><span class="font-medium text-primary">点击上传</span> 或拖放图片到此处</p>
+                        <p class="text-xs text-gray-400">PNG, JPG, GIF 最大 10MB</p>
+                    </div>
+                </div>
+                {% if form.featured_image.errors %}
+                <div class="text-red-500 text-xs mt-1">
+                    {% for error in form.featured_image.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-6">
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-1">内容</label>
+                {{ form.content(rows=12, class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent", placeholder="分享您的旅行经历、见闻和感受...") }}
+                {% if form.content.errors %}
+                <div class="text-red-500 text-sm mt-1">
+                    {% for error in form.content.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="mb-6">
+                <label for="tags" class="block text-sm font-medium text-gray-700 mb-1">标签 (可选，用逗号分隔)</label>
+                <input type="text" id="tags" name="tags" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="例如：海滩,美食,冒险">
+            </div>
+            
+            <div class="mb-6">
+                <label for="images" class="block text-sm font-medium text-gray-700 mb-1">附加照片 (可多选)</label>
+                <input type="file" id="images" name="images" multiple accept="image/*" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                <div id="preview" class="grid grid-cols-3 gap-4 mt-4"></div>
+            </div>
+            
+            <div class="flex justify-center">
+                {{ form.submit(class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-medium transition-all hover:shadow-lg") }}
+            </div>
+        </form>
+    </div>
+    
+    <!-- 写作小贴士 -->
+    <div class="mt-12 bg-gray-50 rounded-xl p-6">
+        <h2 class="text-xl font-bold mb-4 text-dark">旅行写作小贴士</h2>
+        <ul class="space-y-3 text-gray-700">
+            <li class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>用生动的语言描述您的亲身经历，让读者感同身受。</span>
+            </li>
+            <li class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>添加有用的细节，如交通方式、住宿推荐、美食体验等。</span>
+            </li>
+            <li class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>分享您的个人感受和收获，这是使您的故事独一无二的关键。</span>
+            </li>
+            <li class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>上传高质量的图片能大大增强您故事的吸引力。</span>
+            </li>
+            <li class="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>简单的旅行建议和小贴士会让您的故事更加实用。</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{% block scripts %}
+{{ super() }}
+<script>
+  document.getElementById('images').addEventListener('change', function(e){
+      const preview=document.getElementById('preview');
+      preview.innerHTML='';
+      Array.from(this.files).forEach(file=>{
+          if(!file.type.startsWith('image/')) return;
+          const reader=new FileReader();
+          reader.onload=ev=>{
+             const img=document.createElement('img');
+             img.src=ev.target.result;
+             img.className='w-full h-24 object-cover rounded';
+             preview.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+      });
+  });
+
+  const featuredInput=document.getElementById('featured_image');
+  const featuredPreview=document.getElementById('featured-preview');
+  featuredInput.addEventListener('change',function(){
+      if(this.files && this.files[0] && this.files[0].type.startsWith('image/')){
+          const reader=new FileReader();
+          reader.onload=e=>{
+              featuredPreview.innerHTML=`<img src="${e.target.result}" class="w-full h-48 object-cover rounded-lg">`;
+          };
+          reader.readAsDataURL(this.files[0]);
+      }
+  });
+</script>
+{% endblock %}
+{% endblock %} 

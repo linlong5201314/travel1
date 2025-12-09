@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - 环球旅记{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.css" />
+<style>
+    /* HERO 蒙层文字阴影 */
+    .hero-overlay {
+        background: rgba(0, 0, 0, 0.55);
+    }
+    
+    /* 帖子内容样式 */
+    .post-content {
+        line-height: 1.8;
+    }
+    
+    .post-content p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .post-content img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+    
+    .post-content h2, .post-content h3 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    .post-content blockquote {
+        border-left: 4px solid #3498db;
+        padding-left: 1rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: #555;
+    }
+    
+    /* 评论样式 */
+    .comment-card {
+        transition: all 0.3s ease;
+    }
+    
+    .comment-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* 操作按钮悬停效果 */
+    .action-btn {
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    /* 喜欢按钮动画 */
+    .like-btn.active i {
+        color: #e74c3c;
+        animation: pulse 0.3s;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="relative h-[420px] w-full">
+    <!-- 返回按钮 -->
+    <a href="{{ back_url }}" class="absolute top-5 left-5 z-20 flex items-center bg-white/90 hover:bg-primary text-dark hover:text-white px-3 py-2 rounded-full shadow-lg transition-all">
+        <i class="fas fa-arrow-left mr-2"></i><span class="hidden sm:inline">返回</span>
+    </a>
+    {% if post.featured_image %}
+    <img src="{{ url_for('static', filename='uploads/posts/' + post.featured_image) }}" alt="{{ post.title }}" class="absolute inset-0 w-full h-full object-cover">
+    {% else %}
+    <img src="{{ url_for('static', filename='img/default-post.jpg') }}" alt="{{ post.title }}" class="absolute inset-0 w-full h-full object-cover">
+    {% endif %}
+    <div class="absolute inset-0 hero-overlay"></div>
+    <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-5 text-shadow-lg">{{ post.title }}</h1>
+        <div class="flex flex-wrap justify-center gap-4 text-sm opacity-90">
+            <span class="flex items-center"><i class="far fa-calendar-alt mr-1"></i>{{ post.created_at.strftime('%Y-%m-%d') }}</span>
+            {% if post.location %}
+            <span class="flex items-center"><i class="fas fa-map-marker-alt mr-1"></i>{{ post.location }}</span>
+            {% endif %}
+            <span class="flex items-center"><i class="far fa-eye mr-1"></i>{{ post.views }} 浏览</span>
+            <span class="flex items-center"><i class="far fa-comment-dots mr-1"></i>{{ comments|length }} 评论</span>
+        </div>
+    </div>
+</section>
+
+<!-- 主体部分 -->
+<div class="container mx-auto px-4 py-12">
+    <div class="grid lg:grid-cols-12 gap-8">
+        <!-- 正文 -->
+        <article class="lg:col-span-8">
+            <!-- 图片画廊 -->
+            {% if post.featured_image or post.images.count() > 0 %}
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+                {# 先显示封面图片 #}
+                {% if post.featured_image %}
+                <a href="{{ url_for('static', filename='uploads/posts/' + post.featured_image) }}" data-fancybox="gallery" class="block group col-span-2 md:col-span-3">
+                    <img src="{{ url_for('static', filename='uploads/posts/' + post.featured_image) }}" alt="封面图片" class="w-full h-64 md:h-80 object-cover rounded-lg group-hover:opacity-90">
+                </a>
+                {% endif %}
+                {# 附加图片 #}
+                {% for img in post.images.all() %}
+                <a href="{{ url_for('static', filename='uploads/posts/' + img.filename) }}" data-fancybox="gallery" class="block group">
+                    <img src="{{ url_for('static', filename='uploads/posts/' + img.filename) }}" alt="图片" class="w-full h-48 object-cover rounded-lg group-hover:opacity-90">
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- 帖子内容 -->
+            <div class="post-content prose prose-lg max-w-none mb-12">
+                {{ post.content|safe }}
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="flex items-center justify-between border-t border-b border-gray-200 py-6 mb-12">
+                <div class="flex items-center space-x-4">
+                    <!-- 点赞按钮 -->
+                    <button id="like-btn" class="like-btn action-btn flex items-center space-x-2 px-4 py-2 rounded-lg border border-gray-200 hover:border-primary {{ 'active text-red-500' if has_liked else 'text-gray-600' }}">
+                        <i class="{% if has_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                        <span id="like-count">{{ post.like_count() }}</span>
+                    </button>
+                    <!-- 收藏按钮 -->
+                    <button id="bookmark-btn" class="action-btn flex items-center space-x-2 px-4 py-2 rounded-lg border border-gray-200 hover:border-primary {{ 'active text-primary' if is_bookmarked else 'text-gray-600' }}">
+                        <i class="{% if is_bookmarked %}fas{% else %}far{% endif %} fa-bookmark"></i>
+                        <span>{% if is_bookmarked %}已收藏{% else %}收藏{% endif %}</span>
+                    </button>
+                </div>
+
+                <!-- 分享按钮 -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-600 mr-2">分享:</span>
+                    {% set post_url = url_for('main.post', post_id=post.id, _external=True) %}
+                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ post_url }}" id="wechat-share" target="_blank" class="share-btn flex items-center justify-center w-10 h-10 rounded-full text-gray-500 bg-gray-200 hover:bg-green-500 hover:text-white"><i class="fab fa-weixin"></i></a>
+                    <a href="https://service.weibo.com/share/share.php?title={{ post.title }}&url={{ post_url }}" id="weibo-share" target="_blank" class="share-btn flex items-center justify-center w-10 h-10 rounded-full text-gray-500 bg-gray-200 hover:bg-red-500 hover:text-white"><i class="fab fa-weibo"></i></a>
+                    <a href="https://www.douyin.com/" id="tiktok-share" target="_blank" class="share-btn flex items-center justify-center w-10 h-10 rounded-full text-gray-500 bg-gray-200 hover:bg-black hover:text-white"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.bilibili.com/blackboard/share?share_source=copy_link&title={{ post.title }}&url={{ post_url }}" id="bilibili-share" target="_blank" class="share-btn flex items-center justify-center w-10 h-10 rounded-full text-gray-500 bg-gray-200 hover:bg-blue-500 hover:text-white"><i class="fab fa-bilibili"></i></a>
+                </div>
+            </div>
+
+            <!-- 评论区 -->
+            <div id="comments" class="mb-12">
+                {% include 'main/_comments.html' %}
+            </div>
+        </article>
+
+        <!-- 侧栏 -->
+        <aside class="lg:col-span-4 space-y-8">
+            <!-- 作者卡片 -->
+            <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+                <a href="{{ url_for('main.user_profile', username=post.author.username) }}" class="inline-block mb-4">
+                    {% if post.author.avatar_url %}
+                    <img src="{{ url_for('static', filename='uploads/profiles/' + post.author.avatar_url) }}" alt="{{ post.author.username }}" class="w-24 h-24 rounded-full object-cover mx-auto">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ post.author.username }}" class="w-24 h-24 rounded-full object-cover mx-auto">
+                    {% endif %}
+                </a>
+                <h3 class="text-xl font-bold mb-1">{{ post.author.username }}</h3>
+                <p class="text-gray-600 text-sm mb-4">{{ post.author.posts.count() }} 篇旅行故事</p>
+                <a href="{{ url_for('main.user_profile', username=post.author.username) }}" class="inline-block px-4 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-all">查看个人主页</a>
+            </div>
+
+            <!-- 相关故事 -->
+            {% if related_posts %}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-xl font-bold mb-4">相关故事</h3>
+                <div class="space-y-4">
+                    {% for related_post in related_posts %}
+                    <a href="{{ url_for('main.post', post_id=related_post.id) }}" class="flex items-center space-x-3 group">
+                        <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                            {% if related_post.featured_image %}
+                            <img src="{{ url_for('static', filename='uploads/posts/' + related_post.featured_image) }}" alt="{{ related_post.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/default-post.jpg') }}" alt="{{ related_post.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            {% endif %}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-medium line-clamp-2 group-hover:text-primary">{{ related_post.title }}</h4>
+                            <span class="text-xs text-gray-400">{{ related_post.created_at.strftime('%Y-%m-%d') }}</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.umd.js"></script>
+<script>
+  Fancybox.bind('[data-fancybox="gallery"]', {});
+</script>
+{% include 'main/_post_interactions_scripts.html' %}
+{% endblock %} 

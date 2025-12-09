@@ -1,0 +1,1023 @@
+{% extends "base.html" %}
+
+{% block title %}环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    /* 首页特定样式 */
+    .hero-section {
+        background-position: center;
+        color: white;
+    }
+    
+    .hero-heading {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .hero-subheading {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+    
+    .hero-btn {
+        transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    }
+    
+    .hero-btn:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 4px 16px rgba(80,160,255,0.18);
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #333;
+        text-align: center;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        color: #666;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .destination-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .destination-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .destination-img {
+        height: 280px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .destination-card:hover .destination-img {
+        transform: scale(1.05);
+    }
+    
+    .post-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .post-image {
+        height: 220px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .post-card:hover .post-image {
+        transform: scale(1.05);
+    }
+    
+    /* 轮播样式 */
+    .carousel {
+        position: relative;
+        overflow: hidden;
+        height: 100vh; /* 恢复轮播图高度为100vh */
+        margin-top: -2px; /* 增加负margin值以确保与导航栏之间无间隙 */
+        border-top: none; /* 移除顶部边框 */
+    }
+    
+    .carousel-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    
+    /* 轮播图内容可能会有z-index冲突问题 */
+    #navbar {
+        border-bottom: none; /* 移除导航栏底部边框 */
+        box-shadow: none; /* 暂时移除阴影 */
+    }
+    
+    /* 让轮播图内容叠加在导航栏之上 */
+    .carousel-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        background-size: cover;
+        background-position: center;
+        z-index: 1;
+    }
+    
+    .carousel-item.active {
+        opacity: 1;
+        z-index: 2;
+    }
+    
+    /* 轮播图文字位置调整 - 所有轮播图都居中显示 */
+    .carousel-caption {
+        position: absolute;
+        top: 50%;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 80%;
+        max-width: 1200px;
+        text-align: center !important;
+    }
+    
+    .carousel-caption h2 {
+        font-size: 4rem; /* 保持轮播图标题 */
+        text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
+        letter-spacing: 1px;
+    }
+    
+    .carousel-control {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .carousel-control:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+    
+    .carousel-prev {
+        left: 20px;
+    }
+    
+    .carousel-next {
+        right: 20px;
+    }
+    
+    /* 搜索框样式更新 - 所有轮播图中的搜索框都居中 */
+    .search-container {
+        position: relative;
+        max-width: 600px;
+        margin-top: 2rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 18px 30px;
+        border-radius: 50px;
+        border: none;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        font-size: 18px;
+    }
+    
+    /* 轮播图中的搜索按钮样式 */
+    .carousel .search-btn {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 500;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        height: calc(100% - 10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .carousel .search-btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+    }
+    
+    /* 添加向下箭头的动画效果 */
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0) translateX(-50%);
+        }
+        40% {
+            transform: translateY(-20px) translateX(-50%);
+        }
+        60% {
+            transform: translateY(-10px) translateX(-50%);
+        }
+    }
+    
+    .scroll-arrow {
+        position: absolute;
+        bottom: 70px; /* 上调箭头位置，从30px改为70px */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        cursor: pointer;
+        animation: bounce 2s infinite;
+        transition: all 0.3s ease;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
+    }
+    
+    .scroll-arrow:hover {
+        opacity: 1 !important;
+        transform: translateX(-50%) scale(1.1);
+    }
+    
+    .scroll-arrow i {
+        font-size: 3rem;
+        color: white;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .scroll-arrow:hover i {
+        transform: scale(1.2);
+        text-shadow: 0 0 15px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 255, 255, 0.5);
+    }
+    
+    /* 返回顶部按钮样式 */
+    .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background-color: rgba(52, 152, 219, 0.7);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 99;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .back-to-top:hover {
+        background-color: rgba(52, 152, 219, 0.9);
+        transform: translateY(-5px);
+    }
+    
+    .back-to-top i {
+        font-size: 1.8rem;
+    }
+    
+    /* 透明磨砂按钮样式 */
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 轮播图 -->
+<div class="carousel" style="margin-top: -2px; border-top: none;">
+    <div class="carousel-inner">
+        <div class="carousel-item active" style="background-image: url({{ url_for('static', filename='img/1.jpg') }})">
+            <div class="absolute inset-0 bg-black opacity-40"></div>
+            <div class="carousel-caption" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 1200px; text-align: center;">
+                <h2 class="text-6xl md:text-8xl font-bold text-white mb-8" style="text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6); letter-spacing: 1px;">探索世界的奇妙景色</h2>
+                <p class="text-xl md:text-2xl text-white mb-6" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">发现令人惊叹的风景和难忘的体验</p>
+                <div class="flex justify-center space-x-4 mt-10">
+                    <a href="{{ url_for('main.destinations') }}" class="btn btn-primary">
+                        <i class="fas fa-map-marked-alt mr-2"></i> 浏览目的地
+                    </a>
+                    <a href="{{ url_for('main.posts') }}" class="btn btn-glass">
+                        <i class="fas fa-book-open mr-2"></i> 阅读旅行故事
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item" style="background-image: url({{ url_for('static', filename='img/2.jpg') }})">
+            <div class="absolute inset-0 bg-black opacity-40"></div>
+            <div class="carousel-caption" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 1200px; text-align: center;">
+                <h2 class="text-6xl md:text-8xl font-bold text-white mb-8" style="text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6); letter-spacing: 1px;">记录难忘的旅行故事</h2>
+                <p class="text-xl md:text-2xl text-white mb-6" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">分享您的旅行经历，与全球旅行者交流</p>
+                <div class="flex justify-center space-x-4 mt-10">
+                    <a href="{{ url_for('main.destinations') }}" class="btn btn-primary">
+                        <i class="fas fa-map-marked-alt mr-2"></i> 浏览目的地
+                    </a>
+                    <a href="{{ url_for('main.posts') }}" class="btn btn-glass">
+                        <i class="fas fa-book-open mr-2"></i> 阅读旅行故事
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item" style="background-image: url({{ url_for('static', filename='img/4.jpg') }})">
+            <div class="absolute inset-0 bg-black opacity-40"></div>
+            <div class="carousel-caption" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; max-width: 1200px; text-align: center; z-index: 5;">
+                <h2 class="text-6xl md:text-8xl font-bold text-white mb-8" style="text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6); letter-spacing: 1px;">获取专业的旅行建议</h2>
+                <p class="text-xl md:text-2xl text-white mb-6" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">从资深旅行者那里学习实用的旅行贴士</p>
+                <div class="flex justify-center space-x-4 mt-10">
+                    <a href="{{ url_for('main.destinations') }}" class="btn btn-primary">
+                        <i class="fas fa-map-marked-alt mr-2"></i> 浏览目的地
+                    </a>
+                    <a href="{{ url_for('main.posts') }}" class="btn btn-glass">
+                        <i class="fas fa-book-open mr-2"></i> 阅读旅行故事
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 轮播控制 -->
+    <div class="carousel-control carousel-prev">
+        <i class="fas fa-chevron-left text-white text-2xl"></i>
+    </div>
+    <div class="carousel-control carousel-next">
+        <i class="fas fa-chevron-right text-white text-2xl"></i>
+    </div>
+    
+    <!-- 添加向下箭头 -->
+    <div class="scroll-arrow" style="opacity: 0.9; bottom: 70px;" id="scrollToDestinations">
+        <i class="fas fa-chevron-down"></i>
+    </div>
+</div>
+
+<!-- 精选目的地 -->
+<section id="destinations" class="py-20 bg-white">
+  <div class="container mx-auto px-4 md:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-5xl md:text-6xl font-bold text-dark mb-5">精选目的地</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">发现那些令人惊叹的地方，准备好你的下一次冒险</p>
+    </div>
+        
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- 目的地卡片 1 -->
+      <div class="destination-card bg-white rounded-xl overflow-hidden shadow-md">
+        <div class="relative overflow-hidden">
+          <img src="{{ url_for('static', filename='img/japan.jpg') }}" alt="日本" class="destination-img w-full">
+          <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+            亚洲
+          </div>
+        </div>
+        <div class="p-5">
+          <h3 class="text-xl font-bold mb-2">日本</h3>
+          <p class="text-gray-600 mb-3 line-clamp-3">探索日本的传统与现代融合，从东京繁华的街道到京都宁静的寺庙，体验丰富的文化遗产和精致的美食。</p>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+              <span>东京、京都、大阪</span>
+            </div>
+            <a href="#" class="text-primary hover:underline font-medium">详情</a>
+          </div>
+        </div>
+    </div>
+
+      <!-- 目的地卡片 2 -->
+      <div class="destination-card bg-white rounded-xl overflow-hidden shadow-md">
+        <div class="relative overflow-hidden">
+          <img src="{{ url_for('static', filename='img/yidali.jpg') }}" alt="意大利" class="destination-img w-full">
+          <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+            欧洲
+          </div>
+        </div>
+        <div class="p-5">
+          <h3 class="text-xl font-bold mb-2">意大利</h3>
+          <p class="text-gray-600 mb-3 line-clamp-3">在意大利领略文艺复兴的辉煌，品尝正宗的意式美食，探索罗马的古迹、威尼斯的水城和托斯卡纳的乡村风光。</p>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+              <span>罗马、威尼斯、佛罗伦萨</span>
+            </div>
+            <a href="#" class="text-primary hover:underline font-medium">详情</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 目的地卡片 3 -->
+      <div class="destination-card bg-white rounded-xl overflow-hidden shadow-md">
+        <div class="relative overflow-hidden">
+          <img src="{{ url_for('static', filename='img/埃及.jpg') }}" alt="埃及" class="destination-img w-full">
+          <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+            非洲
+          </div>
+        </div>
+        <div class="p-5">
+          <h3 class="text-xl font-bold mb-2">埃及</h3>
+          <p class="text-gray-600 mb-3 line-clamp-3">探索古埃及文明的神秘与辉煌，参观金字塔和狮身人面像，在红海海岸潜水，沿着尼罗河巡游体验千年历史。</p>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+              <span>开罗、卢克索、红海</span>
+            </div>
+            <a href="#" class="text-primary hover:underline font-medium">详情</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-12">
+      <a href="{{ url_for('main.destinations') }}" class="btn btn-primary">
+        查看更多目的地 <i class="fas fa-arrow-right ml-1"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 热门目的地 -->
+<section class="py-20 bg-gray-50">
+  <div class="container mx-auto px-4 md:px-8">
+    <div class="text-center mb-10">
+      <h2 class="text-5xl md:text-6xl font-bold text-dark mb-5">热门目的地</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">探索世界各地最受欢迎的旅游胜地</p>
+    </div>
+    
+    <!-- 分类导航 -->
+    <div class="flex flex-wrap justify-center mb-12 gap-2">
+      <button class="btn bg-blue-600 text-white hover:bg-blue-700">全部</button>
+      <button class="btn btn-glass text-blue-600" style="background: rgba(255, 255, 255, 0.7); color: #1976d2; backdrop-filter: blur(4px);">亚洲</button>
+      <button class="btn btn-glass text-blue-600" style="background: rgba(255, 255, 255, 0.7); color: #1976d2; backdrop-filter: blur(4px);">欧洲</button>
+      <button class="btn btn-glass text-blue-600" style="background: rgba(255, 255, 255, 0.7); color: #1976d2; backdrop-filter: blur(4px);">北美洲</button>
+      <button class="btn btn-glass text-blue-600" style="background: rgba(255, 255, 255, 0.7); color: #1976d2; backdrop-filter: blur(4px);">南美洲</button>
+      <button class="btn btn-glass text-blue-600" style="background: rgba(255, 255, 255, 0.7); color: #1976d2; backdrop-filter: blur(4px);">非洲</button>
+      <button class="btn btn-glass text-blue-600" style="background: rgba(255, 255, 255, 0.7); color: #1976d2; backdrop-filter: blur(4px);">大洋洲</button>
+    </div>
+    
+    <!-- 目的地卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- 东京 -->
+      <div class="destination-card rounded-xl overflow-hidden shadow-md relative">
+        <div class="relative overflow-hidden h-80">
+          <img src="{{ url_for('static', filename='img/japan.jpg') }}" alt="东京" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-4 text-white">
+            <h3 class="text-2xl font-bold mb-1">东京</h3>
+            <p class="text-sm opacity-90">日本</p>
+          </div>
+          <div class="absolute top-3 left-3 flex items-center space-x-1">
+            <i class="fas fa-star text-yellow-400"></i>
+            <span class="text-white font-medium text-sm">4.8</span>
+          </div>
+          <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-xs font-medium py-1 px-2 rounded-full">
+            32个景点
+          </div>
+        </div>
+      </div>
+      
+      <!-- 巴黎 -->
+      <div class="destination-card rounded-xl overflow-hidden shadow-md relative">
+        <div class="relative overflow-hidden h-80">
+          <img src="{{ url_for('static', filename='img/paris.jpg') }}" alt="巴黎" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-4 text-white">
+            <h3 class="text-2xl font-bold mb-1">巴黎</h3>
+            <p class="text-sm opacity-90">法国</p>
+          </div>
+          <div class="absolute top-3 left-3 flex items-center space-x-1">
+            <i class="fas fa-star text-yellow-400"></i>
+            <span class="text-white font-medium text-sm">4.9</span>
+          </div>
+          <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-xs font-medium py-1 px-2 rounded-full">
+            45个景点
+          </div>
+        </div>
+      </div>
+      
+      <!-- 纽约 -->
+      <div class="destination-card rounded-xl overflow-hidden shadow-md relative">
+        <div class="relative overflow-hidden h-80">
+          <img src="{{ url_for('static', filename='img/nyc.jpg') }}" alt="纽约" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-4 text-white">
+            <h3 class="text-2xl font-bold mb-1">纽约</h3>
+            <p class="text-sm opacity-90">美国</p>
+          </div>
+          <div class="absolute top-3 left-3 flex items-center space-x-1">
+            <i class="fas fa-star text-yellow-400"></i>
+            <span class="text-white font-medium text-sm">4.7</span>
+          </div>
+          <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-xs font-medium py-1 px-2 rounded-full">
+            51个景点
+          </div>
+        </div>
+      </div>
+      
+      <!-- 悉尼 -->
+      <div class="destination-card rounded-xl overflow-hidden shadow-md relative">
+        <div class="relative overflow-hidden h-80">
+          <img src="{{ url_for('static', filename='img/sydney.jpg') }}" alt="悉尼" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-4 text-white">
+            <h3 class="text-2xl font-bold mb-1">悉尼</h3>
+            <p class="text-sm opacity-90">澳大利亚</p>
+          </div>
+          <div class="absolute top-3 left-3 flex items-center space-x-1">
+            <i class="fas fa-star text-yellow-400"></i>
+            <span class="text-white font-medium text-sm">4.8</span>
+          </div>
+          <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-xs font-medium py-1 px-2 rounded-full">
+            28个景点
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-12">
+      <a href="{{ url_for('main.destinations') }}" class="btn btn-glass" style="background: rgba(255, 255, 255, 0.7); color: #1976d2; border: 1px solid rgba(25, 118, 210, 0.3);">
+        加载更多目的地 <i class="fas fa-plus ml-1"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 旅行故事 -->
+<section id="stories" class="py-20 bg-white">
+  <div class="container mx-auto px-4 md:px-8">
+    <div class="text-center mb-10">
+      <h2 class="text-5xl md:text-6xl font-bold text-dark mb-4">旅行故事</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">探索世界各地的文化、美食和令人难以置信的冒险</p>
+    </div>
+    
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- 左侧大图故事 -->
+      <div class="w-full lg:w-3/5">
+        <div class="bg-white rounded-lg overflow-hidden shadow-md">
+          <a href="{{ url_for('main.posts') }}" class="block">
+            <div class="relative">
+              <img src="{{ url_for('static', filename='img/story1.jpg') }}" alt="喜马拉雅山脉的精神之旅" class="w-full h-[500px] object-cover">
+              <div class="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 text-sm rounded-md">
+                最新故事
+              </div>
+            </div>
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <img src="{{ url_for('static', filename='img/user1.jpg') }}" alt="李明" class="w-10 h-10 rounded-full object-cover mr-3">
+                <div>
+                  <div class="font-medium">李明</div>
+                  <div class="text-gray-500 text-sm">2023年4月15日 · 8分钟阅读</div>
+                </div>
+              </div>
+              <h3 class="text-2xl font-bold mb-3">喜马拉雅山脉的精神之旅</h3>
+              <p class="text-gray-600 mb-4">去年夏天，我踏上了一段难忘的旅程，前往珍贵的喜马拉雅山脉进行徒步旅行。这次旅行不仅是身体上的挑战，更是一次精神上的洗礼...</p>
+              <div class="text-blue-600 font-medium flex items-center">
+                阅读全文 <i class="fas fa-arrow-right ml-2"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      
+      <!-- 右侧故事列表 -->
+      <div class="w-full lg:w-2/5 space-y-6">
+        <!-- 故事1 -->
+        <div class="flex bg-white rounded-lg overflow-hidden shadow-sm">
+          <a href="{{ url_for('main.posts') }}" class="flex hover:opacity-90 transition-opacity">
+            <div class="w-1/3">
+              <img src="{{ url_for('static', filename='img/story2.jpg') }}" alt="托斯卡纳的美食之旅" class="w-full h-full object-cover">
+            </div>
+            <div class="w-2/3 p-4">
+              <div class="flex items-center mb-2">
+                <img src="{{ url_for('static', filename='img/user2.jpg') }}" alt="王芳" class="w-8 h-8 rounded-full object-cover mr-2">
+                <div class="text-sm text-gray-500">王芳 · 2023年3月28日</div>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">托斯卡纳的美食之旅</h3>
+              <p class="text-gray-600 text-sm line-clamp-2">探索意大利托斯卡纳地区的美食文化，从传统的手工面到世界闻名的葡萄酒，每一道菜都讲述着一个故事...</p>
+              <div class="text-blue-600 text-sm mt-2">
+                阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        <!-- 故事2 -->
+        <div class="flex bg-white rounded-lg overflow-hidden shadow-sm">
+          <a href="{{ url_for('main.posts') }}" class="flex hover:opacity-90 transition-opacity">
+            <div class="w-1/3">
+              <img src="{{ url_for('static', filename='img/story3.jpg') }}" alt="冰岛极光下的冒险" class="w-full h-full object-cover">
+            </div>
+            <div class="w-2/3 p-4">
+              <div class="flex items-center mb-2">
+                <img src="{{ url_for('static', filename='img/user3.jpg') }}" alt="张伟" class="w-8 h-8 rounded-full object-cover mr-2">
+                <div class="text-sm text-gray-500">张伟 · 2023年3月10日</div>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">冰岛极光下的冒险</h3>
+              <p class="text-gray-600 text-sm line-clamp-2">在冰岛的冬季，我追逐着扑朔迷离的极光。从蓝湖到黄金圈，再到南部的冰川，每一处都让我惊叹不已...</p>
+              <div class="text-blue-600 text-sm mt-2">
+                阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+        
+        <!-- 故事3 -->
+        <div class="flex bg-white rounded-lg overflow-hidden shadow-sm">
+          <a href="{{ url_for('main.posts') }}" class="flex hover:opacity-90 transition-opacity">
+            <div class="w-1/3">
+              <img src="{{ url_for('static', filename='img/story4.jpg') }}" alt="泰国清迈的文化探索" class="w-full h-full object-cover">
+            </div>
+            <div class="w-2/3 p-4">
+              <div class="flex items-center mb-2">
+                <img src="{{ url_for('static', filename='img/user4.jpg') }}" alt="陈静" class="w-8 h-8 rounded-full object-cover mr-2">
+                <div class="text-sm text-gray-500">陈静 · 2023年2月27日</div>
+              </div>
+              <h3 class="text-xl font-semibold mb-2">泰国清迈的文化探索</h3>
+              <p class="text-gray-600 text-sm line-clamp-2">在泰国的南部小镇，我深入体验了泰国北部的文化。从高耸的布展仪式到传统的泰式按摩，每一天都充满了惊喜...</p>
+              <div class="text-blue-600 text-sm mt-2">
+                阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-12">
+      <a href="{{ url_for('main.posts') }}" class="btn btn-primary">
+        查看更多故事 <i class="fas fa-arrow-right ml-1"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 旅行贴士 -->
+<section id="tips" class="py-20 bg-white">
+  <div class="container mx-auto px-4 md:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-5xl md:text-6xl font-bold text-dark mb-5">实用旅行贴士</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">让你的旅行更顺畅、更有趣、更难忘</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- 贴士卡片 1 -->
+      <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-suitcase text-primary text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">行李打包技巧</h3>
+        <p class="text-gray-600 mb-4">学习如何高效打包行李，减轻负担，不遗漏重要物品。</p>
+        <a href="{{ url_for('main.tips') }}" class="text-primary hover:underline">查看详情</a>
+      </div>
+      
+      <!-- 贴士卡片 2 -->
+      <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-earth-americas text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">可持续旅行</h3>
+        <p class="text-gray-600 mb-4">如何减少旅行对环境的影响，选择生态友好的旅行方式。</p>
+        <a href="{{ url_for('main.tips') }}" class="text-primary hover:underline">查看详情</a>
+      </div>
+      
+      <!-- 贴士卡片 3 -->
+      <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center">
+        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-camera text-yellow-600 text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">旅行摄影指南</h3>
+        <p class="text-gray-600 mb-4">捕捉精彩瞬间的技巧，拍出与众不同的旅行照片。</p>
+        <a href="{{ url_for('main.tips') }}" class="text-primary hover:underline">查看详情</a>
+      </div>
+      
+      <!-- 贴士卡片 4 -->
+      <div class="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-utensils text-red-600 text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">美食探索</h3>
+        <p class="text-gray-600 mb-4">如何找到地道美食，像当地人一样享受各地美食文化。</p>
+        <a href="{{ url_for('main.tips') }}" class="text-primary hover:underline">查看详情</a>
+      </div>
+    </div>
+    
+    <div class="text-center mt-12">
+      <a href="{{ url_for('main.tips') }}" class="btn btn-primary">
+        查看更多贴士 <i class="fas fa-arrow-right ml-1"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 统计数据，修改为个人介绍页面风格 -->
+<section class="py-20 bg-white">
+  <div class="container mx-auto px-4 md:px-8">
+    <div class="flex flex-col md:flex-row items-center md:items-start gap-12">
+      <!-- 左侧图片 -->
+      <div class="w-full md:w-2/5 relative rounded-2xl overflow-hidden shadow-xl">
+        <img src="{{ url_for('static', filename='img/travel-blogger.jpg') }}" alt="旅行博主" class="w-full object-cover">
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+          <div class="text-white text-lg font-bold mb-2">敦煌实拍：三天打卡敦煌全攻略</div>
+        </div>
+      </div>
+      
+      <!-- 右侧文字和统计数据 -->
+      <div class="w-full md:w-3/5">
+        <!-- 标题和介绍 -->
+        <h1 class="text-4xl font-bold mb-6">你好，我是李明</h1>
+        
+        <div class="space-y-4 text-gray-700 mb-8">
+          <p>我是一位全职旅行博主、摄影师和冒险爱好者。过去5年，我走过了全球30多个国家，记录下无数美丽的风景和动人的故事。</p>
+          
+          <p>我的使命是通过我的文字和照片，激发人们探索世界的好奇心，帮助他们规划难忘的旅行体验。无论是繁华的都市、宁静的乡村，还是神秘的自然奇观，我都希望能与你分享这些精彩的发现。</p>
+          
+          <p>除了旅行，我还热衷于尝试各地美食、学习不同文化，以及挑战各种户外活动。如果你也热爱旅行，欢迎加入我的旅程，一起探索这个美丽而多样化的世界！</p>
+        </div>
+        
+        <!-- 数据统计部分 -->
+        <div class="flex flex-wrap gap-8 md:gap-12 mb-8">
+          <!-- 国家数量 -->
+          <div class="flex items-center">
+            <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+              <i class="fas fa-globe text-blue-500 text-xl"></i>
+            </div>
+            <div>
+              <div class="text-xl font-bold text-gray-800">30+</div>
+              <div class="text-sm text-gray-600">国家</div>
+            </div>
+          </div>
+          
+          <!-- 游记数量 -->
+          <div class="flex items-center">
+            <div class="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+              <i class="fas fa-book-open text-orange-500 text-xl"></i>
+            </div>
+            <div>
+              <div class="text-xl font-bold text-gray-800">500+</div>
+              <div class="text-sm text-gray-600">游记</div>
+            </div>
+          </div>
+          
+          <!-- 粉丝数量 -->
+          <div class="flex items-center">
+            <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mr-3">
+              <i class="fas fa-users text-green-500 text-xl"></i>
+                </div>
+            <div>
+              <div class="text-xl font-bold text-gray-800">100k+</div>
+              <div class="text-sm text-gray-600">粉丝</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 社交媒体图标 -->
+        <div class="flex gap-4">
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-500 transition-colors">
+            <i class="fab fa-weixin"></i>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-500 transition-colors">
+            <i class="fab fa-weibo"></i>
+          </a>
+          <a href="https://www.douyin.com/" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-500 transition-colors">
+            <i class="fab fa-tiktok"></i>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-100 hover:text-blue-500 transition-colors">
+            <i class="fab fa-bilibili"></i>
+          </a>
+        </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 订阅区域 -->
+<section class="py-20 bg-white">
+  <div class="container mx-auto px-4 md:px-8 max-w-3xl">
+    <div class="text-center mb-8">
+      <h2 class="text-5xl md:text-6xl font-bold text-dark mb-5">订阅我们的旅行灵感</h2>
+      <p class="text-gray-600">获取最新的旅行目的地推荐、实用攻略和独家优惠</p>
+    </div>
+    
+    <form class="flex flex-col md:flex-row gap-4">
+      <input 
+        type="email" 
+        placeholder="输入您的邮箱地址" 
+        class="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        required
+      >
+      <button type="submit" class="btn btn-primary">
+        立即订阅
+      </button>
+    </form>
+    
+    <p class="text-gray-500 text-sm text-center mt-4">
+      订阅即表示您同意接收我们的电子邮件，您可以随时取消订阅。
+    </p>
+    </div>
+</section>
+
+<!-- 返回顶部按钮 -->
+<div class="back-to-top" id="backToTop">
+  <i class="fas fa-chevron-up"></i>
+</div>
+
+<!-- 旅行主题 -->
+<section class="py-20 bg-gray-50">
+  <div class="container mx-auto px-4 md:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-5xl md:text-6xl font-bold text-dark mb-5">精选旅行主题</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">根据您的兴趣发现完美的旅行体验</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- 海滩度假 -->
+      <div class="relative h-80 md:h-96 rounded-xl overflow-hidden group">
+        <img src="{{ url_for('static', filename='img/beach.jpg') }}" alt="海滩度假" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+          <h3 class="text-2xl font-bold text-white mb-2">海滩度假</h3>
+          <p class="text-white/90 mb-4">在世界上最美丽的海滩放松身心，享受阳光与海浪</p>
+          <a href="#" class="inline-block bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 px-4 py-2 rounded-lg transition-all">
+            探索目的地
+          </a>
+        </div>
+      </div>
+      
+      <!-- 文化之旅 -->
+      <div class="relative h-80 md:h-96 rounded-xl overflow-hidden group">
+        <img src="{{ url_for('static', filename='img/culture.jpg') }}" alt="文化之旅" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+          <h3 class="text-2xl font-bold text-white mb-2">文化之旅</h3>
+          <p class="text-white/90 mb-4">探索古老文明的遗迹，感受世界各地丰富的文化遗产</p>
+          <a href="#" class="inline-block bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 px-4 py-2 rounded-lg transition-all">
+            探索目的地
+          </a>
+        </div>
+      </div>
+      
+      <!-- 自然探险 -->
+      <div class="relative h-80 md:h-96 rounded-xl overflow-hidden group">
+        <img src="{{ url_for('static', filename='img/adventure.jpg') }}" alt="自然探险" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+          <h3 class="text-2xl font-bold text-white mb-2">自然探险</h3>
+          <p class="text-white/90 mb-4">在壮丽的自然景观中徒步、攀登、探险，挑战自我极限</p>
+          <a href="#" class="inline-block bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 px-4 py-2 rounded-lg transition-all">
+            探索目的地
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 社交媒体关注 -->
+<section class="bg-white py-16">
+    <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-4">关注我们</h2>
+        <p class="text-gray-600 mb-8">在社交媒体上与我们联系，获取最新的旅行灵感和更新。</p>
+        <div class="flex justify-center space-x-6">
+            <a href="#" class="text-gray-500 hover:text-green-500 transition-colors">
+                <i class="fab fa-weixin fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-500 hover:text-red-500 transition-colors">
+                <i class="fab fa-weibo fa-2x"></i>
+            </a>
+            <a href="https://www.douyin.com/" target="_blank" class="text-gray-500 hover:text-black transition-colors">
+                <i class="fab fa-tiktok fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-500 hover:text-blue-400 transition-colors">
+                <i class="fab fa-bilibili fa-2x"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取DOM元素
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        const prevBtn = document.querySelector('.carousel-prev');
+        const nextBtn = document.querySelector('.carousel-next');
+        const scrollArrow = document.getElementById('scrollToDestinations');
+        const destinationsSection = document.getElementById('destinations');
+        const backToTopBtn = document.getElementById('backToTop');
+        let currentIndex = 0;
+        
+        function showSlide(index) {
+            // 隐藏所有slide
+            carouselItems.forEach(item => {
+                item.classList.remove('active');
+                item.style.display = 'none'; // 确保完全隐藏
+                setTimeout(() => {
+                    item.style.display = ''; // 重置display属性
+                }, 50);
+            });
+            
+            // 显示当前slide
+            carouselItems[index].classList.add('active');
+            
+            // 强制刷新当前slide的内容可见性
+            const caption = carouselItems[index].querySelector('.carousel-caption');
+            if(caption) {
+                caption.style.display = 'block';
+                caption.style.opacity = '1';
+                caption.style.visibility = 'visible';
+            }
+        }
+        
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % carouselItems.length;
+            showSlide(currentIndex);
+        }
+        
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+            showSlide(currentIndex);
+        }
+        
+        // 添加点击事件
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        
+        // 自动轮播
+        setInterval(nextSlide, 5000);
+        
+        // 初始化时强制显示第一张
+        showSlide(0);
+        
+        // 检查轮播图是否正确显示
+        setTimeout(() => {
+            carouselItems.forEach((item, idx) => {
+                if (!item.classList.contains('active') && idx > 0) {
+                    const caption = item.querySelector('.carousel-caption');
+                    if(caption) {
+                        caption.style.opacity = '0';
+                    }
+                }
+            });
+        }, 100);
+        
+        // 向下滚动箭头功能
+        scrollArrow.addEventListener('click', function() {
+            destinationsSection.scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        });
+        
+        // 返回顶部按钮功能
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 滚动事件处理 - 控制两个箭头的显示/隐藏
+        window.addEventListener('scroll', function() {
+            // 控制向下箭头
+            if (window.scrollY > 200) {
+                scrollArrow.style.opacity = '0';
+                scrollArrow.style.pointerEvents = 'none';
+            } else {
+                scrollArrow.style.opacity = '0.9';
+                scrollArrow.style.pointerEvents = 'auto';
+            }
+            
+            // 控制返回顶部按钮
+            if (window.scrollY > destinationsSection.offsetTop - 100) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+    });
+</script>
+{% endblock %} 

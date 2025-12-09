@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}我的收藏 - 环球旅记{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 md:px-8 py-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- 页面标题 -->
+        <h1 class="text-3xl font-bold mb-8">我的收藏</h1>
+        
+        <!-- 收藏列表 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            {% if bookmarks.items %}
+            <div class="divide-y">
+                {% for bookmark in bookmarks.items %}
+                <div class="p-6 hover:bg-gray-50 transition-colors">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <!-- 文章图片 -->
+                        {% if bookmark.post.featured_image %}
+                        <a href="{{ url_for('main.post', post_id=bookmark.post.id) }}" class="block md:flex-shrink-0">
+                            <div class="w-full md:w-32 h-32 rounded-lg overflow-hidden">
+                                <img src="{{ url_for('static', filename='uploads/posts/' + bookmark.post.featured_image) }}" alt="{{ bookmark.post.title }}" class="w-full h-full object-cover">
+                            </div>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- 文章信息 -->
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold mb-2">
+                                <a href="{{ url_for('main.post', post_id=bookmark.post.id) }}" class="hover:text-primary">{{ bookmark.post.title }}</a>
+                            </h2>
+                            <p class="text-gray-600 mb-3 line-clamp-2">{{ bookmark.post.content|striptags }}</p>
+                            
+                            <div class="flex justify-between items-center text-sm text-gray-500">
+                                <div class="flex flex-wrap items-center gap-4">
+                                    <div class="flex items-center">
+                                        {% if bookmark.post.author.avatar_url %}
+                                        <img src="{{ url_for('static', filename='uploads/profiles/' + bookmark.post.author.avatar_url) }}" alt="{{ bookmark.post.author.username }}" class="w-6 h-6 rounded-full object-cover mr-2">
+                                        {% else %}
+                                        <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ bookmark.post.author.username }}" class="w-6 h-6 rounded-full object-cover mr-2">
+                                        {% endif %}
+                                        <span>{{ bookmark.post.author.username }}</span>
+                                    </div>
+                                    <span><i class="far fa-calendar-alt mr-1"></i> {{ bookmark.post.created_at.strftime('%Y-%m-%d') }}</span>
+                                    <span><i class="far fa-eye mr-1"></i> {{ bookmark.post.views }}</span>
+                                    <span><i class="far fa-comment mr-1"></i> {{ bookmark.post.comment_count() }}</span>
+                                    {% if bookmark.post.location %}
+                                    <span><i class="fas fa-map-marker-alt mr-1 text-primary"></i> {{ bookmark.post.location }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <form action="{{ url_for('main.bookmark_post', post_id=bookmark.post.id) }}" method="post" class="remove-bookmark-form">
+                                        <button type="submit" class="text-gray-500 hover:text-red-500 focus:outline-none">
+                                            <i class="fas fa-bookmark"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- 分页 -->
+            {% if bookmarks.pages > 1 %}
+            <div class="p-6 border-t">
+                <div class="flex justify-center">
+                    <div class="flex flex-wrap items-center">
+                        {% if bookmarks.has_prev %}
+                        <a href="{{ url_for('main.user_bookmarks', page=bookmarks.prev_num) }}" class="w-10 h-10 flex items-center justify-center rounded-full border mx-1 hover:bg-gray-100">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% for page_num in bookmarks.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                            {% if page_num %}
+                                {% if bookmarks.page == page_num %}
+                                <a href="{{ url_for('main.user_bookmarks', page=page_num) }}" class="w-10 h-10 flex items-center justify-center rounded-full border mx-1 bg-primary text-white">{{ page_num }}</a>
+                                {% else %}
+                                <a href="{{ url_for('main.user_bookmarks', page=page_num) }}" class="w-10 h-10 flex items-center justify-center rounded-full border mx-1 hover:bg-gray-100">{{ page_num }}</a>
+                                {% endif %}
+                            {% else %}
+                            <span class="mx-1">...</span>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if bookmarks.has_next %}
+                        <a href="{{ url_for('main.user_bookmarks', page=bookmarks.next_num) }}" class="w-10 h-10 flex items-center justify-center rounded-full border mx-1 hover:bg-gray-100">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="p-10 text-center">
+                <div class="text-5xl text-gray-300 mb-4">
+                    <i class="far fa-bookmark"></i>
+                </div>
+                <h3 class="text-xl font-medium text-gray-600 mb-3">您还没有收藏任何游记</h3>
+                <p class="text-gray-500 mb-6">浏览游记并点击收藏按钮将它们添加到这里</p>
+                <a href="{{ url_for('main.posts') }}" class="inline-flex items-center bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg transition-all">
+                    <i class="fas fa-compass mr-2"></i> 浏览游记
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 使用AJAX处理取消收藏
+        const forms = document.querySelectorAll('.remove-bookmark-form');
+        
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'unbookmarked') {
+                        // 找到包含此表单的卡片并移除
+                        const card = form.closest('.p-6');
+                        card.style.opacity = '0';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                            
+                            // 检查是否所有卡片都被移除
+                            const remainingCards = document.querySelectorAll('.p-6:not([style*="display: none"])');
+                            if (remainingCards.length === 0) {
+                                // 刷新页面以显示空状态
+                                window.location.reload();
+                            }
+                        }, 300);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+{% endblock %} 

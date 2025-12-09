@@ -1,0 +1,611 @@
+{% extends "admin/base.html" %}
+
+{% block title %}帖子管理 - 环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    /* 主内容区域样式 */
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .content-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2c5282;
+        position: relative;
+    }
+    
+    .content-title::after {
+        content: '';
+        position: absolute;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #3182ce, #63b3ed);
+        bottom: -10px;
+        left: 0;
+    }
+    
+    /* 过滤器样式 */
+    .filter-bar {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .filter-label {
+        font-weight: 600;
+        color: #4a5568;
+        margin-right: 0.5rem;
+    }
+    
+    .filter-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .filter-link {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+    }
+    
+    .filter-link:hover {
+        background: #edf2f7;
+    }
+    
+    .filter-link.active {
+        background: #3182ce;
+        color: white;
+    }
+    
+    /* 表格样式 */
+    .data-table {
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .table-header {
+        background: linear-gradient(to right, #f7fafc, #edf2f7);
+        color: #4a5568;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+    
+    .table-header th {
+        padding: 1rem;
+        text-align: left;
+    }
+    
+    .table-body td {
+        padding: 1rem;
+        border-top: 1px solid #edf2f7;
+    }
+    
+    .table-row {
+        transition: all 0.2s;
+    }
+    
+    .table-row:hover {
+        background: #f7fafc;
+    }
+    
+    /* 状态徽章 */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-approved {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+    
+    .status-pending {
+        background: #feebc8;
+        color: #744210;
+    }
+    
+    .status-deleted {
+        background: #fed7d7;
+        color: #822727;
+    }
+    
+    /* 操作按钮 */
+    .action-btn {
+        display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9999px;color:#fff;margin-right:6px;transition:all .2s;
+    }
+    .action-btn.view{background:#10b981}
+    .action-btn.edit{background:#3b82f6}
+    .action-btn.delete{background:#ef4444}
+    .action-btn.approve{background:#f59e0b}
+    .action-btn:hover{transform:scale(1.05);box-shadow:0 2px 6px rgba(0,0,0,.15)}
+    
+    /* 分页样式 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .pagination-item {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .pagination-item:hover {
+        background: #edf2f7;
+    }
+    
+    .pagination-item.active {
+        background: #3182ce;
+        color: white;
+    }
+    
+    .pagination-arrow {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .pagination-arrow:hover {
+        background: #edf2f7;
+    }
+    
+    .pagination-arrow.disabled {
+        color: #cbd5e0;
+        cursor: not-allowed;
+    }
+    
+    .pagination-arrow.disabled:hover {
+        background: transparent;
+    }
+    
+    /* 搜索栏 */
+    .search-bar {
+        display: flex;
+        margin-left: auto;
+    }
+    
+    .search-input {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px 0 0 8px;
+        padding: 0.5rem 1rem;
+        outline: none;
+        width: 250px;
+        transition: all 0.2s;
+    }
+    
+    .search-input:focus {
+        border-color: #3182ce;
+    }
+    
+    .search-btn {
+        background: #3182ce;
+        color: white;
+        border: none;
+        border-radius: 0 8px 8px 0;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: #2c5282;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 640px) {
+        .search-bar {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .search-input {
+            width: 100%;
+        }
+        
+        .filter-bar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            min-width: 600px;
+        }
+    }
+    
+    /* 模态框样式 */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    
+    .modal-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    .modal-container {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+    
+    .modal-backdrop.active .modal-container {
+        transform: translateY(0);
+    }
+    
+    .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: #2d3748;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #a0aec0;
+        transition: color 0.2s;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+    
+    .modal-close:hover {
+        color: #718096;
+        background: #f7fafc;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+    
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-secondary:hover {
+        background: #cbd5e0;
+    }
+    
+    .btn-danger {
+        background: #e53e3e;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-danger:hover {
+        background: #c53030;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #a0aec0;
+    }
+    
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state-text {
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+        color: white;
+        border: none;
+        padding: 0.625rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(25, 118, 210, 0.12);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(25, 118, 210, 0.15);
+    }
+    
+    .btn-primary i {
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-header mb-6">
+    <h1 class="content-title">帖子管理</h1>
+    
+    <div class="search-bar">
+        <form action="{{ url_for('admin.manage_posts') }}" method="get">
+            <div class="flex">
+                <input type="text" name="search" placeholder="搜索帖子..." class="search-input" value="{{ request.args.get('search', '') }}">
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            {% if status %}
+            <input type="hidden" name="status" value="{{ status }}">
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="filter-bar">
+    <div class="filter-label">筛选：</div>
+    <div class="filter-links">
+        <a href="{{ url_for('admin.manage_posts') }}" class="filter-link {{ 'active' if not status else '' }}">全部</a>
+        <a href="{{ url_for('admin.manage_posts', status='approved') }}" class="filter-link {{ 'active' if status == 'approved' else '' }}">已审核</a>
+        <a href="{{ url_for('admin.manage_posts', status='pending') }}" class="filter-link {{ 'active' if status == 'pending' else '' }}">待审核</a>
+        <a href="{{ url_for('admin.manage_posts', status='deleted') }}" class="filter-link {{ 'active' if status == 'deleted' else '' }}">已删除</a>
+    </div>
+</div>
+
+{% if posts.items %}
+<div class="table-responsive">
+    <table class="data-table">
+        <thead class="table-header">
+            <tr>
+                <th>ID</th>
+                <th>封面</th>
+                <th>标题</th>
+                <th>作者</th>
+                <th>发布时间</th>
+                <th>状态</th>
+                <th>浏览量</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            {% for post in posts.items %}
+            <tr class="table-row">
+                <td><span class="text-sm font-medium">{{ post.id }}</span></td>
+                <td>
+                    {% if post.featured_image %}
+                    <img src="{{ url_for('static', filename='uploads/posts/' + post.featured_image) }}" alt="封面" class="w-16 h-12 object-cover rounded-lg">
+                    {% else %}
+                    <span class="text-xs text-gray-400">无</span>
+                    {% endif %}
+                </td>
+                <td><span class="text-sm font-medium">{{ post.title }}</span></td>
+                <td>
+                    <div class="flex items-center">
+                        {% if post.author.avatar_url %}
+                        <img src="{{ url_for('static', filename='uploads/profiles/' + post.author.avatar_url) }}" alt="{{ post.author.username }}" class="w-8 h-8 rounded-full mr-2">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="默认头像" class="w-8 h-8 rounded-full mr-2">
+                        {% endif %}
+                        <span class="text-sm">{{ post.author.username }}</span>
+                    </div>
+                </td>
+                <td><span class="text-sm text-gray-600">{{ post.created_at.strftime('%Y-%m-%d %H:%M') if post.created_at is not string else post.created_at }}</span></td>
+                <td>
+                    {% if post.is_deleted %}
+                    <span class="status-badge status-deleted">
+                        <i class="fas fa-trash-alt mr-1"></i> 已删除
+                    </span>
+                    {% elif post.is_approved %}
+                    <span class="status-badge status-approved">
+                        <i class="fas fa-check-circle mr-1"></i> 已审核
+                    </span>
+                    {% else %}
+                    <span class="status-badge status-pending">
+                        <i class="fas fa-clock mr-1"></i> 待审核
+                    </span>
+                    {% endif %}
+                </td>
+                <td><span class="text-sm">{{ post.views }}</span></td>
+                <td>
+                    <div class="flex">
+                        <a href="{{ url_for('admin.post_detail', post_id=post.id) }}" class="action-btn view" title="查看详情">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ url_for('admin.edit_post', post_id=post.id) }}" class="action-btn edit" title="编辑">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% if not post.is_deleted %}
+                        <button 
+                            type="button" 
+                            class="action-btn delete" 
+                            title="删除" 
+                            onclick="openDeleteModal('{{ post.id }}', '{{ post.title|replace("'", "\\'") }}')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        {% endif %}
+                        
+                        {% if not post.is_approved and not post.is_deleted %}
+                        <form action="{{ url_for('admin.approve_post', post_id=post.id) }}" method="post" class="inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="action-btn approve" title="审核通过">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 分页 -->
+{% if posts.pages > 1 %}
+<div class="pagination mt-6">
+    {% if posts.has_prev %}
+    <a href="{{ url_for('admin.manage_posts', page=posts.prev_num, status=status, search=request.args.get('search', '')) }}" class="pagination-arrow">
+        <i class="fas fa-chevron-left"></i>
+    </a>
+    {% else %}
+    <span class="pagination-arrow disabled">
+        <i class="fas fa-chevron-left"></i>
+    </span>
+    {% endif %}
+    
+    {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+            {% if page_num == posts.page %}
+            <span class="pagination-item active">{{ page_num }}</span>
+            {% else %}
+            <a href="{{ url_for('admin.manage_posts', page=page_num, status=status, search=request.args.get('search', '')) }}" class="pagination-item">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+        <span class="pagination-item">...</span>
+        {% endif %}
+    {% endfor %}
+    
+    {% if posts.has_next %}
+    <a href="{{ url_for('admin.manage_posts', page=posts.next_num, status=status, search=request.args.get('search', '')) }}" class="pagination-arrow">
+        <i class="fas fa-chevron-right"></i>
+    </a>
+    {% else %}
+    <span class="pagination-arrow disabled">
+        <i class="fas fa-chevron-right"></i>
+    </span>
+    {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">
+        <i class="fas fa-file-alt text-gray-300"></i>
+    </div>
+    <div class="empty-state-text">没有找到符合条件的帖子</div>
+    <a href="{{ url_for('admin.manage_posts') }}" class="btn-primary">
+        <i class="fas fa-sync-alt"></i> 重置筛选条件
+    </a>
+</div>
+{% endif %}
+
+<!-- 删除确认模态框 -->
+<div id="deleteModal" class="modal-backdrop">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">确认删除</h2>
+            <button type="button" class="modal-close" onclick="closeDeleteModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>您确定要删除帖子 "<span id="postTitle"></span>" 吗？</p>
+            <p class="text-red-500 mt-2">此操作无法撤销。</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="closeDeleteModal()">取消</button>
+            <form id="deleteForm" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-danger">确认删除</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openDeleteModal(postId, postTitle) {
+        document.getElementById('postTitle').textContent = postTitle;
+        document.getElementById('deleteForm').action = "{{ url_for('admin.delete_post', post_id=0) }}".replace('0', postId);
+        document.getElementById('deleteModal').classList.add('active');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+    
+    // 点击模态框背景关闭
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+</script>
+{% endblock %} 

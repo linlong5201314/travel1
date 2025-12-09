@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block title %}旅行贴士 - 环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    .tip-card {
+        transition: all 0.3s ease;
+    }
+    
+    .tip-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .category-btn {
+        transition: all 0.3s ease;
+    }
+    
+    .category-btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .category-btn.active {
+        background-color: #3498db;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 页面标题 -->
+<div class="bg-gray-50 py-12 mb-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-dark mb-3">旅行贴士</h1>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto">实用的旅行建议和攻略，让您的旅行更顺畅、更有趣、更难忘</p>
+    </div>
+</div>
+
+<!-- 旅行贴士内容 -->
+<div class="container mx-auto px-4 mb-16">
+    <!-- 分类筛选 -->
+    <div class="flex flex-wrap justify-center gap-3 mb-12">
+        <button class="category-btn px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 font-medium active">全部</button>
+        <button class="category-btn px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 font-medium">行前准备</button>
+        <button class="category-btn px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 font-medium">装备指南</button>
+        <button class="category-btn px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 font-medium">安全提示</button>
+        <button class="category-btn px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 font-medium">省钱技巧</button>
+        <button class="category-btn px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 font-medium">摄影技巧</button>
+        <button class="category-btn px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 font-medium">美食探索</button>
+    </div>
+    
+    <!-- 精选贴士 -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-bold mb-8 text-dark">精选旅行贴士</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- 贴士1：行李打包 -->
+            <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <img src="{{ url_for('static', filename='img/packing.gif') }}" alt="行李打包技巧" class="w-full h-68 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-blue-100 text-primary text-xs px-3 py-1 rounded-full font-medium">行前准备</span>
+                        <span class="ml-auto text-gray-500 text-sm">
+                            <i class="far fa-clock mr-1"></i> 10分钟阅读
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">行李打包的10个实用技巧</h3>
+                    <p class="text-gray-600 mb-4 line-clamp-3">学习如何高效打包行李，减轻负担，不遗漏重要物品。使用卷叠法节省空间，合理分类，安排好随身必备品。</p>
+                    <a href="#" class="text-primary hover:underline font-medium">
+                        阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 贴士2：预订省钱 -->
+            <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <img src="{{ url_for('static', filename='img/booking.jpg') }}" alt="预订省钱技巧" class="w-full h-68 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full font-medium">省钱技巧</span>
+                        <span class="ml-auto text-gray-500 text-sm">
+                            <i class="far fa-clock mr-1"></i> 8分钟阅读
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">如何预订机票和酒店省钱</h3>
+                    <p class="text-gray-600 mb-4 line-clamp-3">了解预订机票和酒店的最佳时机，利用比价工具找到最优惠的价格，灵活调整日期，并利用积分和会员计划节省开支。</p>
+                    <a href="#" class="text-primary hover:underline font-medium">
+                        阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 贴士3：摄影技巧 -->
+            <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <img src="{{ url_for('static', filename='img/photography.jpg') }}" alt="旅行摄影技巧" class="w-full h-68 object-cover">
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-yellow-100 text-yellow-600 text-xs px-3 py-1 rounded-full font-medium">摄影技巧</span>
+                        <span class="ml-auto text-gray-500 text-sm">
+                            <i class="far fa-clock mr-1"></i> 12分钟阅读
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">旅行摄影入门指南</h3>
+                    <p class="text-gray-600 mb-4 line-clamp-3">无论是使用手机还是专业相机，这些简单的构图技巧和光线运用方法都能帮助你拍摄出令人印象深刻的旅行照片。</p>
+                    <a href="#" class="text-primary hover:underline font-medium">
+                        阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 最新贴士 -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-bold mb-8 text-dark">最新旅行贴士</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- 贴士4：安全旅行 -->
+            <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm flex flex-col md:flex-row">
+                <img src="{{ url_for('static', filename='img/safety.jpg') }}" alt="安全旅行技巧" class="w-full md:w-2/5 h-48 md:h-auto object-cover">
+                <div class="p-6 flex flex-col flex-1 justify-between">
+                    <div>
+                        <div class="flex items-center mb-3">
+                            <span class="bg-red-100 text-red-600 text-xs px-3 py-1 rounded-full font-medium">安全提示</span>
+                            <span class="ml-auto text-gray-500 text-sm">
+                                <i class="far fa-calendar-alt mr-1"></i> 2023-05-15
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">独自旅行的安全建议</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-3">独自旅行可以是一次令人难忘的体验，但安全始终是首要考虑因素。了解如何保护自己和随身物品，以及应对紧急情况的实用技巧。</p>
+                    </div>
+                    <a href="#" class="text-primary hover:underline font-medium">
+                        阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 贴士5：美食探索 -->
+            <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm flex flex-col md:flex-row">
+                <img src="{{ url_for('static', filename='img/food.jpg') }}" alt="美食探索技巧" class="w-full md:w-2/5 h-48 md:h-auto object-cover">
+                <div class="p-6 flex flex-col flex-1 justify-between">
+                    <div>
+                        <div class="flex items-center mb-3">
+                            <span class="bg-orange-100 text-orange-600 text-xs px-3 py-1 rounded-full font-medium">美食探索</span>
+                            <span class="ml-auto text-gray-500 text-sm">
+                                <i class="far fa-calendar-alt mr-1"></i> 2023-05-10
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">如何像当地人一样觅食</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-3">远离旅游陷阱，探索真正的当地美食。了解如何找到道地的餐厅，品尝特色菜肴，以及与当地人交流获取美食推荐的技巧。</p>
+                    </div>
+                    <a href="#" class="text-primary hover:underline font-medium">
+                        阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 贴士6：数字游民 -->
+            <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm flex flex-col md:flex-row">
+                <img src="{{ url_for('static', filename='img/digital-nomad.jpg') }}" alt="数字游民工作技巧" class="w-full md:w-2/5 h-48 md:h-auto object-cover">
+                <div class="p-6 flex flex-col flex-1 justify-between">
+                    <div>
+                        <div class="flex items-center mb-3">
+                            <span class="bg-purple-100 text-purple-600 text-xs px-3 py-1 rounded-full font-medium">工作旅行</span>
+                            <span class="ml-auto text-gray-500 text-sm">
+                                <i class="far fa-calendar-alt mr-1"></i> 2023-05-05
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">数字游民生活指南</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-3">在旅行中工作的实用建议，从选择适合远程工作的目的地，到找到可靠的网络连接和舒适的工作环境，帮助你平衡工作与旅行生活。</p>
+                    </div>
+                    <a href="#" class="text-primary hover:underline font-medium">
+                        阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 贴士7：可持续旅行 -->
+            <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm flex flex-col md:flex-row">
+                <img src="{{ url_for('static', filename='img/sustainable.jpg') }}" alt="可持续旅行" class="w-full md:w-2/5 h-48 md:h-auto object-cover">
+                <div class="p-6 flex flex-col flex-1 justify-between">
+                    <div>
+                        <div class="flex items-center mb-3">
+                            <span class="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full font-medium">环保旅行</span>
+                            <span class="ml-auto text-gray-500 text-sm">
+                                <i class="far fa-calendar-alt mr-1"></i> 2023-04-22
+                            </span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">可持续旅行的10个简单方法</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-3">了解如何减少旅行对环境的影响，支持当地社区，做出更负责任的旅行选择，同时仍然享受丰富的旅行体验。</p>
+                    </div>
+                    <a href="#" class="text-primary hover:underline font-medium">
+                        阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 实用工具 -->
+    <div class="bg-gray-50 rounded-xl p-8 md:p-12 mb-16">
+        <h2 class="text-2xl font-bold mb-6 text-dark text-center">实用旅行工具</h2>
+        <p class="text-gray-600 mb-10 text-center max-w-3xl mx-auto">这些工具和资源将帮助您规划和管理旅行，让您的旅程更加顺利</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- 工具1：行李清单 -->
+            <div class="bg-white rounded-lg p-6 text-center hover:shadow-md transition-all">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-suitcase text-primary text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">旅行行李清单</h3>
+                <p class="text-gray-600 mb-4">根据目的地和季节自动生成定制的行李打包清单</p>
+                <a href="#" class="text-primary hover:underline">使用工具</a>
+            </div>
+            
+            <!-- 工具2：货币转换 -->
+            <div class="bg-white rounded-lg p-6 text-center hover:shadow-md transition-all">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exchange-alt text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">货币转换器</h3>
+                <p class="text-gray-600 mb-4">实时汇率转换，支持全球主要货币，离线使用功能</p>
+                <a href="#" class="text-primary hover:underline">使用工具</a>
+            </div>
+            
+            <!-- 工具3：时区计算 -->
+            <div class="bg-white rounded-lg p-6 text-center hover:shadow-md transition-all">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-clock text-purple-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">世界时钟</h3>
+                <p class="text-gray-600 mb-4">全球时区对照，安排跨国通话和会议的最佳工具</p>
+                <a href="#" class="text-primary hover:underline">使用工具</a>
+            </div>
+            
+            <!-- 工具4：翻译助手 -->
+            <div class="bg-white rounded-lg p-6 text-center hover:shadow-md transition-all">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-language text-red-600 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-2">旅行翻译助手</h3>
+                <p class="text-gray-600 mb-4">常用旅行短语与表达，支持多种语言离线翻译</p>
+                <a href="#" class="text-primary hover:underline">使用工具</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 旅行问答 -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-bold mb-8 text-dark">常见旅行问题</h2>
+        
+        <div class="space-y-4">
+            <!-- 问题1 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors text-left">
+                    <span class="font-medium">旅行保险有必要购买吗？</span>
+                    <i class="fas fa-chevron-down text-primary transition-transform"></i>
+                </button>
+                <div class="faq-answer p-4 bg-gray-50 border-t border-gray-200 hidden">
+                    <p class="text-gray-700">旅行保险在大多数情况下都是值得购买的，特别是对于国际旅行。它可以保障您的旅行投资，并在遇到医疗紧急情况、行程取消、行李丢失或旅行延误时提供帮助。选择保险时，考虑您的具体需求和目的地的医疗费用水平。</p>
+                </div>
+            </div>
+            
+            <!-- 问题2 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors text-left">
+                    <span class="font-medium">在国外使用信用卡需要注意什么？</span>
+                    <i class="fas fa-chevron-down text-primary transition-transform"></i>
+                </button>
+                <div class="faq-answer p-4 bg-gray-50 border-t border-gray-200 hidden">
+                    <p class="text-gray-700">出行前通知您的银行和信用卡公司，以免卡片被标记为可疑使用。了解您的卡片是否收取外币交易费。考虑使用没有国际交易费的信用卡，并随身携带至少两张不同网络的卡片作为备用。同时，注意保护您的卡片信息，避免在不安全的网络上进行交易。</p>
+                </div>
+            </div>
+            
+            <!-- 问题3 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors text-left">
+                    <span class="font-medium">如何应对时差反应？</span>
+                    <i class="fas fa-chevron-down text-primary transition-transform"></i>
+                </button>
+                <div class="faq-answer p-4 bg-gray-50 border-t border-gray-200 hidden">
+                    <p class="text-gray-700">调整时差的关键是尽快适应目的地的时间。抵达后，尝试保持清醒直到当地的睡眠时间。在飞行中保持充分水分，并考虑在飞行前几天逐渐调整您的睡眠时间。充足的阳光暴露可以帮助重置您的生物钟，而短暂的小睡（不超过30分钟）可以缓解疲劳而不影响夜间睡眠。</p>
+                </div>
+            </div>
+            
+            <!-- 问题4 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors text-left">
+                    <span class="font-medium">如何找到便宜的机票？</span>
+                    <i class="fas fa-chevron-down text-primary transition-transform"></i>
+                </button>
+                <div class="faq-answer p-4 bg-gray-50 border-t border-gray-200 hidden">
+                    <p class="text-gray-700">寻找便宜机票的技巧包括：提前预订（通常提前1.5-3个月最优），使用航班价格跟踪工具，灵活的出行日期（通常周二、周三和周六的机票价格较低），考虑辅助机场，利用航空公司促销和忠诚计划，以及使用比价网站和应用程序进行全面搜索。</p>
+                </div>
+            </div>
+            
+            <!-- 问题5 -->
+            <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button class="faq-btn w-full flex justify-between items-center p-4 bg-white hover:bg-gray-50 transition-colors text-left">
+                    <span class="font-medium">独自旅行有哪些安全建议？</span>
+                    <i class="fas fa-chevron-down text-primary transition-transform"></i>
+                </button>
+                <div class="faq-answer p-4 bg-gray-50 border-t border-gray-200 hidden">
+                    <p class="text-gray-700">独自旅行时，始终保持警觉和自信，研究目的地的安全风险，与家人或朋友分享您的行程，保管好您的贵重物品，避免在陌生环境中过度饮酒，信任您的直觉，选择安全的住宿，并准备好应急联系人和基本的急救用品。携带便携式充电器和当地SIM卡也是保持联系的好方法。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 分类筛选按钮
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除所有按钮的活动状态
+                categoryBtns.forEach(b => {
+                    b.classList.remove('active');
+                    b.classList.remove('bg-primary');
+                    b.classList.remove('text-white');
+                    b.classList.add('bg-gray-100');
+                    b.classList.add('text-gray-800');
+                });
+                
+                // 添加当前按钮的活动状态
+                this.classList.add('active');
+                this.classList.add('bg-primary');
+                this.classList.add('text-white');
+                this.classList.remove('bg-gray-100');
+                this.classList.remove('text-gray-800');
+            });
+        });
+        
+        // 常见问题折叠面板
+        const faqBtns = document.querySelectorAll('.faq-btn');
+        
+        faqBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                // 切换显示/隐藏状态
+                if (answer.classList.contains('hidden')) {
+                    answer.classList.remove('hidden');
+                    icon.style.transform = 'rotate(180deg)';
+                } else {
+                    answer.classList.add('hidden');
+                    icon.style.transform = 'rotate(0)';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %} 

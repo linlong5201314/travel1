@@ -1,0 +1,237 @@
+{% extends "admin/base.html" %}
+
+{% block title %}编辑用户 - 全球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    body, html { background: #f4f8fb; }
+    .user-edit-wrapper {
+        display: flex;
+        gap: 32px;
+        margin: 0 auto;
+        max-width: 1100px;
+        padding: 40px 0 30px 0;
+        flex-wrap: wrap;
+    }
+    .user-info-card {
+        flex: 1 1 320px;
+        background: linear-gradient(135deg, #e3f0ff 0%, #f8fafc 100%);
+        border-radius: 22px;
+        box-shadow: 0 8px 32px rgba(66,165,245,0.10), 0 1.5px 8px rgba(0,188,212,0.08);
+        padding: 36px 28px 28px 28px;
+        min-width: 300px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+    .user-info-card .avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 18px rgba(66,165,245,0.10);
+        margin-bottom: 18px;
+    }
+    .user-info-card .username {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1976d2;
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+    }
+    .user-info-card .email {
+        color: #64748b;
+        font-size: 1rem;
+        margin-bottom: 18px;
+    }
+    .user-info-card .badges {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+    .user-info-card .badge {
+        padding: 7px 18px;
+        border-radius: 16px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(135deg, #42a5f5 0%, #00bcd4 100%);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(66,165,245,0.10);
+    }
+    .user-info-card .badge-admin {
+        background: linear-gradient(135deg, #ffb74d 0%, #e53935 100%);
+    }
+    .user-info-card .badge-inactive {
+        background: linear-gradient(135deg, #bdbdbd 0%, #757575 100%);
+    }
+    .user-info-card .info-list {
+        margin-top: 18px;
+        padding: 0;
+        list-style: none;
+    }
+    .user-info-card .info-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #e3e8ee;
+        font-size: 1rem;
+        color: #384052;
+    }
+    .user-info-card .info-list li:last-child { border-bottom: none; }
+    .user-info-card .info-label { color: #64748b; font-size: 0.98rem; }
+    .user-info-card .info-value { font-weight: 500; }
+
+    .edit-form-card {
+        flex: 2 1 420px;
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 8px 32px rgba(66,165,245,0.10), 0 1.5px 8px rgba(0,188,212,0.08);
+        padding: 38px 40px 32px 40px;
+        min-width: 320px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+    .edit-form-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2.2rem;
+        background: linear-gradient(90deg, #42a5f5 0%, #00bcd4 50%, #ffb74d 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #384052;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .form-input, .form-select {
+        width: 100%;
+        padding: 13px 18px;
+        border: 1.5px solid #dbe0ea;
+        border-radius: 10px;
+        font-size: 1.08rem;
+        margin-bottom: 22px;
+        background: #f8fafc;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(66,165,245,0.04);
+    }
+    .form-input:focus, .form-select:focus {
+        border-color: #42a5f5;
+        box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.18);
+        outline: none;
+        background: #fff;
+    }
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+    .checkbox-container input[type="checkbox"] {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+        accent-color: #42a5f5;
+    }
+    .btn {
+        padding: 13px 28px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.08rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(66,165,245,0.10);
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #42a5f5 0%, #1976d2 50%, #00bcd4 100%);
+        color: white;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #1976d2 0%, #42a5f5 50%, #00bcd4 100%);
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 8px 24px rgba(66,165,245,0.18);
+    }
+    .btn-secondary {
+        background: linear-gradient(135deg, #ffb74d 0%, #f39c12 100%);
+        color: white;
+    }
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #f39c12 0%, #ffb74d 100%);
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 8px 24px rgba(243,156,18,0.18);
+    }
+    @media (max-width: 900px) {
+        .user-edit-wrapper { flex-direction: column; gap: 0; padding: 18px 0; }
+        .edit-form-card, .user-info-card { min-width: 0; width: 100%; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="user-edit-wrapper">
+    <!-- 左侧用户信息卡片 -->
+    <div class="user-info-card">
+        {% if user.avatar_url %}
+            <img src="{{ url_for('static', filename='uploads/profiles/' + user.avatar_url) }}" alt="{{ user.username }}" class="avatar">
+        {% else %}
+            <img src="{{ url_for('static', filename='img/default.jpg') }}" alt="{{ user.username }}" class="avatar">
+        {% endif %}
+        <div class="username">{{ user.username }}</div>
+        <div class="email">{{ user.email }}</div>
+        <div class="badges">
+            <span class="badge {% if user.role == 'admin' %}badge-admin{% endif %}">{{ '管理员' if user.role == 'admin' else '用户' }}</span>
+            <span class="badge {% if not user.is_active %}badge-inactive{% endif %}">{{ '激活' if user.is_active else '禁用' }}</span>
+        </div>
+        <ul class="info-list">
+            <li><span class="info-label">用户ID</span><span class="info-value">{{ user.id }}</span></li>
+            <li><span class="info-label">注册时间</span><span class="info-value">{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</span></li>
+            <li><span class="info-label">上次登录</span><span class="info-value">{{ user.last_seen.strftime('%Y-%m-%d %H:%M') if user.last_seen else '从未登录' }}</span></li>
+        </ul>
+    </div>
+    <!-- 右侧编辑表单卡片 -->
+    <div class="edit-form-card">
+        <div class="edit-form-title">用户信息编辑</div>
+        <form action="{{ url_for('admin.edit_user', user_id=user.id) }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="username" class="form-label">用户名</label>
+            <input type="text" class="form-input" id="username" name="username" value="{{ user.username }}" required>
+
+            <label for="email" class="form-label">电子邮箱</label>
+            <input type="email" class="form-input" id="email" name="email" value="{{ user.email }}" required>
+
+            <label for="avatar" class="form-label">头像</label>
+            <input type="file" class="form-input" id="avatar" name="avatar" accept="image/*">
+
+            <label for="password" class="form-label">新密码 <span style="color:#bdbdbd;font-size:0.95em;">(留空保持不变)</span></label>
+            <input type="password" class="form-input" id="password" name="password">
+
+            <label for="role" class="form-label">角色</label>
+            <select class="form-select" id="role" name="role">
+                <option value="user" {% if user.role == 'user' %}selected{% endif %}>普通用户</option>
+                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>管理员</option>
+            </select>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="is_active" name="is_active" {% if user.is_active %}checked{% endif %}>
+                <label for="is_active" style="margin:0;">账号状态 (激活/禁用)</label>
+            </div>
+
+            <div style="display:flex;gap:18px;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-2"></i>保存更改</button>
+                <a href="{{ url_for('admin.manage_users') }}" class="btn btn-secondary">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

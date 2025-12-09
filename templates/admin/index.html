@@ -1,0 +1,544 @@
+{% extends "admin/base.html" %}
+
+{% block title %}管理面板 - 环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    /* 整体页面风格 */
+    .admin-dashboard {
+        background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.8), rgba(240, 249, 255, 0.8));
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(31, 45, 61, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .admin-dashboard::before {
+        content: '';
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(66, 153, 225, 0.1), rgba(99, 179, 237, 0.1));
+        top: -100px;
+        right: -100px;
+        z-index: -1;
+    }
+    
+    .admin-dashboard::after {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(99, 179, 237, 0.1), rgba(129, 230, 217, 0.1));
+        bottom: -150px;
+        left: -150px;
+        z-index: -1;
+    }
+    
+    .dashboard-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2c5282;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(66, 153, 225, 0.2);
+        position: relative;
+    }
+    
+    .dashboard-title::after {
+        content: '';
+        position: absolute;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, #3182ce, #63b3ed);
+        bottom: -2px;
+        left: 0;
+    }
+
+    /* 统计卡片样式 - 多彩版本 */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+    
+    @media (min-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+    
+    .stats-card {
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 1;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.9;
+        transition: all 0.4s ease;
+    }
+    
+    .stats-card:hover::before {
+        opacity: 1;
+    }
+    
+    .stats-card.users::before {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    
+    .stats-card.posts::before {
+        background: linear-gradient(135deg, #2193b0, #6dd5ed);
+    }
+    
+    .stats-card.pending::before {
+        background: linear-gradient(135deg, #f6d365, #fda085);
+    }
+    
+    .stats-card.comments::before {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+    
+    .stats-card-content {
+        position: relative;
+        z-index: 2;
+        color: white;
+    }
+    
+    .stats-card h3 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .stats-card .value {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-icon {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(5px);
+    }
+    
+    .stats-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .stats-footer {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.875rem;
+    }
+    
+    .stats-footer a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .stats-footer a:hover {
+        color: white;
+    }
+    
+    .stats-card-link {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+    }
+
+    /* 活动区域样式 */
+    .activity-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        transition: all 0.3s ease;
+    }
+    
+    .activity-card:hover {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+    
+    .activity-card-header {
+        background: linear-gradient(90deg, #f5f7fa, #e4ecfa);
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .activity-card-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #2c5282;
+        display: flex;
+        align-items: center;
+    }
+    
+    .activity-card-title i {
+        margin-right: 0.75rem;
+        background: linear-gradient(135deg, #3182ce, #63b3ed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .activity-card-body {
+        padding: 1.5rem;
+    }
+    
+    /* 用户活动项 */
+    .user-activity-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .user-activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+        border: 2px solid white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .user-activity-content {
+        flex: 1;
+    }
+    
+    .user-activity-time {
+        color: #718096;
+        font-size: 0.75rem;
+    }
+    
+    .user-name {
+        font-weight: 600;
+        color: #4a5568;
+    }
+    
+    /* 帖子项 */
+    .post-item {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        display: flex;
+        align-items: flex-start;
+        transition: all 0.2s ease;
+    }
+    
+    .post-item:hover {
+        background: linear-gradient(90deg, #f5f7fa, #e4ecfa);
+    }
+    
+    .post-item:last-child {
+        border-bottom: none;
+    }
+    
+    .post-item-icon {
+        margin-right: 1rem;
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #3182ce, #63b3ed);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    
+    .post-item-content {
+        flex: 1;
+    }
+    
+    .post-item-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #2d3748;
+    }
+    
+    .post-item-meta {
+        display: flex;
+        align-items: center;
+        font-size: 0.75rem;
+        color: #718096;
+    }
+    
+    .post-item-meta span:not(:last-child)::after {
+        content: '•';
+        margin: 0 0.5rem;
+    }
+    
+    /* 页脚样式 */
+    .dashboard-footer {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(226, 232, 240, 0.8);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+        color: #718096;
+    }
+    
+    .system-info {
+        display: flex;
+        gap: 1.5rem;
+    }
+    
+    .system-info-item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .system-info-item i {
+        margin-right: 0.5rem;
+        color: #4299e1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <h1 class="dashboard-title">管理员控制面板</h1>
+    
+    <!-- 统计卡片 -->
+    <div class="stats-grid mb-10">
+        <!-- 用户统计 -->
+        <div class="stats-card users">
+            <a href="{{ url_for('admin.manage_users') }}" class="stats-card-link"></a>
+            <div class="stats-card-content">
+                <h3>注册用户</h3>
+                <div class="value">{{ total_users }}</div>
+                <p>活跃会员和管理员</p>
+                <div class="stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stats-footer">
+                    <span>最近新增: {{ recent_users|length }}</span>
+                    <a href="{{ url_for('admin.manage_users') }}">管理用户 <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 帖子统计 -->
+        <div class="stats-card posts">
+            <a href="{{ url_for('admin.manage_posts') }}" class="stats-card-link"></a>
+            <div class="stats-card-content">
+                <h3>帖子数量</h3>
+                <div class="value">{{ total_posts }}</div>
+                <p>所有用户的旅行分享</p>
+                <div class="stats-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stats-footer">
+                    <span>最近发布: {{ recent_posts|length }}</span>
+                    <a href="{{ url_for('admin.manage_posts') }}">管理帖子 <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 待审核统计 -->
+        <div class="stats-card pending">
+            <a href="{{ url_for('admin.manage_posts', status='pending') }}" class="stats-card-link"></a>
+            <div class="stats-card-content">
+                <h3>待审核内容</h3>
+                <div class="value">{{ pending_posts + pending_comments }}</div>
+                <p>需要审核的帖子和评论</p>
+                <div class="stats-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stats-footer">
+                    <span>帖子: {{ pending_posts }} | 评论: {{ pending_comments }}</span>
+                    <a href="{{ url_for('admin.manage_posts', status='pending') }}">去审核 <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 评论统计 -->
+        <div class="stats-card comments">
+            <a href="{{ url_for('admin.manage_comments') }}" class="stats-card-link"></a>
+            <div class="stats-card-content">
+                <h3>评论数量</h3>
+                <div class="value">{{ total_comments }}</div>
+                <p>用户互动与反馈</p>
+                <div class="stats-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="stats-footer">
+                    <span>已审核: {{ total_comments - pending_comments }}</span>
+                    <a href="{{ url_for('admin.manage_comments') }}">管理评论 <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 活动区域 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- 最近注册用户 -->
+        <div class="activity-card">
+            <div class="activity-card-header">
+                <h2 class="activity-card-title">
+                    <i class="fas fa-user-plus"></i>
+                    最近注册用户
+                </h2>
+            </div>
+            <div class="activity-card-body">
+                {% if recent_users %}
+                    {% for user in recent_users %}
+                        <div class="user-activity-item">
+                            {% if user.avatar_url %}
+                                <img src="{{ url_for('static', filename='uploads/profiles/' + user.avatar_url) }}" alt="{{ user.username }}" class="user-avatar">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="默认头像" class="user-avatar">
+                            {% endif %}
+                            <div class="user-activity-content">
+                                <div>
+                                    <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="user-name">{{ user.username }}</a>
+                                    <span class="text-sm text-gray-500">{{ user.email }}</span>
+                                </div>
+                                <div class="user-activity-time">
+                                    注册于 {{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at is not string else user.created_at }}
+                                </div>
+                            </div>
+                            <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-6 text-gray-500">
+                        <i class="fas fa-users text-3xl mb-2"></i>
+                        <p>暂无最近注册用户</p>
+                    </div>
+                {% endif %}
+                
+                <div class="mt-4 text-center">
+                    <a href="{{ url_for('admin.manage_users') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        查看所有用户
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 最近发布帖子 -->
+        <div class="activity-card">
+            <div class="activity-card-header">
+                <h2 class="activity-card-title">
+                    <i class="fas fa-file-alt"></i>
+                    最近发布帖子
+                </h2>
+            </div>
+            <div class="activity-card-body p-0">
+                {% if recent_posts %}
+                    {% for post in recent_posts %}
+                        <div class="post-item">
+                            <div class="post-item-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="post-item-content">
+                                <div class="post-item-title">
+                                    <a href="{{ url_for('admin.post_detail', post_id=post.id) }}">{{ post.title }}</a>
+                                </div>
+                                <div class="post-item-meta">
+                                    <span><i class="fas fa-user mr-1"></i> {{ post.author.username }}</span>
+                                    <span><i class="fas fa-calendar-alt mr-1"></i> {{ post.created_at.strftime('%Y-%m-%d') if post.created_at is not string else post.created_at.split(' ')[0] }}</span>
+                                    <span>
+                                        {% if post.is_approved %}
+                                            <i class="fas fa-check-circle text-green-500 mr-1"></i> 已审核
+                                        {% else %}
+                                            <i class="fas fa-clock text-yellow-500 mr-1"></i> 待审核
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <a href="{{ url_for('admin.post_detail', post_id=post.id) }}" class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-6 text-gray-500">
+                        <i class="fas fa-file-alt text-3xl mb-2"></i>
+                        <p>暂无最近发布帖子</p>
+                    </div>
+                {% endif %}
+                
+                <div class="p-4 text-center">
+                    <a href="{{ url_for('admin.manage_posts') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        查看所有帖子
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 系统信息 -->
+    <div class="dashboard-footer">
+        <div class="system-info">
+            <div class="system-info-item">
+                <i class="fas fa-server"></i>
+                <span>环球旅记后台管理系统</span>
+            </div>
+            <div class="system-info-item">
+                <i class="fas fa-code-branch"></i>
+                <span>v1.0.0</span>
+            </div>
+        </div>
+        <div>
+            最后更新: {{ now.strftime('%Y-%m-%d %H:%M') }}
+        </div>
+    </div>
+</div>
+{% endblock %} 

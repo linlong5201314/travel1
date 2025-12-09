@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}搜索结果: {{ query }} - 环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    .post-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .post-image {
+        height: 220px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .post-card:hover .post-image {
+        transform: scale(1.05);
+    }
+    
+    .location-badge {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background-color: rgba(255, 255, 255, 0.8);
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+    
+    .pagination-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin: 0 5px;
+        border-radius: 50%;
+        background-color: #fff;
+        color: #333;
+        border: 1px solid #eee;
+        transition: all 0.3s ease;
+    }
+    
+    .pagination-link:hover, .pagination-link.active {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 页面标题 -->
+<div class="bg-gray-50 py-12 mb-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-dark mb-3">搜索结果: "{{ query }}"</h1>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto">共找到 {{ posts.total }} 条相关结果</p>
+        
+        <!-- 搜索框 -->
+        <div class="max-w-2xl mx-auto mt-8">
+            <form action="{{ url_for('main.search') }}" method="get" class="flex items-center">
+                <input type="text" name="q" placeholder="搜索旅行故事、目的地..." class="flex-1 py-3 px-4 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" value="{{ query }}">
+                <button type="submit" class="search-btn text-white px-6 rounded-r-lg transition-all">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 文章列表 -->
+<div class="container mx-auto px-4 mb-16">
+    <!-- 筛选选项 -->
+    <div class="flex flex-wrap justify-between items-center mb-8">
+        <div class="flex items-center space-x-2 mb-4 md:mb-0">
+            <a href="{{ url_for('main.posts') }}" class="flex items-center text-primary hover:underline">
+                <i class="fas fa-arrow-left mr-2"></i> 返回所有故事
+            </a>
+        </div>
+    </div>
+    
+    {% if posts.items %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for post in posts.items %}
+        <div class="post-card bg-white rounded-xl overflow-hidden shadow-sm">
+            <div class="relative overflow-hidden">
+                {% if post.featured_image %}
+                <img src="{{ url_for('static', filename='uploads/posts/' + post.featured_image) }}" alt="{{ post.title }}" class="post-image w-full">
+                {% else %}
+                <img src="{{ url_for('static', filename='img/default-post.jpg') }}" alt="{{ post.title }}" class="post-image w-full">
+                {% endif %}
+                
+                {% if post.location %}
+                <div class="location-badge">
+                    <i class="fas fa-map-marker-alt text-primary mr-1"></i> {{ post.location }}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="p-6">
+                <h2 class="text-xl font-bold mb-2 line-clamp-1">{{ post.title }}</h2>
+                <p class="text-gray-600 mb-4 line-clamp-2">{{ post.content|striptags }}</p>
+                
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        {% if post.author.avatar_url %}
+                        <img src="{{ url_for('static', filename='uploads/profiles/' + post.author.avatar_url) }}" alt="{{ post.author.username }}" class="w-8 h-8 rounded-full object-cover mr-2">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ post.author.username }}" class="w-8 h-8 rounded-full object-cover mr-2">
+                        {% endif %}
+                        <span class="text-sm font-medium">{{ post.author.username }}</span>
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="far fa-calendar-alt mr-1"></i>
+                        <span>{{ post.created_at.strftime('%Y-%m-%d') }}</span>
+                    </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center text-gray-500">
+                            <i class="far fa-eye mr-1"></i> {{ post.views }}
+                        </span>
+                        <span class="flex items-center text-gray-500">
+                            <i class="far fa-comment mr-1"></i> {{ post.comment_count() }}
+                        </span>
+                    </div>
+                    <a href="{{ url_for('main.post', post_id=post.id) }}" class="text-primary hover:underline font-medium">
+                        阅读全文 <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- 分页 -->
+    {% if posts.pages > 1 %}
+    <div class="mt-12 flex justify-center">
+        <div class="flex flex-wrap items-center">
+            {% if posts.has_prev %}
+            <a href="{{ url_for('main.search', q=query, page=posts.prev_num) }}" class="pagination-link">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    {% if posts.page == page_num %}
+                    <a href="{{ url_for('main.search', q=query, page=page_num) }}" class="pagination-link active">{{ page_num }}</a>
+                    {% else %}
+                    <a href="{{ url_for('main.search', q=query, page=page_num) }}" class="pagination-link">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                <span class="px-2">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if posts.has_next %}
+            <a href="{{ url_for('main.search', q=query, page=posts.next_num) }}" class="pagination-link">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div class="py-16 text-center">
+        <div class="text-5xl text-gray-300 mb-4">
+            <i class="fas fa-search"></i>
+        </div>
+        <h3 class="text-xl font-medium text-gray-600 mb-3">未找到与 "{{ query }}" 相关的结果</h3>
+        <p class="text-gray-500 mb-6">请尝试使用不同的关键词或浏览我们的旅行故事</p>
+        <a href="{{ url_for('main.posts') }}" class="inline-flex items-center bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg transition-all">
+            <i class="fas fa-book-open mr-2"></i> 浏览所有旅行故事
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

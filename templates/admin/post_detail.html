@@ -1,0 +1,448 @@
+{% extends "admin/base.html" %}
+
+{% block title %}帖子详情 - {{ post.title }} - 环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    /* 按钮样式 */
+    .btn {
+        padding: 10px 22px;
+        border: none;
+        border-radius: 22px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.2s cubic-bezier(.4,0,.2,1);
+        box-shadow: 0 2px 8px rgba(80,160,255,0.10);
+        margin-right: 8px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+        color: #fff;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+        color: #fff;
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 4px 16px rgba(80,160,255,0.18);
+    }
+
+    .btn-danger {
+        background: linear-gradient(90deg, #ff8a65 0%, #e53935 100%);
+        color: #fff;
+    }
+    .btn-danger:hover {
+        background: linear-gradient(90deg, #e53935 0%, #ff8a65 100%);
+        color: #fff;
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    /* 卡片样式 */
+    .card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(80,160,255,0.08);
+    }
+    
+    /* 图片样式 */
+    .post-image {
+        border-radius: 8px;
+        max-height: 400px;
+        object-fit: cover;
+    }
+    
+    /* 头像样式 */
+    .avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    /* 评论样式 */
+    .comment {
+        border-radius: 8px;
+        background-color: #f4faff;
+    }
+    
+    /* 提示弹窗 */
+    #toast {
+        background: #1976d2;
+        color: white;
+        padding: 18px 38px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        font-size: 1.18rem;
+        min-width: 180px;
+        text-align: center;
+    }
+    
+    /* 前台预览区域 */
+    #frontend-preview {
+        display: none;
+        height: 100%;
+        width: 100%;
+        border: none;
+        border-radius: 12px;
+    }
+    
+    .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background-color: #f0f7ff;
+        border-radius: 12px 12px 0 0;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .preview-container {
+        display: none;
+        flex-direction: column;
+        height: 100%;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(80,160,255,0.08);
+        overflow: hidden;
+    }
+    
+    .post-detail-container {
+        height: 100%;
+    }
+
+    .post-content img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .comment-card {
+        border-radius: 12px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-primary {
+        background-color: #1976d2;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #1565c0;
+    }
+
+    .btn-outline {
+        border: 1px solid #1976d2;
+        color: #1976d2;
+    }
+
+    .btn-outline:hover {
+        background-color: #f0f7ff;
+    }
+
+    .btn-danger {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #d32f2f;
+    }
+
+    .btn-warning {
+        background-color: #ff9800;
+        color: white;
+    }
+
+    .btn-warning:hover {
+        background-color: #f57c00;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 h-full">
+    <!-- 帖子详情内容 -->
+    <div id="post-detail-container" class="post-detail-container">
+        <!-- 返回按钮和标题 -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                {% if request.args.get('return_to') %}
+                <a href="{{ request.args.get('return_to') }}" class="mr-4 text-blue-600 hover:text-blue-800">
+                    <i class="fas fa-arrow-left"></i> 返回上一页
+                </a>
+                {% else %}
+                <a href="{{ url_for('admin.manage_posts') }}" class="mr-4 text-blue-600 hover:text-blue-800">
+                    <i class="fas fa-arrow-left"></i> 返回帖子列表
+                </a>
+                {% endif %}
+                <h1 class="text-2xl font-bold text-blue-700">帖子详情</h1>
+            </div>
+            <div class="flex items-center">
+                <a href="{{ url_for('admin.post_preview', post_id=post.id) }}" class="btn btn-primary mr-2">
+                    <i class="fas fa-eye mr-2"></i> 在前台查看
+                </a>
+                <a href="{{ url_for('admin.export_post_detail', post_id=post.id) }}" class="btn btn-outline mr-2">
+                    <i class="fas fa-download mr-2"></i> 导出数据
+                </a>
+                <a href="{{ url_for('admin.export_post_detail_excel', post_id=post.id) }}" class="btn btn-outline mr-2">
+                    <i class="fas fa-file-excel mr-2"></i> 导出Excel
+                </a>
+                {% if not post.is_deleted %}
+                <button onclick="deletePost({{ post.id }})" class="btn btn-danger">
+                    <i class="fas fa-trash mr-2"></i> 删除帖子
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- 帖子内容 -->
+        <div class="card p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">{{ post.title }}</h2>
+            
+            <div class="flex items-center mb-6">
+                {% if post.author.avatar_url %}
+                <img src="{{ url_for('static', filename='uploads/profiles/' + post.author.avatar_url) }}" alt="{{ post.author.username }}" class="avatar mr-3">
+                {% else %}
+                    <img src="{{ url_for('static', filename='img/default.jpg') }}" alt="{{ post.author.username }}" class="avatar mr-3">
+                {% endif %}
+                <div>
+                    <div class="font-medium">{{ post.author.username }}</div>
+                    <div class="text-sm text-gray-500">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                </div>
+                
+                <div class="ml-auto">
+                    {% if post.location %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                        <i class="fas fa-map-marker-alt mr-1"></i> {{ post.location }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if post.featured_image %}
+            <div class="mb-6">
+                <img src="{{ url_for('static', filename='uploads/posts/' + post.featured_image) }}" alt="{{ post.title }}" class="post-image w-full">
+            </div>
+            {% endif %}
+            
+            {# 附加图片画廊 #}
+            {% if post.images.count() > 0 %}
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                {% for img in post.images %}
+                <a href="{{ url_for('static', filename='uploads/posts/' + img.filename) }}" target="_blank" class="block group">
+                    <img src="{{ url_for('static', filename='uploads/posts/' + img.filename) }}" class="w-full h-32 object-cover rounded-lg group-hover:opacity-80" alt="图片">
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="post-content mb-6 prose max-w-none">
+                {{ post.content|safe }}
+            </div>
+            
+            <div class="flex justify-between items-center text-sm text-gray-500">
+                <div class="flex items-center">
+                    <span class="mr-4"><i class="fas fa-heart mr-1"></i> {{ post.like_count() }}</span>
+                    <span><i class="fas fa-comment mr-1"></i> {{ post.comments.filter_by(is_deleted=False).count() }}</span>
+                </div>
+                <div>
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ 'bg-green-100 text-green-800' if not post.is_deleted else 'bg-red-100 text-red-800' }}">
+                        {{ '正常' if not post.is_deleted else '已删除' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 评论区 -->
+        <div class="mb-6">
+            <h3 class="text-xl font-bold mb-4">评论 ({{ post.comments.filter_by(is_deleted=False).count() }})</h3>
+            
+            {% if post.comments.filter_by(is_deleted=False).count() > 0 %}
+            <div class="space-y-4">
+                {% for comment in post.comments.filter_by(is_deleted=False).order_by(Comment.created_at.desc()).all() %}
+                <div class="comment p-4" id="comment-{{ comment.id }}">
+                    <div class="flex items-start">
+                        {% if comment.author.avatar_url %}
+                        <img src="{{ url_for('static', filename='uploads/profiles/' + comment.author.avatar_url) }}" alt="{{ comment.author.username }}" class="avatar mr-3 w-10 h-10">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='img/default.jpg') }}" alt="{{ comment.author.username }}" class="avatar mr-3 w-10 h-10">
+                        {% endif %}
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="font-medium">{{ comment.author.username }}</div>
+                                <div class="text-sm text-gray-500">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                            </div>
+                            <div class="text-gray-800">{{ comment.content }}</div>
+                            <div class="mt-2 flex justify-end">
+                                <button onclick="deleteComment({{ comment.id }})" class="text-red-600 hover:text-red-800 text-sm">
+                                    <i class="fas fa-trash mr-1"></i> 删除评论
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center text-gray-500 py-8">
+                <i class="fas fa-comment-slash text-4xl mb-2"></i>
+                <p>暂无评论</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 删除帖子确认弹窗 -->
+<div id="delete-post-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="text-center">
+            <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
+            <h3 class="text-xl font-bold text-blue-700 mb-2">确认删除帖子</h3>
+            <p class="text-gray-600 mb-6">你确定要删除这篇帖子吗？此操作无法撤销。</p>
+            
+            <div class="flex justify-center space-x-4">
+                <button onclick="closeDeletePostModal()" class="btn btn-primary">取消</button>
+                <button onclick="confirmDeletePost()" class="btn btn-danger">确认删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 删除评论确认弹窗 -->
+<div id="delete-comment-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden" data-comment-id="">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="text-center">
+            <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
+            <h3 class="text-xl font-bold text-blue-700 mb-2">确认删除评论</h3>
+            <p class="text-gray-600 mb-6">你确定要删除这条评论吗？此操作无法撤销。</p>
+            
+            <div class="flex justify-center space-x-4">
+                <button onclick="closeDeleteCommentModal()" class="btn btn-primary">取消</button>
+                <button onclick="confirmDeleteComment()" class="btn btn-danger">确认删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 提示弹窗 -->
+<div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-4 px-8 rounded-lg shadow-xl z-[9999] opacity-0 transition-opacity duration-500 hidden">
+    消息提示
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentPostId = {{ post.id }};
+    let currentCommentId = null;
+    
+    function deletePost(postId) {
+        currentPostId = postId;
+        document.getElementById('delete-post-modal').classList.remove('hidden');
+    }
+    
+    function closeDeletePostModal() {
+        document.getElementById('delete-post-modal').classList.add('hidden');
+    }
+    
+    function confirmDeletePost() {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ url_for('admin.delete_post', post_id=0) }}".replace('0', currentPostId);
+        
+        // 添加CSRF令牌
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = "{{ csrf_token() }}";
+        form.appendChild(csrfInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+    
+    function deleteComment(commentId) {
+        currentCommentId = commentId;
+        document.getElementById('delete-comment-modal').classList.remove('hidden');
+    }
+    
+    function closeDeleteCommentModal() {
+        document.getElementById('delete-comment-modal').classList.add('hidden');
+    }
+    
+    function confirmDeleteComment() {
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ url_for('admin.delete_comment', comment_id=0) }}".replace('0', currentCommentId);
+        
+        // 添加CSRF令牌
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = "{{ csrf_token() }}";
+        form.appendChild(csrfInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+    
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.id = 'toast';
+        toast.textContent = message;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.zIndex = '9999';
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 500);
+        }, 3000);
+    }
+    
+    function approveComment(commentId) {
+        fetch("{{ url_for('admin.approve_comment', comment_id=0) }}".replace('0', commentId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': "{{ csrf_token() }}"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 更新UI
+                const approveBtn = document.getElementById(`approve-btn-${commentId}`);
+                if (approveBtn) {
+                    approveBtn.parentNode.innerHTML = '<span class="text-green-500"><i class="fas fa-check-circle mr-1"></i> 已审核</span>';
+                }
+                showToast('评论已审核通过');
+            } else {
+                showToast('操作失败: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('发生错误，请重试');
+        });
+    }
+</script>
+{% endblock %} 

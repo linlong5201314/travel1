@@ -1,0 +1,316 @@
+{% extends 'admin/base.html' %}
+
+{% block styles %}
+<style>
+    /* 帖子内容样式 */
+    .post-content img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+    .post-content h1, .post-content h2, .post-content h3, .post-content h4 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: #1e3a8a;
+    }
+    .post-content p {
+        margin-bottom: 1rem;
+        line-height: 1.7;
+    }
+    .post-content ul, .post-content ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
+    .post-content blockquote {
+        border-left: 4px solid #2563eb;
+        padding-left: 1rem;
+        font-style: italic;
+        margin: 1.5rem 0;
+        color: #4b5563;
+    }
+    .post-content a {
+        color: #2563eb;
+        text-decoration: underline;
+    }
+    .avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .comment-avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .prose {
+        max-width: 65ch;
+        color: #374151;
+    }
+    .prose-lg {
+        font-size: 1.125rem;
+        line-height: 1.75;
+    }
+    .max-w-none {
+        max-width: none;
+    }
+    .post-actions {
+        display: flex;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    .btn-like, .btn-bookmark {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .btn-like {
+        color: #ef4444;
+        border: 1px solid #ef4444;
+        margin-right: 1rem;
+    }
+    .btn-bookmark {
+        color: #3b82f6;
+        border: 1px solid #3b82f6;
+    }
+    .btn-like:hover, .btn-bookmark:hover {
+        background-color: #f9fafb;
+    }
+    .btn-like.active {
+        background-color: #ef4444;
+        color: white;
+    }
+    .btn-bookmark.active {
+        background-color: #3b82f6;
+        color: white;
+    }
+    .comment-form textarea {
+        width: 100%;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        min-height: 6rem;
+    }
+    .comment-form button {
+        padding: 0.5rem 1.5rem;
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 0.5rem;
+        font-weight: 500;
+    }
+    .comment-card {
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
+        background-color: white;
+    }
+    .reply-form {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+    .pending-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: #fef3c7;
+        color: #d97706;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-left: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- 页面头部 -->
+    <div class="mb-6 flex justify-between items-center">
+        <div class="flex items-center">
+            <a href="{{ url_for('admin.post_detail', post_id=post.id) }}" class="mr-4 text-blue-600 hover:text-blue-800">
+                <i class="fas fa-arrow-left"></i> 返回帖子详情
+            </a>
+            <h1 class="text-2xl font-bold text-blue-700">前台预览</h1>
+        </div>
+        <div>
+            <a href="{{ url_for('main.post', post_id=post.id) }}" target="_blank" class="btn btn-primary">
+                <i class="fas fa-external-link-alt mr-2"></i> 在新标签页打开
+            </a>
+        </div>
+    </div>
+
+    <!-- 帖子内容区域 -->
+    <div class="main-content p-8">
+        <!-- 帖子标题 -->
+        <h1 class="text-3xl md:text-4xl font-bold text-dark mb-3">{{ post.title }}</h1>
+        
+        <!-- 帖子元数据 -->
+        <div class="flex flex-wrap items-center mb-6">
+            <a href="{{ url_for('main.user_profile', username=post.author.username) }}" class="flex items-center mr-6">
+                {% if post.author.avatar_url %}
+                <img src="{{ url_for('static', filename='uploads/profiles/' + post.author.avatar_url) }}" alt="{{ post.author.username }}" class="w-10 h-10 rounded-full object-cover mr-2">
+                {% else %}
+                <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ post.author.username }}" class="w-10 h-10 rounded-full object-cover mr-2">
+                {% endif %}
+                <span class="font-medium">{{ post.author.username }}</span>
+            </a>
+            
+            <div class="flex items-center mr-6 text-gray-600">
+                <i class="far fa-calendar-alt mr-2"></i>
+                <span>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+            
+            {% if post.location %}
+            <div class="flex items-center mr-6 text-gray-600">
+                <i class="fas fa-map-marker-alt mr-2 text-primary"></i>
+                <span>{{ post.location }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="flex items-center mr-6 text-gray-600">
+                <i class="far fa-eye mr-2"></i>
+                <span>{{ post.views }} 次浏览</span>
+            </div>
+        </div>
+        
+        <!-- 特色图片 -->
+        {% if post.featured_image %}
+        <div class="mb-8 rounded-xl overflow-hidden">
+            <img src="{{ url_for('static', filename='uploads/posts/' + post.featured_image) }}" alt="{{ post.title }}" class="w-full h-auto">
+        </div>
+        {% endif %}
+        
+        <!-- 帖子内容 -->
+        <div class="post-content prose prose-lg max-w-none mb-12">
+            {{ post.content|safe }}
+        </div>
+        
+        <!-- 帖子操作 -->
+        <div class="post-actions">
+            <button class="btn-like">
+                <i class="far fa-heart mr-2"></i> 点赞 ({{ post.like_count() }})
+            </button>
+            <button class="btn-bookmark">
+                <i class="far fa-bookmark mr-2"></i> 收藏
+            </button>
+        </div>
+        
+        <!-- 评论区 -->
+        <div class="mt-12">
+            <h3 class="text-2xl font-bold mb-6">评论 ({{ comments|length }})</h3>
+            
+            <!-- 评论表单 -->
+            <div class="comment-form mb-8">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 mr-3">
+                        <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="Avatar" class="comment-avatar">
+                    </div>
+                    <div class="flex-grow">
+                        <textarea placeholder="添加评论..." disabled></textarea>
+                        <div class="text-right">
+                            <button type="button" disabled>发表评论</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-gray-500 text-sm mt-2 text-center">
+                    <i class="fas fa-info-circle mr-1"></i> 这是预览模式，评论功能已禁用
+                </div>
+            </div>
+            
+            <!-- 评论列表 -->
+            {% if comments %}
+            <div class="space-y-6">
+                {% for comment in comments %}
+                <div class="comment-card">
+                    <div class="flex">
+                        <div class="flex-shrink-0 mr-3">
+                            {% if comment.author.avatar_url %}
+                            <img src="{{ url_for('static', filename='uploads/profiles/' + comment.author.avatar_url) }}" alt="{{ comment.author.username }}" class="comment-avatar">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ comment.author.username }}" class="comment-avatar">
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow">
+                            <div class="flex items-center">
+                                <h4 class="font-medium">{{ comment.author.username }}</h4>
+                                {% if not comment.is_approved %}
+                                <span class="pending-badge">待审核</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-sm text-gray-500 mb-2">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                            <div class="mb-2">{{ comment.content }}</div>
+                            
+                            <!-- 子评论 -->
+                            {% set replies = comment.replies.filter_by(is_deleted=False).all() %}
+                            {% if replies %}
+                            <div class="ml-8 mt-4 space-y-4">
+                                {% for reply in replies %}
+                                <div class="flex">
+                                    <div class="flex-shrink-0 mr-3">
+                                        {% if reply.author.avatar_url %}
+                                        <img src="{{ url_for('static', filename='uploads/profiles/' + reply.author.avatar_url) }}" alt="{{ reply.author.username }}" class="w-8 h-8 rounded-full object-cover">
+                                        {% else %}
+                                        <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ reply.author.username }}" class="w-8 h-8 rounded-full object-cover">
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center">
+                                            <h4 class="font-medium">{{ reply.author.username }}</h4>
+                                            {% if not reply.is_approved %}
+                                            <span class="pending-badge">待审核</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="text-sm text-gray-500 mb-1">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                                        <div>{{ reply.content }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8">
+                <p class="text-gray-500">还没有评论，来发表第一条评论吧！</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- 相关故事 -->
+        <div class="mb-12 mt-12">
+            <h3 class="text-2xl font-bold mb-6">相关故事</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for related_post in related_posts %}
+                <a href="{{ url_for('admin.post_preview', post_id=related_post.id) }}" class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-gray-100">
+                    <div class="relative overflow-hidden h-48">
+                        {% if related_post.featured_image %}
+                        <img src="{{ url_for('static', filename='uploads/posts/' + related_post.featured_image) }}" alt="{{ related_post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/default-post.jpg') }}" alt="{{ related_post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        {% endif %}
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-lg mb-2 line-clamp-1">{{ related_post.title }}</h4>
+                        <p class="text-gray-600 text-sm mb-2 line-clamp-2">{{ related_post.content|striptags }}</p>
+                        <span class="text-primary text-sm">阅读更多 <i class="fas fa-arrow-right ml-1"></i></span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

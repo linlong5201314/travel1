@@ -1,0 +1,180 @@
+# 旅游博客系统数据库ER图 (文本版)
+生成时间: 2025-05-21 19:24:07
+
+## 表: bookmark
+
+### 列:
+- **id** (INTEGER) 主键  非空 
+- **created_at** (DATETIME)   可空 
+- **user_id** (INTEGER)  外键 -> users.id 非空 
+- **post_id** (INTEGER)  外键 -> post.id 非空 
+
+### 外键关系:
+- user_id -> users.id
+- post_id -> post.id
+
+### 索引:
+- post_id (post_id) [普通索引]
+- unique_user_post_bookmark (user_id, post_id) [唯一索引]
+
+
+## 表: users
+
+### 列:
+- **id** (INTEGER) 主键  非空 
+- **username** (VARCHAR(64) COLLATE "utf8mb4_unicode_ci")   非空 
+- **email** (VARCHAR(120) COLLATE "utf8mb4_unicode_ci")   非空 
+- **password_hash** (VARCHAR(128) COLLATE "utf8mb4_unicode_ci")   非空 
+- **role** (VARCHAR(10) COLLATE "utf8mb4_unicode_ci")   非空 
+- **created_at** (DATETIME)   非空 
+- **is_deleted** (TINYINT)   非空 
+- **avatar_url** (VARCHAR(255) COLLATE "utf8mb4_unicode_ci")   可空 
+- **is_active** (TINYINT)   非空 
+- **last_seen** (DATETIME)   可空 
+
+### 索引:
+- ix_users_email (email) [普通索引]
+- ix_users_username (username) [普通索引]
+- uix_email_not_deleted (email, is_deleted) [唯一索引]
+- uix_username_not_deleted (username, is_deleted) [唯一索引]
+
+
+## 表: post
+
+### 列:
+- **id** (INTEGER) 主键  非空 
+- **title** (VARCHAR(200) COLLATE "utf8mb4_unicode_ci")   非空 
+- **content** (TEXT COLLATE "utf8mb4_unicode_ci")   非空 
+- **featured_image** (VARCHAR(200) COLLATE "utf8mb4_unicode_ci")   可空 
+- **location** (VARCHAR(100) COLLATE "utf8mb4_unicode_ci")   可空 
+- **created_at** (DATETIME)   可空 
+- **updated_at** (DATETIME)   可空 
+- **views** (INTEGER)   可空 
+- **is_deleted** (TINYINT)   可空 
+- **user_id** (INTEGER)  外键 -> users.id 非空 
+- **is_approved** (TINYINT)   可空 
+
+### 外键关系:
+- user_id -> users.id
+
+### 索引:
+- user_id (user_id) [普通索引]
+
+
+## 表: bookmarks
+
+### 列:
+- **id** (INTEGER) 主键  非空 
+- **created_at** (DATETIME)   非空 
+- **is_liked** (TINYINT)   可空 
+- **user_id** (INTEGER)  外键 -> users.id 非空 
+- **post_id** (INTEGER)  外键 -> posts.id 非空 
+
+### 外键关系:
+- user_id -> users.id
+- post_id -> posts.id
+
+### 索引:
+- post_id (post_id) [普通索引]
+- uq_user_post (user_id, post_id) [唯一索引]
+
+
+## 表: posts
+
+### 列:
+- **id** (INTEGER) 主键  非空 
+- **title** (VARCHAR(100) COLLATE "utf8mb4_unicode_ci")   非空 
+- **content** (TEXT COLLATE "utf8mb4_unicode_ci")   非空 
+- **location** (VARCHAR(100) COLLATE "utf8mb4_unicode_ci")   可空 
+- **featured_image** (VARCHAR(255) COLLATE "utf8mb4_unicode_ci")   可空 
+- **created_at** (DATETIME)   非空 
+- **updated_at** (DATETIME)   可空 
+- **views** (INTEGER)   可空 
+- **is_deleted** (TINYINT)   可空 
+- **is_approved** (TINYINT)   可空 
+- **user_id** (INTEGER)  外键 -> users.id 非空 
+
+### 外键关系:
+- user_id -> users.id
+
+### 索引:
+- user_id (user_id) [普通索引]
+
+
+## 表: comment
+
+### 列:
+- **id** (INTEGER) 主键  非空 
+- **content** (TEXT COLLATE "utf8mb4_unicode_ci")   非空 
+- **created_at** (DATETIME)   可空 
+- **is_deleted** (TINYINT)   可空 
+- **user_id** (INTEGER)  外键 -> users.id 非空 
+- **post_id** (INTEGER)  外键 -> post.id 非空 
+- **updated_at** (DATETIME)   可空 
+- **is_approved** (TINYINT)   可空 
+
+### 外键关系:
+- user_id -> users.id
+- post_id -> post.id
+
+### 索引:
+- post_id (post_id) [普通索引]
+- user_id (user_id) [普通索引]
+
+
+## 表: comments
+
+### 列:
+- **id** (INTEGER) 主键  非空 
+- **content** (TEXT COLLATE "utf8mb4_unicode_ci")   非空 
+- **created_at** (DATETIME)   非空 
+- **updated_at** (DATETIME)   可空 
+- **is_deleted** (TINYINT)   可空 
+- **is_approved** (TINYINT)   可空 
+- **user_id** (INTEGER)  外键 -> users.id 非空 
+- **post_id** (INTEGER)  外键 -> posts.id 非空 
+- **parent_id** (INTEGER)  外键 -> comments.id 可空 
+
+### 外键关系:
+- post_id -> posts.id
+- parent_id -> comments.id
+- user_id -> users.id
+
+### 索引:
+- parent_id (parent_id) [普通索引]
+- post_id (post_id) [普通索引]
+- user_id (user_id) [普通索引]
+
+
+## 表: like
+
+### 列:
+- **id** (INTEGER) 主键  非空 
+- **created_at** (DATETIME)   可空 
+- **user_id** (INTEGER)  外键 -> users.id 非空 
+- **post_id** (INTEGER)  外键 -> post.id 非空 
+
+### 外键关系:
+- user_id -> users.id
+- post_id -> post.id
+
+### 索引:
+- post_id (post_id) [普通索引]
+- unique_user_post_like (user_id, post_id) [唯一索引]
+
+
+# 表之间的关系
+
+- bookmark.user_id -> users.id
+- bookmark.post_id -> post.id
+- post.user_id -> users.id
+- bookmarks.user_id -> users.id
+- bookmarks.post_id -> posts.id
+- posts.user_id -> users.id
+- comment.user_id -> users.id
+- comment.post_id -> post.id
+- comments.post_id -> posts.id
+- comments.parent_id -> comments.id
+- comments.user_id -> users.id
+- like.user_id -> users.id
+- like.post_id -> post.id

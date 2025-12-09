@@ -1,0 +1,131 @@
+{# 评论区局部模板 #}
+<h3 class="text-2xl font-bold mb-6">评论 ({{ comments|length }})</h3>
+
+{% if current_user.is_authenticated %}
+<!-- 评论表单 -->
+<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+    <form action="{{ url_for('main.add_comment', post_id=post.id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="flex">
+            <div class="flex-shrink-0 mr-4">
+                {% if current_user.avatar_url %}
+                <img src="{{ url_for('static', filename='uploads/profiles/' + current_user.avatar_url) }}" alt="{{ current_user.username }}" class="w-10 h-10 rounded-full object-cover">
+                {% else %}
+                <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ current_user.username }}" class="w-10 h-10 rounded-full object-cover">
+                {% endif %}
+            </div>
+            <div class="flex-1">
+                <textarea name="content" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="分享您的想法..."></textarea>
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-all">
+                发表评论
+            </button>
+        </div>
+    </form>
+</div>
+{% else %}
+<!-- 未登录提示 -->
+<div class="bg-gray-50 rounded-xl p-6 mb-8 text-center">
+    <p class="text-gray-600 mb-4">登录后参与讨论</p>
+    <a href="{{ url_for('auth.login', next=request.path) }}" class="inline-block bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg transition-all">
+        登录
+    </a>
+</div>
+{% endif %}
+
+<!-- 评论列表 -->
+{% if comments %}
+<div class="space-y-6">
+    {% for comment in comments %}
+    <div id="comment-{{ comment.id }}" class="comment-card relative bg-white rounded-xl p-6 shadow ring-1 ring-gray-100 hover:shadow-lg transition">
+        <!-- 左侧彩色条 -->
+        <span class="absolute left-0 top-6 w-1 h-10 bg-primary rounded-r"></span>
+        <div class="flex items-start">
+            <a href="{{ url_for('main.user_profile', username=comment.author.username) }}" class="flex-shrink-0 mr-4">
+                {% if comment.author.avatar_url %}
+                <img src="{{ url_for('static', filename='uploads/profiles/' + comment.author.avatar_url) }}" alt="{{ comment.author.username }}" class="w-10 h-10 rounded-full object-cover">
+                {% else %}
+                <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ comment.author.username }}" class="w-10 h-10 rounded-full object-cover">
+                {% endif %}
+            </a>
+            <div class="flex-1">
+                <div class="flex items-center mb-2">
+                    <a href="{{ url_for('main.user_profile', username=comment.author.username) }}" class="font-medium mr-2">{{ comment.author.username }}</a>
+                    {% if comment.author.id == post.user_id %}
+                    <span class="ml-1 px-1.5 py-0.5 text-xs bg-primary text-white rounded">作者</span>
+                    {% elif comment.author.is_admin %}
+                    <span class="ml-1 px-1.5 py-0.5 text-xs bg-yellow-500 text-white rounded">管理员</span>
+                    {% endif %}
+                    <span class="text-gray-500 text-sm">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                <div class="text-gray-800 mb-3">
+                    {{ comment.content }}
+                </div>
+                <div class="flex items-center text-sm">
+                    <button class="reply-button text-gray-500 hover:text-primary mr-4" data-id="{{ comment.id }}">
+                        <i class="fas fa-reply mr-1"></i> 回复
+                    </button>
+                    {% if current_user.is_authenticated and (current_user.id == comment.author.id or current_user.is_admin) %}
+                    <form action="{{ url_for('main.delete_comment', comment_id=comment.id) }}" method="post" class="inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="text-gray-500 hover:text-red-500" onclick="return confirm('确定要删除这条评论吗？')">
+                            <i class="fas fa-trash mr-1"></i> 删除
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                
+                <!-- 回复表单 (默认隐藏) -->
+                {% if current_user.is_authenticated %}
+                <div id="reply-form-{{ comment.id }}" class="reply-form mt-4 hidden">
+                    <form action="{{ url_for('main.add_comment', post_id=post.id) }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                        <div class="flex flex-col space-y-2">
+                            <textarea name="content" rows="2" class="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="回复 {{ comment.author.username }}..."></textarea>
+                            <div class="flex justify-end space-x-2">
+                                <button type="button" class="cancel-reply px-4 py-1 border border-gray-300 rounded-lg text-sm">取消</button>
+                                <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-4 py-1 rounded-lg text-sm">回复</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+                
+                <!-- 回复列表 -->
+                {% if comment.replies.count() > 0 %}
+                <div class="mt-4 space-y-4 pl-6 border-l-2 border-primary/30">
+                    {% for reply in comment.replies %}
+                    <div class="flex items-start">
+                        <a href="{{ url_for('main.user_profile', username=reply.author.username) }}" class="flex-shrink-0 mr-3">
+                            {% if reply.author.avatar_url %}
+                            <img src="{{ url_for('static', filename='uploads/profiles/' + reply.author.avatar_url) }}" alt="{{ reply.author.username }}" class="w-8 h-8 rounded-full object-cover">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/default-avatar.png') }}" alt="{{ reply.author.username }}" class="w-8 h-8 rounded-full object-cover">
+                            {% endif %}
+                        </a>
+                        <div>
+                            <div class="flex items-center mb-1">
+                                <a href="{{ url_for('main.user_profile', username=reply.author.username) }}" class="font-medium text-sm mr-2">{{ reply.author.username }}</a>
+                                <span class="text-gray-500 text-xs">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </div>
+                            <div class="text-gray-800 text-sm">
+                                {{ reply.content }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-8">
+    <p class="text-gray-500">还没有评论，来发表第一条评论吧！</p>
+</div>
+{% endif %} 

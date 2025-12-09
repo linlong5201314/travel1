@@ -1,0 +1,715 @@
+/* 全球旅记 - 自定义样式 */
+
+/* 全局样式 */
+:root {
+  --primary-color: #3498db;
+  --primary-hover: rgba(52, 152, 219, 0.9);
+  --secondary-color: #FF7D00;
+  --accent-color: #36D399;
+  --danger-color: #e74c3c;
+  --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --light-color: #F8FAFC;
+  --dark-color: #1E293B;
+}
+
+/* 添加字体图标加载优化 */
+.icon-loading {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-color: currentColor;
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+.fonts-loaded .icon-loading {
+  display: none;
+}
+
+/* 确保图标加载正确 */
+.fa, .fas, .far, .fab {
+  display: inline-block;
+}
+
+/* 添加回退方案 */
+[class*="fa-"] {
+  display: inline-block;
+}
+
+body {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: var(--light-color);
+}
+
+/* 自定义头像样式 */
+.avatar-xs {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+}
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.avatar-md {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+}
+
+.avatar-lg {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+}
+
+.avatar-xl {
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+}
+
+/* 自定义背景颜色 */
+.bg-travel {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/img/hero-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+
+/* 文本截断 */
+.line-clamp-1,
+.line-clamp-2,
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-1 {
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 22px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 2px 8px rgba(80,160,255,0.10);
+    margin-right: 8px;
+}
+
+.btn-primary, .btn-secondary {
+    background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+    color: #fff;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+    background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+    color: #fff;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 16px rgba(80,160,255,0.18);
+}
+
+/* 透明磨砂按钮样式 */
+.btn-glass {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btn-success {
+    background: linear-gradient(90deg, #4fc3f7 0%, #00bcd4 100%);
+    color: #fff;
+}
+
+.btn-success:hover {
+    background: linear-gradient(90deg, #00bcd4 0%, #4fc3f7 100%);
+    color: #fff;
+    transform: translateY(-2px) scale(1.05);
+}
+
+.btn-danger {
+    background: linear-gradient(90deg, #ff8a65 0%, #e53935 100%);
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(90deg, #e53935 0%, #ff8a65 100%);
+    color: #fff;
+    transform: translateY(-2px) scale(1.05);
+}
+
+/* 搜索按钮样式 */
+.search-btn {
+    background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+    color: white;
+    border: none;
+    border-radius: 0 20px 20px 0;
+    padding: 10px 25px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-btn:hover {
+    background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 16px rgba(80,160,255,0.18);
+}
+
+/* 轮播图中的搜索按钮样式 */
+.carousel .search-btn {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 500;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    height: calc(100% - 10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(80,160,255,0.10);
+}
+
+.carousel .search-btn:hover {
+    background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 16px rgba(80,160,255,0.18);
+}
+
+/* 卡片样式 */
+.card-hover-effect {
+  transition: all 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 自定义动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease forwards;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
+/* 博客内容格式化 */
+.blog-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.blog-content h1, 
+.blog-content h2, 
+.blog-content h3, 
+.blog-content h4, 
+.blog-content h5, 
+.blog-content h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.blog-content p {
+  margin-bottom: 1rem;
+  line-height: 1.7;
+}
+
+.blog-content blockquote {
+  border-left: 4px solid var(--primary-color);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: #555;
+}
+
+.blog-content pre {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.blog-content code {
+  background-color: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.blog-content ul, 
+.blog-content ol {
+  margin: 1rem 0 1rem 1.5rem;
+}
+
+.blog-content li {
+  margin-bottom: 0.5rem;
+}
+
+/* 自定义表格样式 */
+.custom-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.custom-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* 导航栏样式 */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff !important;
+  padding: 0.3rem 1rem;  /* 降低导航栏高度 */
+  border-bottom: none;   /* 移除底部边框 */
+}
+
+.navbar-brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000 !important;
+}
+
+.navbar-brand img {
+  height: 24px;
+  margin-right: 6px;
+}
+
+.nav-link {
+  color: #333 !important;
+  font-weight: 500;
+  margin: 0 15px;  /* 增加导航链接之间的间距 */
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary-color) !important;
+  transform: translateY(-2px);
+}
+
+/* 搜索框样式 */
+.search-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  border-radius: 20px 0 0 20px;
+  padding-right: 15px;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+  height: 38px; /* 固定高度 */
+}
+
+.search-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+  border-color: var(--primary-color);
+}
+
+/* 按钮样式 */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  transition: all 0.3s ease;
+  border-radius: 50px;
+  padding: 10px 25px;
+  font-weight: 500;
+  text-align: center;
+  display: inline-block;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+/* 卡片样式 */
+.card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* 页脚样式 */
+footer {
+  background-color: #f8f9fa;
+  padding: 40px 0;
+  margin-top: 60px;
+  color: #666;
+}
+
+/* 表单元素 */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* 卡片渐变效果 */
+.destination-card,
+.post-card,
+.tip-card {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.destination-card:hover,
+.post-card:hover,
+.tip-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.destination-img,
+.post-image,
+.tip-image {
+  transition: transform 0.5s ease;
+}
+
+.destination-card:hover .destination-img,
+.post-card:hover .post-image,
+.tip-card:hover .tip-image {
+  transform: scale(1.05);
+}
+
+/* 导航链接效果 */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after, 
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* 按钮悬停效果 */
+.btn,
+.action-btn {
+  transition: all 0.3s ease;
+}
+
+.btn:hover,
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 轮播图样式 */
+.carousel {
+  position: relative;
+  overflow: hidden;
+  height: 100vh; /* 恢复轮播图高度为100vh */
+  margin-top: -2px; /* 增加负margin值以确保与导航栏之间无间隙 */
+  border-top: none; /* 移除顶部边框 */
+}
+
+.carousel-item {
+  transition: opacity 1s ease-in-out;
+}
+
+/* 轮播图文字大小 */
+.carousel-caption h2 {
+  font-size: 4rem; /* 增大轮播图标题 */
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.6);
+  letter-spacing: 1px;
+}
+
+.carousel-caption p {
+  font-size: 1.8rem; /* 增大轮播图副标题 */
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* 自定义动画 */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .navbar-brand {
+    font-size: 20px;
+  }
+  
+  .hero-heading {
+    font-size: 2rem;
+  }
+  
+  .hero-subheading {
+    font-size: 1.2rem;
+  }
+}
+
+/* 用户下拉菜单 */
+.user-dropdown {
+  position: relative;
+}
+
+.user-dropdown-content {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: 200px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.user-dropdown:hover .user-dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-dropdown-item {
+  display: block;
+  padding: 8px 20px;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.user-dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: var(--primary-color);
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background-color: #eee;
+  margin: 8px 0;
+}
+
+/* 首页轮播图搜索框样式 */
+.carousel .search-container {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.carousel .search-input {
+  width: 100%;
+  padding: 15px 25px;
+  border-radius: 50px;
+  border: none;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  font-size: 16px;
+  height: auto;
+}
+
+/* 全局搜索框对齐 */
+form.flex.items-center {
+  display: flex;
+  align-items: center;
+  height: 38px;
+}
+
+form.flex.items-center input {
+  height: 100%;
+  border-radius: 20px 0 0 20px;
+}
+
+form.flex.items-center button.search-btn {
+  height: 100%;
+  border-radius: 0 20px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 轮播图位置调整 - 所有轮播图都居中显示 */
+.carousel-item:nth-child(1) .carousel-caption,
+.carousel-item:nth-child(2) .carousel-caption,
+.carousel-item:nth-child(3) .carousel-caption {
+  text-align: center;
+  top: 50%;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 80%;
+  max-width: 1200px;
+}
+
+/* 特别处理第三张轮播图，确保文字和搜索框可见 */
+.carousel-item:nth-child(3) .carousel-caption {
+  z-index: 10;
+  visibility: visible !important;
+}
+
+.carousel-item:nth-child(3) .carousel-caption h2,
+.carousel-item:nth-child(3) .carousel-caption p,
+.carousel-item:nth-child(3) .search-container {
+  visibility: visible !important;
+}
+
+/* 闪现消息样式 */
+.flash-toast-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.flash-toast {
+  background-color: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  max-width: 90%;
+  width: auto;
+  transform: translateY(0);
+  opacity: 1;
+  transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: auto;
+}
+
+.flash-toast.success {
+  border-left: 4px solid var(--success-color);
+}
+
+.flash-toast.danger {
+  border-left: 4px solid var(--danger-color);
+}
+
+.flash-toast.info {
+  border-left: 4px solid var(--primary-color);
+}
+
+.flash-toast.warning {
+  border-left: 4px solid var(--warning-color);
+}
+
+.flash-toast.hide {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* 在移动设备上调整样式 */
+@media (max-width: 640px) {
+  .flash-toast {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+} 

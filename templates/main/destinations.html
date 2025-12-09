@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}目的地 - 环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    .destination-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .destination-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .destination-img {
+        height: 280px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .destination-card:hover .destination-img {
+        transform: scale(1.05);
+    }
+    
+    .continent-tab {
+        transition: all 0.3s ease;
+    }
+    
+    .continent-tab:hover {
+        transform: translateY(-2px);
+    }
+    
+    .continent-tab.active {
+        color: #3498db;
+        border-color: #3498db;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 页面标题 -->
+<div class="bg-gray-50 py-12 mb-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-dark mb-3">探索目的地</h1>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto">发现世界各地令人惊叹的景点、文化和美食，规划您的下一次旅行冒险</p>
+    </div>
+</div>
+
+<!-- 目的地内容 -->
+<div class="container mx-auto px-4 mb-16">
+    <!-- 大洲选项卡 -->
+    <div class="flex flex-wrap justify-center mb-12 gap-2">
+        <button class="continent-tab px-6 py-3 border-b-2 border-transparent font-medium text-gray-800 active">全部</button>
+        <button class="continent-tab px-6 py-3 border-b-2 border-transparent font-medium text-gray-600">亚洲</button>
+        <button class="continent-tab px-6 py-3 border-b-2 border-transparent font-medium text-gray-600">欧洲</button>
+        <button class="continent-tab px-6 py-3 border-b-2 border-transparent font-medium text-gray-600">北美洲</button>
+        <button class="continent-tab px-6 py-3 border-b-2 border-transparent font-medium text-gray-600">南美洲</button>
+        <button class="continent-tab px-6 py-3 border-b-2 border-transparent font-medium text-gray-600">非洲</button>
+        <button class="continent-tab px-6 py-3 border-b-2 border-transparent font-medium text-gray-600">大洋洲</button>
+    </div>
+    
+    <!-- 亚洲目的地 -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-bold mb-6 text-dark">亚洲热门目的地</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- 日本 -->
+            <div class="destination-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/japan.jpg') }}" alt="日本" class="destination-img w-full">
+                    <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+                        亚洲
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-xl font-bold mb-2">日本</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">探索日本的传统与现代融合，从东京繁华的街道到京都宁静的寺庙，体验丰富的文化遗产和精致的美食。</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+                            <span>东京、京都、大阪</span>
+                        </div>
+                        <a href="{{ url_for('main.destination_detail', slug='japan') }}" class="text-primary hover:underline font-medium">详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 泰国 -->
+            <div class="destination-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/thailand.jpg') }}" alt="泰国" class="destination-img w-full">
+                    <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+                        亚洲
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-xl font-bold mb-2">泰国</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">在泰国沉浸在微笑之国的魅力中，享受热带海滩、辣味美食和独特的寺庙建筑，感受热情好客的文化氛围。</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+                            <span>曼谷、普吉岛、清迈</span>
+                        </div>
+                        <a href="{{ url_for('main.destination_detail', slug='thailand') }}" class="text-primary hover:underline font-medium">详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 中国 -->
+            <div class="destination-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/china.jpg') }}" alt="中国" class="destination-img w-full">
+                    <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+                        亚洲
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-xl font-bold mb-2">中国</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">领略中国丰富的自然景观和五千年文明，从长城的雄伟到桂林山水的秀丽，感受古老与现代共存的魅力。</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+                            <span>北京、上海、桂林</span>
+                        </div>
+                        <a href="{{ url_for('main.destination_detail', slug='china') }}" class="text-primary hover:underline font-medium">详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 越南 -->
+            <div class="destination-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/vietnam.jpg') }}" alt="越南" class="destination-img w-full">
+                    <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+                        亚洲
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-xl font-bold mb-2">越南</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">在越南发现迷人的文化和令人惊叹的自然美景，从繁忙的河内到宁静的下龙湾，享受独特的美食和丰富的历史。</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+                            <span>河内、胡志明市、下龙湾</span>
+                        </div>
+                        <a href="{{ url_for('main.destination_detail', slug='vietnam') }}" class="text-primary hover:underline font-medium">详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 欧洲目的地 -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-bold mb-6 text-dark">欧洲热门目的地</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- 意大利 -->
+            <div class="destination-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/italy.jpg') }}" alt="意大利" class="destination-img w-full">
+                    <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+                        欧洲
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-xl font-bold mb-2">意大利</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">在意大利领略文艺复兴的辉煌，品尝正宗的意式美食，探索罗马的古迹、威尼斯的水城和托斯卡纳的乡村风光。</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+                            <span>罗马、威尼斯、佛罗伦萨</span>
+                        </div>
+                        <a href="{{ url_for('main.destination_detail', slug='italy') }}" class="text-primary hover:underline font-medium">详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 法国 -->
+            <div class="destination-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/france.gif') }}" alt="法国" class="destination-img w-full">
+                    <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+                        欧洲
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-xl font-bold mb-2">法国</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">感受法国的浪漫与艺术气息，在巴黎的街头漫步，在普罗旺斯的薰衣草田中放松，品味世界顶级的美食与葡萄酒。</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+                            <span>巴黎、尼斯、普罗旺斯</span>
+                        </div>
+                        <a href="{{ url_for('main.destination_detail', slug='france') }}" class="text-primary hover:underline font-medium">详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 西班牙 -->
+            <div class="destination-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/spain.jpg') }}" alt="西班牙" class="destination-img w-full">
+                    <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+                        欧洲
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-xl font-bold mb-2">西班牙</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">探索西班牙多元的文化和热情的生活方式，从马德里的艺术到巴塞罗那的建筑，体验弗拉门戈和午夜小食的魅力。</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+                            <span>马德里、巴塞罗那、塞维利亚</span>
+                        </div>
+                        <a href="{{ url_for('main.destination_detail', slug='spain') }}" class="text-primary hover:underline font-medium">详情</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 瑞士 -->
+            <div class="destination-card bg-white rounded-xl overflow-hidden shadow-sm">
+                <div class="relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/switzerland.jpg') }}" alt="瑞士" class="destination-img w-full">
+                    <div class="absolute top-3 right-3 bg-white/80 backdrop-blur-sm text-sm font-medium py-1 px-3 rounded-full">
+                        欧洲
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-xl font-bold mb-2">瑞士</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">在瑞士的阿尔卑斯山脉中徒步，欣赏壮丽的湖泊和山峰，探索迷人的小镇，品尝巧克力、奶酪和精致的瑞士钟表工艺。</p>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center text-sm text-gray-500">
+                            <i class="fas fa-map-marker-alt text-primary mr-1"></i>
+                            <span>苏黎世、琉森、因特拉肯</span>
+                        </div>
+                        <a href="{{ url_for('main.destination_detail', slug='switzerland') }}" class="text-primary hover:underline font-medium">详情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 精选旅行主题 -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-bold mb-6 text-dark">精选旅行主题</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- 海滩度假 -->
+            <div class="relative h-60 md:h-96 rounded-xl overflow-hidden group">
+                <img src="{{ url_for('static', filename='img/beach.jpg') }}" alt="海滩度假" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                    <h3 class="text-xl font-bold text-white mb-2">海滩度假</h3>
+                    <p class="text-white/90 mb-4">在世界上最美丽的海滩放松身心，享受阳光与海浪</p>
+                    <a href="#" class="inline-block bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 px-4 py-2 rounded-lg transition-all text-sm">
+                        探索目的地
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 历史文化 -->
+            <div class="relative h-60 md:h-96 rounded-xl overflow-hidden group">
+                <img src="{{ url_for('static', filename='img/culture.jpg') }}" alt="历史文化" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                    <h3 class="text-xl font-bold text-white mb-2">历史文化</h3>
+                    <p class="text-white/90 mb-4">探索古老文明的遗迹，感受世界各地丰富的文化遗产</p>
+                    <a href="#" class="inline-block bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 px-4 py-2 rounded-lg transition-all text-sm">
+                        探索目的地
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 自然探险 -->
+            <div class="relative h-60 md:h-96 rounded-xl overflow-hidden group">
+                <img src="{{ url_for('static', filename='img/adventure.jpg') }}" alt="自然探险" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6">
+                    <h3 class="text-xl font-bold text-white mb-2">自然探险</h3>
+                    <p class="text-white/90 mb-4">在壮丽的自然景观中徒步、攀登、探险，挑战自我极限</p>
+                    <a href="#" class="inline-block bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 px-4 py-2 rounded-lg transition-all text-sm">
+                        探索目的地
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 旅行灵感 -->
+    <div class="bg-gray-50 rounded-xl p-8 md:p-12">
+        <div class="text-center mb-10">
+            <h2 class="text-2xl font-bold mb-3 text-dark">获取个性化旅行建议</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">告诉我们您的旅行偏好和预算，我们将为您推荐最适合的目的地和行程</p>
+        </div>
+        
+        <form class="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">您喜欢的旅行类型</label>
+                <select class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option>请选择</option>
+                    <option>海滩度假</option>
+                    <option>文化探索</option>
+                    <option>自然探险</option>
+                    <option>美食之旅</option>
+                    <option>城市观光</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">您的预算范围</label>
+                <select class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option>请选择</option>
+                    <option>经济型 (¥5,000以下)</option>
+                    <option>中等 (¥5,000-¥15,000)</option>
+                    <option>高端 (¥15,000-¥30,000)</option>
+                    <option>奢华 (¥30,000以上)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">旅行时长</label>
+                <select class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option>请选择</option>
+                    <option>周末短途 (1-3天)</option>
+                    <option>短期旅行 (4-7天)</option>
+                    <option>中期旅行 (8-14天)</option>
+                    <option>长期旅行 (15天以上)</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">旅行季节</label>
+                <select class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option>请选择</option>
+                    <option>春季 (3-5月)</option>
+                    <option>夏季 (6-8月)</option>
+                    <option>秋季 (9-11月)</option>
+                    <option>冬季 (12-2月)</option>
+                    <option>不限季节</option>
+                </select>
+            </div>
+            
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">特别要求或兴趣</label>
+                <textarea rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请告诉我们您的特别要求或兴趣，例如：适合带孩子、摄影景点、当地美食体验等"></textarea>
+            </div>
+            
+            <div class="md:col-span-2 text-center">
+                <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg transition-all inline-block">
+                    获取旅行建议
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 大洲选项卡切换
+        const tabs = document.querySelectorAll('.continent-tab');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有选项卡的活动状态
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.classList.remove('text-primary');
+                    t.classList.remove('border-primary');
+                    t.classList.add('text-gray-600');
+                    t.classList.add('border-transparent');
+                });
+                
+                // 添加当前选项卡的活动状态
+                this.classList.add('active');
+                this.classList.add('text-primary');
+                this.classList.add('border-primary');
+                this.classList.remove('text-gray-600');
+                this.classList.remove('border-transparent');
+            });
+        });
+    });
+</script>
+{% endblock %} 

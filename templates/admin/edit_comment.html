@@ -1,0 +1,185 @@
+{% extends "admin/base.html" %}
+
+{% block title %}编辑评论 - 环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    /* 卡片样式 */
+    .edit-card {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+    
+    /* 表单样式 */
+    label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #384052;
+    }
+    
+    .form-input, .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #dbe0ea;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.2s;
+        margin-bottom: 20px;
+    }
+    
+    .form-textarea {
+        min-height: 150px;
+        resize: vertical;
+    }
+    
+    .form-input:focus, .form-textarea:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+        outline: none;
+    }
+    
+    /* 按钮样式 */
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #2b7bff 0%, #135cc5 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(43, 123, 255, 0.3);
+    }
+    
+    .btn-secondary {
+        background: #f0f4f9;
+        color: #384052;
+    }
+    
+    .btn-secondary:hover {
+        background: #dbe0ea;
+    }
+    
+    /* 复选框样式 */
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .checkbox-container input[type="checkbox"] {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* 信息卡片样式 */
+    .info-card {
+        background: #f0f7ff;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .info-row {
+        display: flex;
+        margin-bottom: 8px;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #384052;
+        width: 100px;
+    }
+    
+    .info-value {
+        color: #4a5568;
+        flex: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-10">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-bold text-blue-800 mb-8">编辑评论</h1>
+        
+        <div class="edit-card">
+            <!-- 评论相关信息 -->
+            <div class="info-card">
+                <div class="info-row">
+                    <div class="info-label">评论ID:</div>
+                    <div class="info-value">{{ comment.id }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">评论者:</div>
+                    <div class="info-value">{{ comment.author.username }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">评论时间:</div>
+                    <div class="info-value">{{ comment.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">所属帖子:</div>
+                    <div class="info-value">
+                        <a href="{{ url_for('main.post', post_id=comment.post.id) }}" target="_blank" class="text-blue-600 hover:underline">
+                            {{ comment.post.title }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-6">
+                    <label for="content">评论内容</label>
+                    <textarea id="content" name="content" class="form-textarea" required>{{ comment.content }}</textarea>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="is_approved" name="is_approved" {% if comment.is_approved %}checked{% endif %}>
+                    <label for="is_approved" class="m-0">审核通过（勾选后将公开显示）</label>
+                </div>
+                
+                <div class="flex justify-end gap-4">
+                    <a href="{{ url_for('admin.manage_comments', status=status) }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left mr-2"></i>返回
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save mr-2"></i>保存修改
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 表单提交前验证
+    document.querySelector('form').addEventListener('submit', function(e) {
+        var content = document.getElementById('content').value.trim();
+        if (!content) {
+            e.preventDefault();
+            alert('评论内容不能为空');
+            return false;
+        }
+    });
+</script>
+{% endblock %} 

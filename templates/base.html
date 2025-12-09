@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} - 环球旅记{% else %}环球旅记{% endif %}</title>
+    
+    <!-- 预加载关键字体资源 -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Font Awesome (只保留一个版本) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- 字体显示策略 -->
+    <style>
+        /* 确保在字体加载过程中有合理的占位显示 */
+        @font-face {
+            font-family: 'Font Awesome 6 Free';
+            font-display: swap;
+        }
+        
+        @font-face {
+            font-family: 'Font Awesome 6 Brands';
+            font-display: swap;
+        }
+        
+        /* 在字体加载前使用后备样式 */
+        .fa, .fas, .far, .fab {
+            /* 使用后备Unicode字符而不是隐藏 */
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        
+        /* 当字体加载完成时使用正确的图标 */
+        .fonts-loaded .fa, 
+        .fonts-loaded .fas, 
+        .fonts-loaded .far, 
+        .fonts-loaded .fab {
+            opacity: 1;
+        }
+        
+        /* 添加加载指示器样式 */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+            z-index: 9999;
+            animation: loading-bar 2s infinite;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+        
+        .fonts-loaded .loading-indicator {
+            opacity: 0;
+        }
+        
+        @keyframes loading-bar {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+    
+    <script>
+        // 检测字体加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加加载指示器
+            var loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'loading-indicator';
+            document.body.appendChild(loadingIndicator);
+            
+            // 字体加载超时
+            setTimeout(function() {
+                document.documentElement.classList.add('fonts-loaded');
+                // 3秒后移除加载指示器
+                setTimeout(function() {
+                    loadingIndicator.style.display = 'none';
+                }, 500);
+            }, 3000);
+        });
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 自定义CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3498db',  // 浅蓝色
+                        secondary: '#FF7D00',
+                        accent: '#36D399',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .text-shadow-lg {
+                text-shadow: 0 4px 8px rgba(0,0,0,0.25);
+            }
+            .animate-float {
+                animation: float 6s ease-in-out infinite;
+            }
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+            }
+            .mask-gradient {
+                mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            }
+            .nav-link {
+                position: relative;
+            }
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -4px;
+                left: 0;
+                background-color: #3498db;
+                transition: width 0.3s ease;
+            }
+            .nav-link:hover::after, .nav-link.active::after {
+                width: 100%;
+            }
+        }
+        
+        /* 添加闪现消息样式 */
+        .flash-toast-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        
+        .flash-toast {
+            background-color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            max-width: 90%;
+            width: auto;
+            transform: translateY(0);
+            opacity: 1;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: auto;
+        }
+        
+        .flash-toast.success {
+            border-left: 4px solid #10b981;
+        }
+        
+        .flash-toast.danger {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .flash-toast.info {
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .flash-toast.hide {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    </style>
+    {% block styles %}{% endblock %}
+</head>
+<body class="font-inter bg-light text-dark antialiased">
+    <!-- 导航栏 -->
+    <header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white" style="box-shadow: none; border-bottom: none;">
+        <nav class="container mx-auto px-4 md:px-8 py-2">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <a href="{{ url_for('main.index') }}" class="flex items-center space-x-2">
+                    <i class="fas fa-globe-americas text-primary text-xl"></i>
+                    <span class="text-lg font-bold text-dark">环球旅记</span>
+                </a>
+                
+                <!-- 导航链接和用户菜单 -->
+                <div class="flex items-center space-x-6 ml-auto">
+                <!-- 导航链接 -->
+                    <div class="flex items-center space-x-10">
+                        <a href="{{ url_for('main.index') }}" class="nav-link font-medium hover:text-primary transition-colors {% if request.endpoint == 'main.index' %}active text-primary{% endif %}">首页</a>
+                        <a href="{{ url_for('main.posts') }}" class="nav-link font-medium hover:text-primary transition-colors {% if request.endpoint == 'main.posts' %}active text-primary{% endif %}">旅行故事</a>
+                        <a href="{{ url_for('main.destinations') }}" class="nav-link font-medium hover:text-primary transition-colors {% if request.endpoint == 'main.destinations' %}active text-primary{% endif %}">目的地</a>
+                        <a href="{{ url_for('main.tips') }}" class="nav-link font-medium hover:text-primary transition-colors {% if request.endpoint == 'main.tips' %}active text-primary{% endif %}">旅行贴士</a>
+                        <a href="{{ url_for('main.about') }}" class="nav-link font-medium hover:text-primary transition-colors {% if request.endpoint == 'main.about' %}active text-primary{% endif %}">关于我们</a>
+                    </div>
+                    
+                    <!-- 搜索按钮 -->
+                    {% if hide_search is not defined or not hide_search %}
+                    <div class="relative mx-6">
+                        <form action="{{ url_for('main.search') }}" class="flex items-center">
+                            <input 
+                                class="w-40 py-1.5 px-3 border border-gray-300 rounded-l-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
+                                type="search" 
+                                name="q" 
+                                placeholder="搜索..." 
+                                value="{{ request.args.get('q', '') }}">
+                            <button 
+                                class="search-btn text-white px-3 py-1.5 rounded-r-full font-medium flex items-center justify-center h-full"
+                                type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 用户菜单 -->
+                    {% if current_user.is_authenticated %}
+                    <div class="relative user-dropdown">
+                        <button class="flex items-center space-x-2 cursor-pointer">
+                            {% if current_user.avatar_url %}
+                            <img src="{{ url_for('static', filename='uploads/profiles/' + current_user.avatar_url) }}" alt="{{ current_user.username }}" class="w-7 h-7 rounded-circle object-cover">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="{{ current_user.username }}" class="w-7 h-7 rounded-circle object-cover">
+                            {% endif %}
+                            <span class="font-medium">{{ current_user.username }}</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <ul class="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-2 opacity-0 invisible user-dropdown-content transition-all duration-300 z-50">
+                            <li><a href="{{ url_for('main.user_profile', username=current_user.username) }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 user-dropdown-item">
+                                <i class="fas fa-user mr-2"></i> 个人主页
+                            </a></li>
+                            <li><a href="{{ url_for('auth.profile') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 user-dropdown-item">
+                                <i class="fas fa-cog mr-2"></i> 账号设置
+                            </a></li>
+                            <li><a href="{{ url_for('main.user_posts') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 user-dropdown-item">
+                                <i class="fas fa-pen-nib mr-2"></i> 我的博客
+                            </a></li>
+                            <li><a href="{{ url_for('main.user_bookmarks') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 user-dropdown-item">
+                                <i class="fas fa-bookmark mr-2"></i> 我的收藏
+                            </a></li>
+                            {% if current_user.is_admin %}
+                            <li><hr class="border-t border-gray-100 my-1 user-dropdown-divider"></li>
+                            <li><a href="{{ url_for('admin.index') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 user-dropdown-item">
+                                <i class="fas fa-crown mr-2"></i> 管理后台
+                            </a></li>
+                            {% endif %}
+                            <li><hr class="border-t border-gray-100 my-1 user-dropdown-divider"></li>
+                            <li><a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 user-dropdown-item">
+                                <i class="fas fa-sign-out-alt mr-2"></i> 退出登录
+                            </a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">登录</a>
+                    {% endif %}
+                </div>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="mobile-menu-btn" class="md:hidden text-dark focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="fixed inset-0 bg-dark bg-opacity-50 z-50 hidden">
+        <div class="absolute right-0 top-0 h-screen w-64 bg-white shadow-xl p-4 transform transition-transform duration-300 translate-x-full">
+            <div class="flex justify-between items-center mb-4">
+                <a href="{{ url_for('main.index') }}" class="flex items-center space-x-2">
+                    <i class="fas fa-globe-americas text-primary text-xl"></i>
+                    <span class="text-lg font-bold text-dark">环球旅记</span>
+                </a>
+                <button id="close-menu-btn" class="text-dark focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- 移动端搜索栏 -->
+            {% if hide_search is not defined or not hide_search %}
+            <div class="mb-4">
+                <form action="{{ url_for('main.search') }}" class="flex items-center">
+                    <input 
+                        class="w-full py-1.5 px-3 border border-gray-300 rounded-l-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
+                        type="search" 
+                        name="q" 
+                        placeholder="搜索..." 
+                        value="{{ request.args.get('q', '') }}">
+                    <button 
+                        class="search-btn text-white px-3 py-1.5 rounded-r-full font-medium"
+                        type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+            
+            <div class="flex flex-col space-y-4">
+                <a href="{{ url_for('main.index') }}" class="py-2 px-4 rounded-lg {% if request.endpoint == 'main.index' %}bg-primary/10 text-primary{% endif %}">
+                    <i class="fas fa-home mr-2"></i> 首页
+                </a>
+                <a href="{{ url_for('main.posts') }}" class="py-2 px-4 rounded-lg {% if request.endpoint == 'main.posts' %}bg-primary/10 text-primary{% endif %}">
+                    <i class="fas fa-book mr-2"></i> 旅行故事
+                </a>
+                <a href="{{ url_for('main.destinations') }}" class="py-2 px-4 rounded-lg {% if request.endpoint == 'main.destinations' %}bg-primary/10 text-primary{% endif %}">
+                    <i class="fas fa-map-marked-alt mr-2"></i> 目的地
+                </a>
+                <a href="{{ url_for('main.tips') }}" class="py-2 px-4 rounded-lg {% if request.endpoint == 'main.tips' %}bg-primary/10 text-primary{% endif %}">
+                    <i class="fas fa-lightbulb mr-2"></i> 旅行贴士
+                </a>
+                <a href="{{ url_for('main.about') }}" class="py-2 px-4 rounded-lg {% if request.endpoint == 'main.about' %}bg-primary/10 text-primary{% endif %}">
+                    <i class="fas fa-info-circle mr-2"></i> 关于我们
+                </a>
+                
+                {% if current_user.is_authenticated %}
+                <div class="border-t border-gray-100 my-2 pt-2">
+                    <div class="flex items-center px-4 py-2">
+                        {% if current_user.avatar_url %}
+                        <img src="{{ url_for('static', filename='uploads/profiles/' + current_user.avatar_url) }}" alt="{{ current_user.username }}" class="w-8 h-8 rounded-circle object-cover mr-2">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="{{ current_user.username }}" class="w-8 h-8 rounded-circle object-cover mr-2">
+                                {% endif %}
+                        <span class="font-medium">{{ current_user.username }}</span>
+                    </div>
+                    
+                    <a href="{{ url_for('main.user_profile', username=current_user.username) }}" class="block py-2 px-4 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-user mr-2"></i> 个人主页
+                    </a>
+                    <a href="{{ url_for('auth.profile') }}" class="block py-2 px-4 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-cog mr-2"></i> 账号设置
+                    </a>
+                    <a href="{{ url_for('main.user_posts') }}" class="block py-2 px-4 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-pen-nib mr-2"></i> 我的博客
+                    </a>
+                    <a href="{{ url_for('main.user_bookmarks') }}" class="block py-2 px-4 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-bookmark mr-2"></i> 我的收藏
+                    </a>
+                    
+                    {% if current_user.is_admin %}
+                    <div class="border-t border-gray-100 my-2 pt-2">
+                        <a href="{{ url_for('admin.index') }}" class="block py-2 px-4 rounded-lg hover:bg-gray-100">
+                            <i class="fas fa-crown mr-2"></i> 管理后台
+                                </a>
+                            </div>
+                    {% endif %}
+                    
+                    <div class="border-t border-gray-100 my-2 pt-2">
+                        <a href="{{ url_for('auth.logout') }}" class="block py-2 px-4 rounded-lg text-red-500 hover:bg-gray-100">
+                            <i class="fas fa-sign-out-alt mr-2"></i> 退出登录
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="border-t border-gray-100 my-2 pt-2">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary block text-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i> 登录
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="btn block text-center mt-2" style="background: white; color: #1976d2; border: 1px solid #1976d2;">
+                        <i class="fas fa-user-plus mr-2"></i> 注册
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- 内容区域 -->
+    <main class="pt-16">
+        <!-- 页面内容 -->
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- 闪现消息 -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-toast-container" id="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash-toast {{ category }}" id="flash-message-{{ loop.index }}">
+                    <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' if category == 'danger' else 'info-circle' }} mr-3 text-{{ 'green' if category == 'success' else 'red' if category == 'danger' else 'blue' }}-500 text-xl"></i>
+                    <p class="text-gray-700">{{ message }}</p>
+                    <button class="ml-6 focus:outline-none text-gray-400 hover:text-gray-600" onclick="dismissToast('flash-message-{{ loop.index }}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- 页脚 -->
+    {% set hide_footer_routes = ['auth.profile', 'main.user_profile', 'main.user_posts', 'main.user_bookmarks', 'auth.login', 'auth.register', 'auth.reset_password'] %}
+    {% if request.endpoint not in hide_footer_routes %}
+    <footer class="bg-gray-100 pt-16 pb-8 mt-16">
+        <div class="container mx-auto px-4 md:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <a href="{{ url_for('main.index') }}" class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-globe-americas text-primary text-2xl"></i>
+                        <span class="text-xl font-bold text-dark">环球旅记</span>
+                    </a>
+                    <div class="flex space-x-4">
+                        {% set current_url = request.url %}
+                        <a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ current_url }}" target="_blank" class="text-gray-600 hover:text-primary">
+                            <i class="fab fa-weixin text-lg"></i>
+                        </a>
+                        <a href="https://service.weibo.com/share/share.php?title={{ title if title else '环球旅记' }}&url={{ current_url }}" target="_blank" class="text-gray-600 hover:text-primary">
+                            <i class="fab fa-weibo text-lg"></i>
+                        </a>
+                        <a href="https://www.douyin.com/" target="_blank" class="text-gray-600 hover:text-primary">
+                            <i class="fab fa-tiktok text-lg"></i>
+                        </a>
+                        <a href="https://www.bilibili.com/blackboard/share?share_source=copy_link&title={{ title if title else '环球旅记' }}&url={{ current_url }}" target="_blank" class="text-gray-600 hover:text-primary">
+                            <i class="fab fa-bilibili text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">发现</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('main.destinations') }}" class="text-gray-600 hover:text-primary">目的地</a></li>
+                        <li><a href="{{ url_for('main.posts') }}" class="text-gray-600 hover:text-primary">旅行故事</a></li>
+                        <li><a href="{{ url_for('main.tips') }}" class="text-gray-600 hover:text-primary">旅行贴士</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary">摄影作品</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">关于我们</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('main.about') }}" class="text-gray-600 hover:text-primary">关于环球旅记</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary">联系我们</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary">隐私政策</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-primary">使用条款</a></li>
+                    </ul>
+                    </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">订阅</h3>
+                    <p class="text-gray-600 mb-4">订阅我们的电子邮件，获取最新的旅行灵感。</p>
+                    <form class="flex">
+                        <input type="email" placeholder="您的邮箱地址" class="flex-1 py-2 px-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <button type="submit" class="search-btn rounded-r-lg px-4 py-2">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-8 text-center text-gray-600">
+                <p>&copy; {{ now.year }} 环球旅记. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+    
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- 字体加载完成后执行的脚本 -->
+    <script>
+        // 检查页面上的图标，为没有正确显示的图标添加后备处理
+        (function() {
+            function checkIcons() {
+                if (document.documentElement.classList.contains('fonts-loaded')) {
+                    // 图标已加载完成，不需要后备处理
+                    return;
+                }
+                
+                // 对于仍未加载的图标，使用后备样式
+                document.querySelectorAll('.fa, .fas, .far, .fab').forEach(function(icon) {
+                    if (getComputedStyle(icon).fontFamily.indexOf('Font Awesome') === -1) {
+                        // 字体未加载，添加占位符类
+                        icon.classList.add('icon-loading');
+                    }
+                });
+            }
+            
+            // 初始检查
+            setTimeout(checkIcons, 1000);
+            // 再次检查
+            setTimeout(checkIcons, 2000);
+        })();
+    </script>
+
+    <!-- 页面功能脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 闪现消息动画
+            const flashToasts = document.querySelectorAll('.flash-toast');
+            if (flashToasts.length > 0) {
+                // 等待0.5秒后开始渐变消失
+                setTimeout(function() {
+                    flashToasts.forEach(toast => {
+                        toast.classList.add('hide');
+                        
+                        // 等待动画完成后移除元素
+                        setTimeout(() => {
+                            toast.style.display = 'none';
+                            if (toast.parentNode && toast.parentNode.childElementCount === 1) {
+                                toast.parentNode.style.display = 'none';
+                            }
+                        }, 800); // 动画持续时间
+                    });
+                }, 2000); // 显示持续时间
+            }
+            
+            // 手动关闭消息的函数
+            window.dismissToast = function(id) {
+                const toast = document.getElementById(id);
+                if (toast) {
+                    toast.classList.add('hide');
+                    setTimeout(() => {
+                        toast.style.display = 'none';
+                        if (toast.parentNode && toast.parentNode.childElementCount === 1) {
+                            toast.parentNode.style.display = 'none';
+                        }
+                    }, 800);
+                }
+            };
+        
+            // 导航栏滚动效果
+            const navbar = document.getElementById('navbar');
+            
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('shadow-md');
+                    navbar.classList.add('bg-white/95');
+                    navbar.classList.add('backdrop-blur-md');
+                } else {
+                    navbar.classList.remove('shadow-md');
+                    navbar.classList.remove('bg-white/95');
+                    navbar.classList.remove('backdrop-blur-md');
+                }
+            });
+            
+            // 移动端菜单
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuBtn && closeMenuBtn && mobileMenu) {
+                const mobileMenuContent = mobileMenu.querySelector('div:nth-child(1)');
+                
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.remove('hidden');
+                    setTimeout(() => {
+                        mobileMenuContent.classList.remove('translate-x-full');
+                    }, 10);
+                });
+                
+                closeMenuBtn.addEventListener('click', function() {
+                    mobileMenuContent.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        mobileMenu.classList.add('hidden');
+                    }, 300);
+                });
+                
+                // 点击遮罩关闭菜单
+                mobileMenu.addEventListener('click', function(e) {
+                    if (e.target === mobileMenu) {
+                        mobileMenuContent.classList.add('translate-x-full');
+                        setTimeout(() => {
+                            mobileMenu.classList.add('hidden');
+                        }, 300);
+                    }
+                });
+            }
+            
+            // 轮播图功能
+            const carouselItems = document.querySelectorAll('.carousel-item');
+            const prevBtn = document.querySelector('.carousel-prev');
+            const nextBtn = document.querySelector('.carousel-next');
+            
+            if (carouselItems.length > 0) {
+                let currentIndex = 0;
+                
+                function showSlide(index) {
+                    // 隐藏所有slide
+                    carouselItems.forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // 显示当前slide
+                    carouselItems[index].classList.add('active');
+                }
+                
+                function nextSlide() {
+                    currentIndex = (currentIndex + 1) % carouselItems.length;
+                    showSlide(currentIndex);
+                }
+                
+                function prevSlide() {
+                    currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+                    showSlide(currentIndex);
+                }
+                
+                // 添加点击事件
+                if (nextBtn && prevBtn) {
+                    nextBtn.addEventListener('click', nextSlide);
+                    prevBtn.addEventListener('click', prevSlide);
+                    
+                    // 自动轮播
+                    setInterval(nextSlide, 5000);
+                }
+            }
+
+            // 用户下拉菜单功能
+            const userDropdown = document.querySelector('.user-dropdown');
+            if (userDropdown) {
+                const dropdownContent = userDropdown.querySelector('.user-dropdown-content');
+                const dropdownButton = userDropdown.querySelector('button');
+                
+                // 点击显示/隐藏下拉菜单
+                dropdownButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (dropdownContent.classList.contains('opacity-0')) {
+                        // 显示菜单
+                        dropdownContent.classList.remove('opacity-0', 'invisible');
+                        dropdownContent.classList.add('opacity-100', 'visible');
+                    } else {
+                        // 隐藏菜单
+                        dropdownContent.classList.add('opacity-0', 'invisible');
+                        dropdownContent.classList.remove('opacity-100', 'visible');
+                    }
+                });
+                
+                // 点击外部区域关闭菜单
+                document.addEventListener('click', function(e) {
+                    if (!userDropdown.contains(e.target)) {
+                        dropdownContent.classList.add('opacity-0', 'invisible');
+                        dropdownContent.classList.remove('opacity-100', 'visible');
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- 页面特定JavaScript -->
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

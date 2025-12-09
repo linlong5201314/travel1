@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} - 环球旅记管理系统{% else %}环球旅记管理系统{% endif %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#e6f2ff',
+                            100: '#cce5ff',
+                            200: '#99c9ff',
+                            300: '#66adff',
+                            400: '#3392ff',
+                            500: '#1976d2',
+                            600: '#0d5db9',
+                            700: '#0a4a94',
+                            800: '#07366f',
+                            900: '#05234a',
+                        },
+                        secondary: {
+                            50: '#e6f9fa',
+                            100: '#ccf3f5',
+                            200: '#99e6eb',
+                            300: '#66dae1',
+                            400: '#33cdd7',
+                            500: '#00bcd4',
+                            600: '#00a0b7',
+                            700: '#00849a',
+                            800: '#00687d',
+                            900: '#004c60',
+                        },
+                        accent: {
+                            50: '#fff8e6',
+                            100: '#fff1cc',
+                            200: '#ffe499',
+                            300: '#ffd666',
+                            400: '#ffc933',
+                            500: '#ffbb00',
+                            600: '#e6a800',
+                            700: '#cc9500',
+                            800: '#b38200',
+                            900: '#996f00',
+                        },
+                        danger: '#e53935',
+                        success: '#2ecc71',
+                        warning: '#f39c12',
+                        light: '#f8fafc',
+                        dark: '#1e293b'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'gradient-blue': 'linear-gradient(135deg, #e3f0ff 0%, #b3d8ff 100%)',
+                        'gradient-purple': 'linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%)',
+                        'gradient-gold': 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                        'gradient-teal': 'linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%)',
+                    }
+                },
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0eeff 100%);
+            color: #234;
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar {
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 8px 32px rgba(80,160,255,0.15);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .sidebar-item {
+            transition: all 0.3s cubic-bezier(.4,0,.2,1);
+            border-radius: 12px;
+            margin: 0.35rem 0.5rem;
+        }
+        .sidebar-item:hover {
+            background: linear-gradient(90deg, #e6f2ff 0%, #d0e7ff 100%);
+            color: #1976d2;
+            transform: translateX(4px);
+        }
+        .sidebar-item.active {
+            background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+            color: white;
+            border-left: none;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
+        }
+        .sidebar-item.active i {
+            color: white;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+            transition: all 0.3s cubic-bezier(.4,0,.2,1);
+            border-radius: 12px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(80,160,255,0.25);
+        }
+        .toast {
+            transition: opacity 0.5s;
+        }
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .sidebar-footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 1rem;
+        }
+        .header-gradient {
+            background: linear-gradient(90deg, #ffffff 0%, #f0f7ff 100%);
+        }
+        .main-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .menu-icon {
+            font-size: 1.25rem;
+            width: 1.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-item.active .menu-icon {
+            background: white;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .sidebar-brand {
+            background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -0.5px;
+        }
+        .flash-message {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            animation: slideInRight 0.5s ease;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .user-dropdown {
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            animation: fadeInDown 0.3s ease;
+        }
+        @keyframes fadeInDown {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .user-menu-btn {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+        }
+        .user-menu-btn:hover {
+            background: #f0f7ff;
+        }
+    </style>
+    {% block head_extra %}
+    {% block styles %}{% endblock %}
+    {% endblock %}
+</head>
+<body class="h-screen flex">
+    <!-- 侧边栏 -->
+    <aside class="sidebar h-full w-64 fixed left-0 top-0 bottom-0 z-10 hidden md:flex">
+        <!-- 品牌标志 -->
+        <div class="py-6 px-4 flex items-center">
+            <i class="fas fa-globe-asia text-3xl mr-3 text-primary-500"></i>
+            <h1 class="text-2xl sidebar-brand">环球旅记</h1>
+        </div>
+        
+        <!-- 侧边栏导航 -->
+        <div class="sidebar-content py-4 px-3">
+            <nav>
+                <a href="{{ url_for('admin.index') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.index' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-tachometer-alt menu-icon mr-3"></i>
+                    <span>控制面板</span>
+                </a>
+                
+                <a href="{{ url_for('admin.manage_users') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.manage_users' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-users menu-icon mr-3"></i>
+                    <span>用户管理</span>
+                </a>
+                
+                <a href="{{ url_for('admin.manage_posts') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.manage_posts' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-file-alt menu-icon mr-3"></i>
+                    <span>帖子管理</span>
+                </a>
+                
+                <a href="{{ url_for('admin.manage_comments') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.manage_comments' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-comments menu-icon mr-3"></i>
+                    <span>评论管理</span>
+                </a>
+                
+                <a href="{{ url_for('admin.admin_analytics') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.admin_analytics' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-chart-bar menu-icon mr-3"></i>
+                    <span>数据分析</span>
+                </a>
+                
+                <!-- 可根据需要添加更多侧边栏项目 -->
+            </nav>
+        </div>
+        
+        <!-- 侧边栏底部 -->
+        <div class="sidebar-footer">
+            <a href="{{ url_for('main.index') }}" class="flex items-center text-sm text-gray-500 hover:text-primary-500 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> 返回前台
+            </a>
+        </div>
+    </aside>
+    
+    <!-- 主内容区 -->
+    <div class="flex-1 md:ml-64 flex flex-col h-screen overflow-hidden">
+        <!-- 顶部导航 -->
+        <header class="header-gradient p-4 shadow-sm">
+            <div class="container mx-auto flex justify-between items-center">
+                <!-- 移动端菜单按钮 -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-bars text-xl text-gray-600"></i>
+                </button>
+                
+                <!-- 面包屑导航 -->
+                <div class="flex items-center space-x-2 text-gray-500 text-sm ml-4 md:ml-0">
+                    <a href="{{ url_for('admin.index') }}" class="hover:text-primary-500">管理后台</a>
+                    {% if title %}
+                    <i class="fas fa-chevron-right text-xs"></i>
+                    <span class="font-medium text-gray-700">{{ title }}</span>
+                    {% endif %}
+                </div>
+                
+                <!-- 右侧用户菜单 -->
+                <div class="relative">
+                    <button id="user-menu-button" class="user-menu-btn flex items-center">
+                        {% if current_user.avatar_url %}
+                        <img src="{{ url_for('static', filename='uploads/profiles/' + current_user.avatar_url) }}" alt="用户头像" class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="默认头像" class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm">
+                        {% endif %}
+                        <span class="ml-2 text-sm font-medium">{{ current_user.username }}</span>
+                        <i class="fas fa-chevron-down ml-2 text-xs text-gray-400"></i>
+                    </button>
+                    
+                    <!-- 用户菜单下拉框 -->
+                    <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white user-dropdown hidden z-50">
+                        <div class="py-2 px-4 border-b border-gray-100">
+                            <p class="text-sm font-medium">{{ current_user.username }}</p>
+                            <p class="text-xs text-gray-500">{{ current_user.email }}</p>
+                        </div>
+                        <div class="py-1">
+                            <a href="{{ url_for('main.user_profile', username=current_user.username) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-user-circle mr-2"></i> 个人主页
+                            </a>
+                            <a href="{{ url_for('auth.settings') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i> 账号设置
+                            </a>
+                            <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                <i class="fas fa-sign-out-alt mr-2"></i> 退出登录
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 闪现消息 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mx-auto px-4 py-3">
+                    {% for category, message in messages %}
+                        <div class="flash-message p-4 mb-3 {{ category }}">
+                            {% if category == 'success' %}
+                                <div class="flex items-center text-green-800 bg-green-100 rounded-lg p-4">
+                                    <i class="fas fa-check-circle text-xl mr-3 text-green-500"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% elif category == 'danger' or category == 'error' %}
+                                <div class="flex items-center text-red-800 bg-red-100 rounded-lg p-4">
+                                    <i class="fas fa-exclamation-circle text-xl mr-3 text-red-500"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% elif category == 'warning' %}
+                                <div class="flex items-center text-yellow-800 bg-yellow-100 rounded-lg p-4">
+                                    <i class="fas fa-exclamation-triangle text-xl mr-3 text-yellow-500"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% else %}
+                                <div class="flex items-center text-blue-800 bg-blue-100 rounded-lg p-4">
+                                    <i class="fas fa-info-circle text-xl mr-3 text-blue-500"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- 主要内容 -->
+        <main class="flex-1 overflow-y-auto p-4">
+            <div class="container mx-auto">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+        
+        <!-- 底部 -->
+        <footer class="py-4 px-6 text-gray-500 text-sm border-t border-gray-200">
+            <div class="container mx-auto text-center">
+                <p>环球旅记管理系统 &copy; {{ now.year }} 版权所有</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- 移动端侧边栏遮罩 -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-0 hidden md:hidden"></div>
+    
+    <!-- 移动端侧边栏 -->
+    <div id="mobile-sidebar" class="sidebar h-full w-64 fixed left-0 top-0 bottom-0 z-20 transform -translate-x-full transition-transform duration-300 md:hidden">
+        <!-- 与上面的侧边栏内容相同 -->
+        <!-- 品牌标志 -->
+        <div class="py-6 px-4 flex items-center">
+            <i class="fas fa-globe-asia text-3xl mr-3 text-primary-500"></i>
+            <h1 class="text-2xl sidebar-brand">环球旅记</h1>
+        </div>
+        
+        <!-- 侧边栏导航 -->
+        <div class="sidebar-content py-4 px-3">
+            <nav>
+                <a href="{{ url_for('admin.index') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.index' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-tachometer-alt menu-icon mr-3"></i>
+                    <span>控制面板</span>
+                </a>
+                
+                <a href="{{ url_for('admin.manage_users') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.manage_users' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-users menu-icon mr-3"></i>
+                    <span>用户管理</span>
+                </a>
+                
+                <a href="{{ url_for('admin.manage_posts') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.manage_posts' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-file-alt menu-icon mr-3"></i>
+                    <span>帖子管理</span>
+                </a>
+                
+                <a href="{{ url_for('admin.manage_comments') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.manage_comments' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-comments menu-icon mr-3"></i>
+                    <span>评论管理</span>
+                </a>
+                
+                <a href="{{ url_for('admin.admin_analytics') }}" class="sidebar-item {{ 'active' if request.endpoint == 'admin.admin_analytics' else '' }} flex items-center p-3 mb-2">
+                    <i class="fas fa-chart-bar menu-icon mr-3"></i>
+                    <span>数据分析</span>
+                </a>
+                
+                <!-- 可根据需要添加更多侧边栏项目 -->
+            </nav>
+        </div>
+        
+        <!-- 侧边栏底部 -->
+        <div class="sidebar-footer">
+            <a href="{{ url_for('main.index') }}" class="flex items-center text-sm text-gray-500 hover:text-primary-500 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> 返回前台
+            </a>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 用户菜单
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userDropdown = document.getElementById('user-dropdown');
+            
+            userMenuButton.addEventListener('click', function() {
+                userDropdown.classList.toggle('hidden');
+            });
+            
+            document.addEventListener('click', function(event) {
+                if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+            
+            // 移动端菜单
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileSidebar = document.getElementById('mobile-sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileSidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            });
+            
+            sidebarOverlay.addEventListener('click', function() {
+                mobileSidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            });
+            
+            // 自动隐藏闪现消息
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                setTimeout(function() {
+                    message.style.opacity = '0';
+                    setTimeout(function() {
+                        message.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            });
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

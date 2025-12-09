@@ -1,0 +1,6 @@
+<!-- 在管理后台导航中添加数据分析页面的链接 -->
+<li class="nav-item">
+  <a class="nav-link {% if request.path == url_for('admin.admin_analytics') %}active{% endif %}" href="{{ url_for('admin.admin_analytics') }}">
+    <i class="fas fa-chart-bar"></i> 数据分析
+  </a>
+</li> 

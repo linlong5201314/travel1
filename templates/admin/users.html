@@ -1,0 +1,821 @@
+{% extends "admin/base.html" %}
+
+{% block title %}用户管理 - 环球旅记{% endblock %}
+
+{% block styles %}
+<style>
+    /* 主内容区域样式 */
+    .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .content-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2c5282;
+        position: relative;
+    }
+    
+    .content-title::after {
+        content: '';
+        position: absolute;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, #3182ce, #63b3ed);
+        bottom: -10px;
+        left: 0;
+    }
+    
+    /* 卡片样式 */
+    .card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(to right, #f7fafc, #edf2f7);
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .card-header h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* 表格样式 */
+    .data-table {
+        width: 100%;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .table-header {
+        background: linear-gradient(to right, #f7fafc, #edf2f7);
+        color: #4a5568;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+    
+    .table-header th {
+        padding: 1rem;
+        text-align: left;
+    }
+    
+    .table-body td {
+        padding: 1rem;
+        border-top: 1px solid #edf2f7;
+    }
+    
+    .table-row {
+        transition: all 0.2s;
+    }
+    
+    .table-row:hover {
+        background: #f7fafc;
+    }
+    
+    /* 用户状态徽章 */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-active {
+        background: #c6f6d5;
+        color: #22543d;
+    }
+    
+    .status-inactive {
+        background: #fed7d7;
+        color: #822727;
+    }
+    
+    .status-admin {
+        background: #bee3f8;
+        color: #2a4365;
+    }
+    
+    /* 操作按钮 */
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 9999px;
+        color: #fff;
+        margin-right: 6px;
+        transition: all 0.2s;
+    }
+    
+    .action-btn.view {
+        background: #10b981;
+    }
+    
+    .action-btn.edit {
+        background: #3b82f6;
+    }
+    
+    .action-btn.delete {
+        background: #ef4444;
+    }
+    
+    .action-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* 用户搜索表单 */
+    .search-form {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        max-width: 600px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .search-input-group {
+        display: flex;
+        flex: 1;
+    }
+    
+    .search-select {
+        border: 1px solid #e2e8f0;
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+        padding: 0.5rem;
+        background-color: #f7fafc;
+        color: #4a5568;
+        font-weight: 500;
+    }
+    
+    .search-input {
+        flex: 1;
+        border: 1px solid #e2e8f0;
+        border-right: none;
+        padding: 0.5rem 1rem;
+        outline: none;
+        transition: all 0.2s;
+    }
+    
+    .search-input:focus {
+        border-color: #3182ce;
+    }
+    
+    .search-btn {
+        background: #3182ce;
+        color: white;
+        border: none;
+        border-radius: 0 8px 8px 0;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .search-btn:hover {
+        background: #2c5282;
+    }
+    
+    .reset-btn {
+        background: #e2e8f0;
+        color: #4a5568;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+    
+    .reset-btn:hover {
+        background: #cbd5e0;
+    }
+    
+    /* 添加用户按钮 */
+    .btn-primary {
+        background: linear-gradient(90deg, #42a5f5 0%, #1976d2 100%);
+        color: white;
+        border: none;
+        padding: 0.625rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(25, 118, 210, 0.12);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(90deg, #1976d2 0%, #42a5f5 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 7px 14px rgba(25, 118, 210, 0.15);
+    }
+    
+    .btn-primary i {
+        margin-right: 0.5rem;
+    }
+    
+    /* 分页样式 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .pagination-item {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .pagination-item:hover {
+        background: #edf2f7;
+    }
+    
+    .pagination-item.active {
+        background: #3182ce;
+        color: white;
+    }
+    
+    .pagination-arrow {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .pagination-arrow:hover {
+        background: #edf2f7;
+    }
+    
+    .pagination-arrow.disabled {
+        color: #cbd5e0;
+        cursor: not-allowed;
+    }
+    
+    .pagination-arrow.disabled:hover {
+        background: transparent;
+    }
+    
+    /* 添加用户模态框 */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    
+    .modal-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    .modal-container {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+    
+    .modal-backdrop.active .modal-container {
+        transform: translateY(0);
+    }
+    
+    .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: #2d3748;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #a0aec0;
+        transition: color 0.2s;
+        padding: 0.5rem;
+        border-radius: 8px;
+    }
+    
+    .modal-close:hover {
+        color: #718096;
+        background: #f7fafc;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #4a5568;
+    }
+    
+    .form-input {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .form-input:focus {
+        border-color: #3182ce;
+        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        outline: none;
+    }
+    
+    .form-select {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        transition: all 0.2s;
+    }
+    
+    .form-select:focus {
+        border-color: #3182ce;
+        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        outline: none;
+    }
+    
+    .form-error {
+        color: #e53e3e;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+    
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-secondary:hover {
+        background: #cbd5e0;
+    }
+    
+    .btn-danger {
+        background: #e53e3e;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-danger:hover {
+        background: #c53030;
+    }
+    
+    .btn-success {
+        background: #38a169;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-success:hover {
+        background: #2f855a;
+    }
+    
+    /* 用户角色徽章 */
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .role-admin {
+        background: #ebf8ff;
+        color: #2c5282;
+    }
+    
+    .role-user {
+        background: #f0fff4;
+        color: #276749;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 640px) {
+        .search-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            min-width: 600px;
+        }
+    }
+    
+    /* 空状态 */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #a0aec0;
+    }
+    
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state-text {
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-header mb-6">
+    <h1 class="content-title">用户管理</h1>
+    
+    <button class="btn-primary" onclick="openAddUserModal()">
+        <i class="fas fa-user-plus"></i> 添加用户
+    </button>
+</div>
+
+<!-- 用户搜索 -->
+<form action="{{ url_for('admin.manage_users') }}" method="get" class="search-form">
+    <div class="search-input-group">
+        <select name="search_type" class="search-select">
+            <option value="username" {% if request.args.get('search_type') == 'username' %}selected{% endif %}>用户名</option>
+            <option value="email" {% if request.args.get('search_type') == 'email' %}selected{% endif %}>邮箱</option>
+        </select>
+        <input type="text" name="keyword" placeholder="搜索用户..." class="search-input" value="{{ request.args.get('keyword', '') }}">
+        <button type="submit" class="search-btn">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+    <div class="search-input-group">
+        <select name="role" class="search-select" onchange="this.form.submit()">
+            <option value="" {% if not request.args.get('role') %}selected{% endif %}>全部角色</option>
+            <option value="user" {% if request.args.get('role') == 'user' %}selected{% endif %}>普通用户</option>
+            <option value="admin" {% if request.args.get('role') == 'admin' %}selected{% endif %}>管理员</option>
+        </select>
+        <select name="status" class="search-select" onchange="this.form.submit()">
+            <option value="" {% if not request.args.get('status') %}selected{% endif %}>全部状态</option>
+            <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>已启用</option>
+            <option value="inactive" {% if request.args.get('status') == 'inactive' %}selected{% endif %}>已禁用</option>
+        </select>
+    </div>
+</form>
+
+{% if users.items %}
+<div class="table-responsive">
+    <table class="data-table">
+        <thead class="table-header">
+            <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>邮箱</th>
+                <th>角色</th>
+                <th>状态</th>
+                <th>注册时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody class="table-body">
+            {% for user in users.items %}
+            <tr class="table-row">
+                <td><span class="text-sm font-medium">{{ loop.index + (users.page - 1) * users.per_page }}</span></td>
+                <td>
+                    <div class="flex items-center">
+                        {% if user.avatar_url %}
+                        <img src="{{ url_for('static', filename='uploads/profiles/' + user.avatar_url) }}" alt="{{ user.username }}" class="w-8 h-8 rounded-full mr-2">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="默认头像" class="w-8 h-8 rounded-full mr-2">
+                        {% endif %}
+                        <div>
+                            <span class="text-sm font-medium">{{ user.username }}</span><br>
+                            <span class="text-xs text-gray-400">ID: {{ user.id }}</span>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="text-sm">{{ user.email }}</span></td>
+                <td>
+                    {% if user.is_admin %}
+                    <span class="role-badge role-admin">
+                        <i class="fas fa-user-shield mr-1"></i> 管理员
+                    </span>
+                    {% else %}
+                    <span class="role-badge role-user">
+                        <i class="fas fa-user mr-1"></i> 普通用户
+                    </span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user.is_active %}
+                    <span class="status-badge status-active">
+                        <i class="fas fa-check-circle mr-1"></i> 已启用
+                    </span>
+                    {% else %}
+                    <span class="status-badge status-inactive">
+                        <i class="fas fa-ban mr-1"></i> 已禁用
+                    </span>
+                    {% endif %}
+                </td>
+                <td><span class="text-sm text-gray-600">{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at is not string else user.created_at }}</span></td>
+                <td>
+                    <div class="flex">
+                        <a href="{{ url_for('admin.user_detail', user_id=user.id) }}" class="action-btn view" title="查看详情">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="action-btn edit" title="编辑用户">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {% if current_user.id != user.id %}
+                        <form action="{{ url_for('admin.toggle_user_status', user_id=user.id) }}" method="post" class="inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="action-btn" title="{{ '禁用用户' if user.is_active else '启用用户' }}">
+                                <i class="fas {{ 'fa-toggle-on text-green-500' if user.is_active else 'fa-toggle-off text-red-500' }}"></i>
+                            </button>
+                        </form>
+                        <button type="button" class="action-btn delete" title="删除用户" onclick="openDeleteModal('{{ user.id }}', '{{ user.username|replace("'", "\\'") }}')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 分页 -->
+{% if users.pages > 1 %}
+<div class="pagination mt-6">
+    {% if users.has_prev %}
+    <a href="{{ url_for('admin.manage_users', page=users.prev_num, search_type=request.args.get('search_type', ''), keyword=request.args.get('keyword', '')) }}" class="pagination-arrow">
+        <i class="fas fa-chevron-left"></i>
+    </a>
+    {% else %}
+    <span class="pagination-arrow disabled">
+        <i class="fas fa-chevron-left"></i>
+    </span>
+    {% endif %}
+    
+    {% for page_num in users.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+            {% if page_num == users.page %}
+            <span class="pagination-item active">{{ page_num }}</span>
+            {% else %}
+            <a href="{{ url_for('admin.manage_users', page=page_num, search_type=request.args.get('search_type', ''), keyword=request.args.get('keyword', '')) }}" class="pagination-item">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+        <span class="pagination-item">...</span>
+        {% endif %}
+    {% endfor %}
+    
+    {% if users.has_next %}
+    <a href="{{ url_for('admin.manage_users', page=users.next_num, search_type=request.args.get('search_type', ''), keyword=request.args.get('keyword', '')) }}" class="pagination-arrow">
+        <i class="fas fa-chevron-right"></i>
+    </a>
+    {% else %}
+    <span class="pagination-arrow disabled">
+        <i class="fas fa-chevron-right"></i>
+    </span>
+    {% endif %}
+</div>
+{% endif %}
+{% else %}
+<div class="empty-state">
+    <div class="empty-state-icon">
+        <i class="fas fa-users text-gray-300"></i>
+    </div>
+    <div class="empty-state-text">没有找到用户</div>
+</div>
+{% endif %}
+
+<!-- 添加用户模态框 -->
+<div id="addUserModal" class="modal-backdrop">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">添加新用户</h2>
+            <button type="button" class="modal-close" onclick="closeAddUserModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="addUserForm" action="{{ url_for('admin.add_user') }}" method="post" onsubmit="return validateForm()">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="username" class="form-label">用户名</label>
+                    <input type="text" id="username" name="username" class="form-input" required>
+                    <div id="username-error" class="form-error hidden"></div>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">邮箱</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                    <div id="email-error" class="form-error hidden"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">密码</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                    <div id="password-error" class="form-error hidden"></div>
+                </div>
+                <div class="form-group">
+                    <label for="role" class="form-label">角色</label>
+                    <select id="role" name="role" class="form-select">
+                        <option value="user">普通用户</option>
+                        <option value="admin">管理员</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeAddUserModal()">取消</button>
+                <button type="submit" class="btn-success">添加用户</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div id="deleteModal" class="modal-backdrop">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h2 class="modal-title">确认删除</h2>
+            <button type="button" class="modal-close" onclick="closeDeleteModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>您确定要删除用户 "<span id="userName"></span>" 吗？</p>
+            <p class="text-red-500 mt-2">此操作将删除该用户的所有数据，且无法恢复。</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="closeDeleteModal()">取消</button>
+            <form id="deleteForm" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-danger">确认删除</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openAddUserModal() {
+        document.getElementById('addUserModal').classList.add('active');
+    }
+    
+    function closeAddUserModal() {
+        document.getElementById('addUserModal').classList.remove('active');
+        // 清空表单和错误信息
+        document.getElementById('addUserForm').reset();
+        document.getElementById('username-error').classList.add('hidden');
+        document.getElementById('email-error').classList.add('hidden');
+        document.getElementById('password-error').classList.add('hidden');
+    }
+    
+    function validateForm() {
+        let isValid = true;
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        // 用户名验证
+        if (username.length < 3) {
+            document.getElementById('username-error').textContent = '用户名至少需要3个字符';
+            document.getElementById('username-error').classList.remove('hidden');
+            isValid = false;
+        } else {
+            document.getElementById('username-error').classList.add('hidden');
+        }
+        
+        // 邮箱验证
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            document.getElementById('email-error').textContent = '请输入有效的邮箱地址';
+            document.getElementById('email-error').classList.remove('hidden');
+            isValid = false;
+        } else {
+            document.getElementById('email-error').classList.add('hidden');
+        }
+        
+        // 密码验证
+        if (password.length < 6) {
+            document.getElementById('password-error').textContent = '密码至少需要6个字符';
+            document.getElementById('password-error').classList.remove('hidden');
+            isValid = false;
+        } else {
+            document.getElementById('password-error').classList.add('hidden');
+        }
+        
+        return isValid;
+    }
+    
+    function openDeleteModal(userId, username) {
+        document.getElementById('userName').textContent = username;
+        document.getElementById('deleteForm').action = "{{ url_for('admin.delete_user', user_id=0) }}".replace('0', userId);
+        document.getElementById('deleteModal').classList.add('active');
+    }
+    
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+    
+    // 点击模态框背景关闭
+    document.getElementById('addUserModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeAddUserModal();
+        }
+    });
+    
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeleteModal();
+        }
+    });
+</script>
+{% endblock %} 

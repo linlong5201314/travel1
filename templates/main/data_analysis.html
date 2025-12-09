@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<style>
+    .chart-container {
+        height: 400px;
+        margin-bottom: 30px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .map-container {
+        height: 600px;
+        width: 100%;
+        margin-bottom: 30px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1; /* 确保地图在页面上可见 */
+        overflow: hidden;
+    }
+    
+    .info-card {
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: #fff;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #4A89DC;
+    }
+    
+    .stat-title {
+        font-size: 1.2rem;
+        color: #777;
+        margin-top: 10px;
+    }
+    
+    #time-chart {
+        height: 400px;
+    }
+    
+    .filter-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+    
+    /* 地图标记样式 */
+    .map-marker {
+        background-color: rgba(52, 152, 219, 0.8);
+        color: white;
+        font-weight: bold;
+        padding: 3px 8px;
+        border-radius: 12px;
+        white-space: nowrap;
+        text-align: center;
+    }
+    
+    /* 自定义Leaflet弹出窗口样式 */
+    .custom-popup .leaflet-popup-content-wrapper {
+        border-radius: 4px;
+        padding: 0;
+    }
+    
+    .popup-title {
+        background-color: #3498db;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px 4px 0 0;
+        font-weight: bold;
+    }
+    
+    .popup-content {
+        padding: 12px;
+        background-color: white;
+        border-radius: 0 0 4px 4px;
+    }
+</style>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css?v={{ cache_control }}" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<!-- Leaflet热力图插件CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.css?v={{ cache_control }}">
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="mb-4">旅行数据分析</h1>
+        
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <div class="stat-number" id="total-locations">{{ location_data|length }}</div>
+                    <div class="stat-title">目的地数量</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <div class="stat-number" id="total-posts">
+                        {% set total_posts = 0 %}
+                        {% for item in location_data %}
+                            {% set total_posts = total_posts + item.value %}
+                        {% endfor %}
+                        {{ total_posts }}
+                    </div>
+                    <div class="stat-title">总游记数量</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card text-center">
+                    <div class="stat-number" id="popular-destination">
+                        {% set popular = {'name': '', 'value': 0} %}
+                        {% for item in location_data %}
+                            {% if item.value > popular.value %}
+                                {% set popular = item %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ popular.name or '无数据' }}
+                    </div>
+                    <div class="stat-title">最热门目的地</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">旅游目的地地图分布</h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="heatmapToggle" checked>
+                            <label class="form-check-label" for="heatmapToggle">热力图显示</label>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="map-container" id="map-container">
+                            <div style="position:absolute; top:10px; right:10px; z-index:1000; background:white; padding:5px 10px; border-radius:4px; box-shadow:0 1px 5px rgba(0,0,0,0.2);">
+                                <strong style="color:#3498db;">使用Leaflet地图 (v{{ cache_control }})</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">旅游目的地统计</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" id="location-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">游记发布时间趋势</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" id="time-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js?v={{ cache_control }}" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- Leaflet热力图插件 -->
+<script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.min.js?v={{ cache_control }}"></script>
+
+<!-- 引入ECharts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js?v={{ cache_control }}"></script>
+
+<script>
+    // 将后端传递的数据转换为JavaScript变量
+    const locationData = {{ location_data|tojson }};
+    const timeData = {{ time_data|tojson }};
+    
+    // 显示调试信息
+    console.log("使用Leaflet地图库，版本控制参数:", {{ cache_control }});
+    
+    // 预定义的城市坐标 - 简化地理编码
+    const cityCoordinates = {
+        '北京': [39.904989, 116.405285],
+        '上海': [31.231706, 121.472644],
+        '广州': [23.125178, 113.280637],
+        '深圳': [22.547, 114.085947],
+        '成都': [30.659462, 104.065735],
+        '杭州': [30.287459, 120.153576],
+        '西安': [34.263161, 108.948024],
+        '南京': [32.041544, 118.767413],
+        '武汉': [30.584355, 114.298572],
+        '重庆': [29.533155, 106.504962],
+        '青岛': [36.094406, 120.369557],
+        '长沙': [28.19409, 112.982279],
+        '厦门': [24.490474, 118.11022],
+        '哈尔滨': [45.756967, 126.642464],
+        '三亚': [18.247872, 109.508268],
+        '大理': [25.589449, 100.225668],
+        '丽江': [26.872108, 100.233026],
+        '拉萨': [29.660361, 91.132212],
+        '香港': [22.320048, 114.173355],
+        '澳门': [22.198951, 113.54909],
+        '台北': [25.030724, 121.520076]
+    };
+    
+    // 初始化地图
+    function initMap() {
+        const mapContainer = document.getElementById('map-container');
+        if (!mapContainer) return;
+        
+        // 显示加载中状态
+        mapContainer.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;"><div style="width:40px;height:40px;border:3px solid rgba(52,152,219,0.2);border-top-color:#3498db;border-radius:50%;animation:spin 1s linear infinite;"></div></div>';
+        
+        try {
+            // 创建Leaflet地图实例 - 使用OpenStreetMap
+            const map = L.map('map-container').setView([35.86166, 104.195397], 4); // 中国中心点
+            
+            // 添加OpenStreetMap图层
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // 创建标记点集合和热力图数据
+            let markers = [];
+            let heatmapData = [];
+            
+            // 处理位置数据
+            locationData.forEach(item => {
+                const position = cityCoordinates[item.name];
+                if (position) {
+                    // 为热力图添加数据点 - Leaflet热力图格式 [lat, lng, intensity]
+                    heatmapData.push([position[0], position[1], item.value]);
+                    
+                    // 创建标记
+                    const marker = L.marker(position, {
+                        title: item.name
+                    });
+                    
+                    // 创建自定义弹出窗口内容
+                    const popupContent = `
+                        <div class="custom-popup">
+                            <div class="popup-title">${item.name}</div>
+                            <div class="popup-content">
+                                <div style="margin-bottom: 8px;">
+                                    <span style="font-weight: bold;">游记数量:</span>
+                                    <span style="color: #3498db; font-weight: bold; margin-left: 5px;">${item.value}</span>
+                                </div>
+                                <div>
+                                    <a href="/search?q=${item.name}" style="color: #3498db; text-decoration: none;">查看相关游记 &raquo;</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 绑定弹出窗口
+                    marker.bindPopup(popupContent);
+                    
+                    // 添加标记到地图
+                    marker.addTo(map);
+                    markers.push(marker);
+                    
+                    // 创建圆圈表示游记数量
+                    const circleSize = Math.min(Math.max(item.value * 5000, 20000), 100000);
+                    const circle = L.circle(position, {
+                        radius: circleSize,
+                        color: '#3498db',
+                        fillColor: '#3498db',
+                        fillOpacity: 0.2,
+                        weight: 1
+                    }).addTo(map);
+                }
+            });
+            
+            // 创建热力图层
+            const heatLayer = L.heatLayer(heatmapData, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 10,
+                max: Math.max(...heatmapData.map(item => item[2])),
+                gradient: {
+                    0.4: 'cyan',
+                    0.6: 'lime',
+                    0.8: 'yellow',
+                    1.0: 'red'
+                }
+            }).addTo(map);
+            
+            // 添加热力图切换事件监听
+            const heatmapToggle = document.getElementById('heatmapToggle');
+            if (heatmapToggle) {
+                heatmapToggle.addEventListener('change', function() {
+                    if (this.checked) {
+                        map.addLayer(heatLayer);
+                    } else {
+                        map.removeLayer(heatLayer);
+                    }
+                });
+            }
+            
+            // 调整视图以包含所有标记
+            if (markers.length > 0) {
+                const group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds());
+            }
+            
+            console.log("地图初始化成功");
+            
+        } catch (error) {
+            console.error("初始化地图时出错:", error);
+            mapContainer.innerHTML = `
+                <div style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #e74c3c; margin-bottom: 15px;"></i>
+                    <h3 style="margin-bottom: 10px; color: #333;">地图加载失败</h3>
+                    <p style="color: #777;">请检查网络连接或刷新页面重试</p>
+                    <p style="font-size: 12px; color: #999; margin-top: 10px;">错误信息: ${error.message}</p>
+                </div>
+            `;
+        }
+    }
+    
+    // 初始化地点统计图表
+    function initLocationChart() {
+        const chartDom = document.getElementById('location-chart');
+        const myChart = echarts.init(chartDom);
+        
+        // 只取前15个最多游记的地点
+        const sortedData = [...locationData].sort((a, b) => b.value - a.value).slice(0, 15);
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
+                data: sortedData.map(item => item.name),
+                axisLabel: {
+                    interval: 0,
+                    rotate: 0
+                }
+            },
+            series: [{
+                name: '游记数量',
+                type: 'bar',
+                data: sortedData.map(item => item.value),
+                itemStyle: {
+                    color: function(params) {
+                        // 颜色渐变
+                        const colorList = ['#83bff6', '#188df0', '#005eaa', '#0030a0'];
+                        return colorList[params.dataIndex % 4];
+                    }
+                }
+            }]
+        };
+        
+        myChart.setOption(option);
+        
+        // 响应式调整
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    }
+    
+    // 初始化时间趋势图表
+    function initTimeChart() {
+        const chartDom = document.getElementById('time-chart');
+        const myChart = echarts.init(chartDom);
+        
+        // 确保时间数据按时间排序
+        const sortedTimeData = [...timeData].sort((a, b) => a.date.localeCompare(b.date));
+        
+        const option = {
+            tooltip: {
+                trigger: 'axis'
+            },
+            xAxis: {
+                type: 'category',
+                data: sortedTimeData.map(item => item.date),
+                axisLabel: {
+                    rotate: 45
+                }
+            },
+            yAxis: {
+                type: 'value',
+                name: '游记数量'
+            },
+            series: [{
+                name: '游记数量',
+                type: 'line',
+                data: sortedTimeData.map(item => item.count),
+                markPoint: {
+                    data: [
+                        { type: 'max', name: '最高值' },
+                        { type: 'min', name: '最低值' }
+                    ]
+                },
+                markLine: {
+                    data: [{ type: 'average', name: '平均值' }]
+                },
+                lineStyle: {
+                    width: 3,
+                    color: '#4A89DC'
+                },
+                itemStyle: {
+                    color: '#4A89DC'
+                },
+                areaStyle: {
+                    color: {
+                        type: 'linear',
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [{
+                            offset: 0,
+                            color: 'rgba(74, 137, 220, 0.6)'
+                        }, {
+                            offset: 1,
+                            color: 'rgba(74, 137, 220, 0.1)'
+                        }]
+                    }
+                },
+                smooth: true
+            }]
+        };
+        
+        myChart.setOption(option);
+        
+        // 响应式调整
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    }
+    
+    // 页面加载完成后初始化所有图表
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("页面加载完成，开始初始化图表和地图");
+        
+        // 确保地图容器存在
+        if (document.getElementById('map-container')) {
+            // 初始化地图
+            initMap();
+        } else {
+            console.error("找不到地图容器元素 #map-container");
+        }
+        
+        // 初始化统计图表
+        initLocationChart();
+        initTimeChart();
+    });
+</script>
+{% endblock %} 

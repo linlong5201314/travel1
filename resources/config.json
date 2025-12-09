@@ -1,0 +1,19 @@
+{
+    "app_name": "旅游记录",
+    "description": "分享您的旅行故事和经验",
+    "version": "1.0.0",
+    "upload_settings": {
+        "allowed_extensions": ["png", "jpg", "jpeg", "gif"],
+        "max_file_size": 5242880
+    },
+    "pagination": {
+        "posts_per_page": 9,
+        "comments_per_page": 10
+    },
+    "features": {
+        "enable_comments": true,
+        "enable_likes": true,
+        "enable_bookmarks": true,
+        "enable_search": true
+    }
+} 

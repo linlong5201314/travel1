@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}关于我们 - 环球旅记{% endblock %}
+
+{% block content %}
+<!-- 页面标题 -->
+<div class="bg-gray-50 py-12 mb-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-dark mb-3">关于环球旅记</h1>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto">探索世界的每一个角落，记录旅途中的精彩瞬间</p>
+    </div>
+</div>
+
+<!-- 关于我们内容 -->
+<div class="container mx-auto px-4 mb-16">
+    <!-- 我们的故事 -->
+    <div class="max-w-4xl mx-auto mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+                <h2 class="text-2xl font-bold mb-4 text-dark">我们的故事</h2>
+                <p class="text-gray-700 mb-4">环球旅记诞生于2023年，由一群热爱旅行、热爱分享的旅行爱好者创建。我们深信旅行不仅仅是到达一个目的地，更是一种生活方式和思考方式。</p>
+                <p class="text-gray-700 mb-4">在这个快节奏的世界中，我们希望通过环球旅记平台，鼓励更多人走出舒适区，探索世界的多样性和美丽，同时通过分享个人的旅行故事，帮助他人获得灵感和实用信息。</p>
+                <p class="text-gray-700">从最初的几篇旅行博客，到如今覆盖全球数百个目的地的综合旅行平台，环球旅记已经帮助成千上万的旅行者规划了他们的完美旅程。我们不断成长，但初心未变——让旅行更加简单、丰富和有意义。</p>
+            </div>
+            <div class="rounded-xl overflow-hidden shadow-md">
+                <img src="{{ url_for('static', filename='img/about-story.jpg') }}" alt="我们的故事" class="w-full h-auto">
+            </div>
+        </div>
+    </div>
+    
+    <!-- 我们的使命 -->
+    <div class="max-w-4xl mx-auto mb-16">
+        <h2 class="text-2xl font-bold mb-8 text-center text-dark">我们的使命</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-lightbulb text-primary text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3">激发旅行灵感</h3>
+                <p class="text-gray-600">通过真实的旅行故事和精美的摄影作品，激发人们探索世界的热情和好奇心。</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-hands-helping text-green-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3">提供实用信息</h3>
+                <p class="text-gray-600">分享准确、及时的旅行贴士和目的地指南，帮助旅行者做出明智的决策和规划。</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-users text-purple-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold mb-3">连接旅行社区</h3>
+                <p class="text-gray-600">建立一个开放、包容的旅行者社区，让人们分享经验，交流心得，互相支持。</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 我们的团队 -->
+    <div class="max-w-4xl mx-auto mb-16">
+        <h2 class="text-2xl font-bold mb-8 text-center text-dark">遇见我们的团队</h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm text-center">
+                <div class="overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/team1.jpg') }}" alt="张明 - 创始人兼CEO" class="w-full h-64 object-cover transition-transform hover:scale-105 duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold mb-1">张明</h3>
+                    <p class="text-gray-500 text-sm mb-3">创始人兼CEO</p>
+                    <p class="text-gray-700 text-sm mb-4">环球旅行家，已探索超过50个国家，热爱摄影和户外探险。</p>
+                    <div class="flex justify-center space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm text-center">
+                <div class="overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/team2.jpg') }}" alt="李秋 - 内容总监" class="w-full h-64 object-cover transition-transform hover:scale-105 duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold mb-1">李秋</h3>
+                    <p class="text-gray-500 text-sm mb-3">内容总监</p>
+                    <p class="text-gray-700 text-sm mb-4">前旅游杂志编辑，美食爱好者，擅长发掘小众目的地的独特魅力。</p>
+                    <div class="flex justify-center space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm text-center">
+                <div class="overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/team3.jpg') }}" alt="王伟 - 技术负责人" class="w-full h-64 object-cover transition-transform hover:scale-105 duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold mb-1">王伟</h3>
+                    <p class="text-gray-500 text-sm mb-3">技术负责人</p>
+                    <p class="text-gray-700 text-sm mb-4">资深开发者，喜欢将科技融入旅行体验，同时是一名越野跑爱好者。</p>
+                    <div class="flex justify-center space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm text-center">
+                <div class="overflow-hidden">
+                    <img src="{{ url_for('static', filename='img/team4.jpg') }}" alt="赵悦 - 营销经理" class="w-full h-64 object-cover transition-transform hover:scale-105 duration-500">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold mb-1">赵悦</h3>
+                    <p class="text-gray-500 text-sm mb-3">营销经理</p>
+                    <p class="text-gray-700 text-sm mb-4">社交媒体达人，热爱城市探索和艺术，擅长讲述引人入胜的品牌故事。</p>
+                    <div class="flex justify-center space-x-3">
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 我们的价值观 -->
+    <div class="max-w-4xl mx-auto mb-16">
+        <h2 class="text-2xl font-bold mb-8 text-center text-dark">我们的价值观</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-start mb-4">
+                    <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-globe text-primary"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold mb-2">开放与包容</h3>
+                        <p class="text-gray-600">我们相信每一种文化都有其独特的价值和魅力。我们致力于以开放和尊重的态度展示世界的多样性，鼓励相互理解和欣赏。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-start mb-4">
+                    <div class="bg-green-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-leaf text-green-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold mb-2">可持续发展</h3>
+                        <p class="text-gray-600">我们倡导负责任的旅行方式，关注旅游对环境和当地社区的影响。我们相信好的旅行不仅是享受，更是对目的地的尊重和保护。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-start mb-4">
+                    <div class="bg-yellow-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-star text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold mb-2">品质与真实</h3>
+                        <p class="text-gray-600">我们承诺提供高质量、准确和真实的内容。我们的建议和推荐来自真实的经历和深入的研究，而不是商业利益驱动。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+                <div class="flex items-start mb-4">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-heart text-purple-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold mb-2">热情与创新</h3>
+                        <p class="text-gray-600">我们对旅行充满热情，并不断寻求创新的方式来讲述旅行故事、分享实用信息，为用户创造更好的体验。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 联系我们 -->
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-gray-50 rounded-xl p-8 md:p-12">
+            <h2 class="text-2xl font-bold mb-6 text-center text-dark">联系我们</h2>
+            <p class="text-gray-600 mb-8 text-center max-w-3xl mx-auto">无论您是想分享旅行故事、提供反馈建议，还是有业务合作的想法，我们都很乐意听取您的声音</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="name">您的姓名</label>
+                            <input type="text" id="name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请输入您的姓名">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="email">电子邮箱</label>
+                            <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请输入您的电子邮箱">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="subject">主题</label>
+                            <select id="subject" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">请选择主题</option>
+                                <option value="feedback">网站反馈</option>
+                                <option value="cooperation">商务合作</option>
+                                <option value="content">内容建议</option>
+                                <option value="support">技术支持</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="message">您的留言</label>
+                            <textarea id="message" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="请输入您的留言内容"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg transition-all">发送留言</button>
+                    </form>
+                </div>
+                
+                <div>
+                    <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+                        <h3 class="font-bold mb-4">联系方式</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-primary mt-1 mr-3"></i>
+                                <div>
+                                    <p class="font-medium">电子邮箱</p>
+                                    <p class="text-gray-600">contact@huanqiulvji.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <i class="fas fa-phone-alt text-primary mt-1 mr-3"></i>
+                                <div>
+                                    <p class="font-medium">电话</p>
+                                    <p class="text-gray-600">+86 (10) 8888 7777</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt text-primary mt-1 mr-3"></i>
+                                <div>
+                                    <p class="font-medium">办公地址</p>
+                                    <p class="text-gray-600">北京市海淀区中关村大街1号</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <h3 class="font-bold mb-4">社交媒体</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
+                                <i class="fab fa-weixin"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
+                                <i class="fab fa-weibo"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
+                                <i class="fab fa-bilibili"></i>
+                            </a>
+                            <a href="https://www.douyin.com/" target="_blank" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 text-gray-600 hover:bg-primary hover:text-white transition-colors">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="bg-gray-100 py-20">
+    <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-4">关注我们</h2>
+        <p class="max-w-2xl mx-auto text-gray-600 mb-8">
+            在社交媒体上与我们保持联系，获取最新的旅行故事、目的地推荐和独家优惠。
+        </p>
+        <div class="flex justify-center items-center space-x-6">
+            <a href="#" class="text-gray-500 hover:text-green-500 transition-colors duration-300">
+                <i class="fab fa-weixin fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-500 hover:text-red-500 transition-colors duration-300">
+                <i class="fab fa-weibo fa-2x"></i>
+            </a>
+            <a href="https://www.douyin.com/" target="_blank" class="text-gray-500 hover:text-black transition-colors duration-300">
+                <i class="fab fa-tiktok fa-2x"></i>
+            </a>
+            <a href="#" class="text-gray-500 hover:text-blue-400 transition-colors duration-300">
+                <i class="fab fa-bilibili fa-2x"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %} 
