@@ -1,0 +1,44 @@
+# 依赖目录
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+
+# 数据库文件
+*.db
+instance/
+
+# 上传文件
+static/uploads/
+
+# 临时文件
+*.swp
+*.swo
+*~
+
+# 编辑器配置
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+logs/
+
+# 虚拟环境
+venv/
+env/
+.env/
+
+# Railway配置
+railway.json
+railway.toml
