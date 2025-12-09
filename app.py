@@ -7,7 +7,6 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
 from flask_wtf.csrf import CSRFProtect
-from flask_caching import Cache
 from datetime import datetime
 from config import DATABASE_URL, SECRET_KEY, SQLALCHEMY_TRACK_MODIFICATIONS
 
@@ -24,14 +23,6 @@ migrate = Migrate()
 login_manager = LoginManager()
 moment = Moment()
 csrf = CSRFProtect()
-cache = Cache()
-
-# 缓存配置
-cache_config = {
-    "CACHE_TYPE": "simple",  # 使用内存缓存，适合单机部署
-    "CACHE_DEFAULT_TIMEOUT": 300,  # 缓存过期时间为5分钟
-    "CACHE_THRESHOLD": 500  # 最多缓存500个项目
-}
 
 
 
@@ -61,7 +52,6 @@ def create_app():
     migrate.init_app(app, db)
     moment.init_app(app)
     csrf.init_app(app)
-    cache.init_app(app, config=cache_config)
     
     # 配置CSRF保护，使其支持AJAX请求
     app.config['WTF_CSRF_CHECK_DEFAULT'] = False  # 关闭默认的CSRF检查，我们将手动处理

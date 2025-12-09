@@ -6,10 +6,8 @@ from datetime import datetime
 import uuid
 from controllers.forms import PostForm
 from utility.file_utils import save_file, allowed_file
-from flask_caching import Cache
 
-# 初始化缓存实例（用于装饰器）
-cache = Cache()
+
 
 # 创建蓝图
 bp = Blueprint('main', __name__)
@@ -139,7 +137,6 @@ def allowed_file(filename):
 # 首页
 @bp.route('/')
 @bp.route('/index')
-@cache.cached(timeout=300, key_prefix='index')
 def index():
     # 只获取已审核的帖子
     posts = current_app.Post.query.filter_by(is_deleted=False, is_approved=True).order_by(current_app.Post.created_at.desc()).limit(3).all()
@@ -154,13 +151,11 @@ def index():
 
 # 目的地页面
 @bp.route('/destinations')
-@cache.cached(timeout=300, key_prefix='destinations')
 def destinations():
     return render_template('main/destinations.html', title='目的地')
 
 # 目的地详情页面
 @bp.route('/destination/<slug>')
-@cache.cached(timeout=300, key_prefix='destination_')
 def destination_detail(slug):
     info = destinations_info.get(slug)
     if not info:
@@ -175,13 +170,11 @@ def destination_detail(slug):
 
 # 旅行贴士页面
 @bp.route('/tips')
-@cache.cached(timeout=300, key_prefix='tips')
 def tips():
     return render_template('main/tips.html', title='旅行贴士')
 
 # 关于我们页面
 @bp.route('/about')
-@cache.cached(timeout=300, key_prefix='about')
 def about():
     return render_template('main/about.html', title='关于我们')
 
