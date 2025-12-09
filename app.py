@@ -124,8 +124,6 @@ def create_app():
         rating = db.Column(db.Float, default=0.0)  # 文章评分
         total_views = db.Column(db.Integer, default=0)  # 目的地总阅读量
         avg_rating = db.Column(db.Float, default=0.0)  # 目的地平均评分
-        comment_count = db.Column(db.Integer, default=0)  # 帖子评论数缓存
-        like_count_cache = db.Column(db.Integer, default=0)  # 帖子点赞数缓存
         growth_trend = db.Column(db.String(50), default='0%')  # 增长趋势
         
         # 外键关系
@@ -154,17 +152,11 @@ def create_app():
         
         def like_count(self):
             """获取帖子的点赞数量"""
-            return self.like_count_cache
+            return Like.query.filter_by(post_id=self.id).count()
         
-        def update_like_count(self):
-            """更新帖子的点赞数量"""
-            self.like_count_cache = Like.query.filter_by(post_id=self.id).count()
-            db.session.commit()
-        
-        def update_comment_count(self):
-            """更新帖子的评论数量"""
-            self.comment_count = Comment.query.filter_by(post_id=self.id, is_deleted=False).count()
-            db.session.commit()
+        def comment_count(self):
+            """获取帖子的评论数量"""
+            return Comment.query.filter_by(post_id=self.id, is_deleted=False).count()
     
     class Comment(db.Model):
         __tablename__ = 'comments'
@@ -241,28 +233,6 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-    
-    # 数据库事件监听器，用于更新帖子的点赞和评论计数
-    from sqlalchemy import event
-    
-    # 当Like记录被添加或删除时，更新帖子的点赞计数
-    @event.listens_for(Like, 'after_insert')
-    @event.listens_for(Like, 'after_delete')
-    def update_post_like_count(mapper, connection, target):
-        # 更新帖子的点赞计数
-        post = Post.query.get(target.post_id)
-        if post:
-            post.update_like_count()
-    
-    # 当Comment记录被添加、删除或更新时，更新帖子的评论计数
-    @event.listens_for(Comment, 'after_insert')
-    @event.listens_for(Comment, 'after_delete')
-    @event.listens_for(Comment, 'after_update')
-    def update_post_comment_count(mapper, connection, target):
-        # 更新帖子的评论计数
-        post = Post.query.get(target.post_id)
-        if post:
-            post.update_comment_count()
     
     # 注册蓝图
     from controllers.routes import bp as main_bp
