@@ -510,6 +510,7 @@ def edit_user(user_id):
 @bp.route('/admin_analytics')
 @login_required
 @admin_required
+@cache.cached(timeout=300, key_prefix='admin_analytics')
 def admin_analytics():
     """管理员数据可视化页面"""
     try:
@@ -534,48 +535,44 @@ def admin_analytics():
             'labels': ['管理员', '普通用户'],
             'data': [admin_count, user_count - admin_count]
         }
-        # 获取过去6个月的用户注册趋势
+        # 获取过去6个月的用户注册趋势和文章发布趋势
         months_data = []
+        post_months_data = []
         months_labels = []
         for i in range(5, -1, -1):
             month_start = datetime.utcnow().replace(day=1) - timedelta(days=i*30)
             month_end = (month_start.replace(day=28) + timedelta(days=4)).replace(day=1)
-            month_count = current_app.User.query.filter(current_app.User.created_at >= month_start, current_app.User.created_at < month_end).count()
-            months_data.append(month_count)
+            # 一次循环中获取两种数据，减少循环次数
+            user_month_count = current_app.User.query.filter(current_app.User.created_at >= month_start, current_app.User.created_at < month_end).count()
+            post_month_count = current_app.Post.query.filter(current_app.Post.created_at >= month_start, current_app.Post.created_at < month_end).count()
+            
+            months_data.append(user_month_count)
+            post_months_data.append(post_month_count)
             months_labels.append(month_start.strftime('%Y-%m'))
-        # 获取文章浏览量最高的前5篇
-        top_posts = current_app.Post.query.order_by(current_app.Post.views.desc()).limit(5).all()
-        # 获取评论最多的前5篇文章
-        most_commented = []
-        try:
-            most_commented = current_app.db.session.query(
-                current_app.Post, current_app.db.func.count(current_app.Comment.id).label('comment_count')
-            ).join(current_app.Comment).group_by(current_app.Post.id).order_by(current_app.db.desc('comment_count')).limit(5).all()
-        except Exception as e:
-            print(f"获取评论最多的文章时出错: {str(e)}")
-        # 获取地区分布
-        locations = []
-        try:
-            locations = current_app.db.session.query(
-                current_app.Post.location, current_app.db.func.count(current_app.Post.id).label('location_count')
-            ).filter(current_app.Post.location != None).filter(current_app.Post.location != '').group_by(current_app.Post.location).order_by(current_app.db.desc('location_count')).limit(10).all()
-        except Exception as e:
-            print(f"获取地区分布时出错: {str(e)}")
-        location_data = {
-            'labels': [loc[0] for loc in locations if loc[0]],
-            'data': [loc[1] for loc in locations if loc[0]]
-        }
-        # 每月文章发布趋势
-        post_months_data = []
-        for i in range(5, -1, -1):
-            month_start = datetime.utcnow().replace(day=1) - timedelta(days=i*30)
-            month_end = (month_start.replace(day=28) + timedelta(days=4)).replace(day=1)
-            month_count = current_app.Post.query.filter(current_app.Post.created_at >= month_start, current_app.Post.created_at < month_end).count()
-            post_months_data.append(month_count)
+        
         post_trend_data = {
             'labels': months_labels,
             'data': post_months_data
         }
+        
+        # 获取文章浏览量最高的前5篇
+        top_posts = current_app.Post.query.order_by(current_app.Post.views.desc()).limit(5).all()
+        
+        # 获取评论最多的前5篇文章
+        most_commented = current_app.db.session.query(
+            current_app.Post, current_app.db.func.count(current_app.Comment.id).label('comment_count')
+        ).join(current_app.Comment).group_by(current_app.Post.id).order_by(current_app.db.desc('comment_count')).limit(5).all()
+        
+        # 获取地区分布
+        locations = current_app.db.session.query(
+            current_app.Post.location, current_app.db.func.count(current_app.Post.id).label('location_count')
+        ).filter(current_app.Post.location != None).filter(current_app.Post.location != '').group_by(current_app.Post.location).order_by(current_app.db.desc('location_count')).limit(10).all()
+        
+        location_data = {
+            'labels': [loc[0] for loc in locations if loc[0]],
+            'data': [loc[1] for loc in locations if loc[0]]
+        }
+        
         # 创建前端计算需要用到的比率数据
         # 避免除以零错误
         new_users_month_ratio = 0
@@ -584,56 +581,42 @@ def admin_analytics():
         avg_comments_per_post = 0
         if post_count > 0:
             avg_comments_per_post = comment_count / post_count
+        
         # 文章分类分布统计
-        category_data = []
-        try:
-            category_stats = current_app.db.session.query(
-                current_app.Post.category, current_app.db.func.count(current_app.Post.id)
-            ).group_by(current_app.Post.category).all()
-            category_data = [
-                {'name': t[0] or '未知', 'value': t[1]} for t in category_stats if t[0]
-            ]
-        except Exception as e:
-            print(f"获取文章分类分布时出错: {str(e)}")
-            category_data = []
+        category_stats = current_app.db.session.query(
+            current_app.Post.category, current_app.db.func.count(current_app.Post.id)
+        ).group_by(current_app.Post.category).all()
+        category_data = [
+            {'name': t[0] or '未知', 'value': t[1]} for t in category_stats if t[0]
+        ]
+        
         # 用户活跃度分布统计
-        user_activity_stats = []
-        try:
-            user_activity_stats = [
-                {'name': '每日活跃', 'value': current_app.User.query.filter(current_app.User.activity_score >= 80).count()},
-                {'name': '每周活跃', 'value': current_app.User.query.filter(current_app.User.activity_score >= 60, current_app.User.activity_score < 80).count()},
-                {'name': '每月活跃', 'value': current_app.User.query.filter(current_app.User.activity_score >= 40, current_app.User.activity_score < 60).count()},
-                {'name': '不定期活跃', 'value': current_app.User.query.filter(current_app.User.activity_score >= 20, current_app.User.activity_score < 40).count()},
-                {'name': '长期不活跃', 'value': current_app.User.query.filter(current_app.User.activity_score < 20).count()}
-            ]
-        except Exception as e:
-            print(f"获取用户活跃度分布时出错: {str(e)}")
-            user_activity_stats = []
+        user_activity_stats = [
+            {'name': '每日活跃', 'value': current_app.User.query.filter(current_app.User.activity_score >= 80).count()},
+            {'name': '每周活跃', 'value': current_app.User.query.filter(current_app.User.activity_score >= 60, current_app.User.activity_score < 80).count()},
+            {'name': '每月活跃', 'value': current_app.User.query.filter(current_app.User.activity_score >= 40, current_app.User.activity_score < 60).count()},
+            {'name': '不定期活跃', 'value': current_app.User.query.filter(current_app.User.activity_score >= 20, current_app.User.activity_score < 40).count()},
+            {'name': '长期不活跃', 'value': current_app.User.query.filter(current_app.User.activity_score < 20).count()}
+        ]
+        
         # 文章评分分布统计
-        rating_stats = []
-        try:
-            rating_stats = [
-                {'name': '5星', 'value': current_app.Post.query.filter(current_app.Post.rating >= 4.5).count()},
-                {'name': '4星', 'value': current_app.Post.query.filter(current_app.Post.rating >= 3.5, current_app.Post.rating < 4.5).count()},
-                {'name': '3星', 'value': current_app.Post.query.filter(current_app.Post.rating >= 2.5, current_app.Post.rating < 3.5).count()},
-                {'name': '2星', 'value': current_app.Post.query.filter(current_app.Post.rating >= 1.5, current_app.Post.rating < 2.5).count()},
-                {'name': '1星', 'value': current_app.Post.query.filter(current_app.Post.rating < 1.5).count()}
-            ]
-        except Exception as e:
-            print(f"获取文章评分分布时出错: {str(e)}")
-            rating_stats = []
+        rating_stats = [
+            {'name': '5星', 'value': current_app.Post.query.filter(current_app.Post.rating >= 4.5).count()},
+            {'name': '4星', 'value': current_app.Post.query.filter(current_app.Post.rating >= 3.5, current_app.Post.rating < 4.5).count()},
+            {'name': '3星', 'value': current_app.Post.query.filter(current_app.Post.rating >= 2.5, current_app.Post.rating < 3.5).count()},
+            {'name': '2星', 'value': current_app.Post.query.filter(current_app.Post.rating >= 1.5, current_app.Post.rating < 2.5).count()},
+            {'name': '1星', 'value': current_app.Post.query.filter(current_app.Post.rating < 1.5).count()}
+        ]
+        
         # 目的地类型分布统计
-        destination_type_data = []
-        try:
-            destination_type_stats = current_app.db.session.query(
-                current_app.Post.destination_type, current_app.db.func.count(current_app.Post.id)
-            ).group_by(current_app.Post.destination_type).all()
-            destination_type_data = [
-                {'name': t[0] or '未知', 'value': t[1]} for t in destination_type_stats if t[0]
-            ]
-        except Exception as e:
-            print(f"获取目的地类型分布时出错: {str(e)}")
-            destination_type_data = []
+        destination_type_stats = current_app.db.session.query(
+            current_app.Post.destination_type, current_app.db.func.count(current_app.Post.id)
+        ).group_by(current_app.Post.destination_type).all()
+        
+        destination_type_data = [
+            {'name': t[0] or '未知', 'value': t[1]} for t in destination_type_stats if t[0]
+        ]
+        
         # 渲染模板
         return render_template(
             'admin/analytics.html',
@@ -661,7 +644,6 @@ def admin_analytics():
             config=current_app.config
         )
     except Exception as e:
-        print(f"数据分析页面加载错误: {str(e)}")
         flash(f'加载数据分析页面时出现错误: {str(e)}', 'danger')
         return redirect(url_for('admin.index'))
 

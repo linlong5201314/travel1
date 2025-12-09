@@ -6,6 +6,10 @@ from datetime import datetime
 import uuid
 from controllers.forms import PostForm
 from utility.file_utils import save_file, allowed_file
+from flask_caching import Cache
+
+# 初始化缓存实例（用于装饰器）
+cache = Cache()
 
 # 创建蓝图
 bp = Blueprint('main', __name__)
@@ -135,6 +139,7 @@ def allowed_file(filename):
 # 首页
 @bp.route('/')
 @bp.route('/index')
+@cache.cached(timeout=300, key_prefix='index')
 def index():
     # 只获取已审核的帖子
     posts = current_app.Post.query.filter_by(is_deleted=False, is_approved=True).order_by(current_app.Post.created_at.desc()).limit(3).all()
@@ -149,11 +154,13 @@ def index():
 
 # 目的地页面
 @bp.route('/destinations')
+@cache.cached(timeout=300, key_prefix='destinations')
 def destinations():
     return render_template('main/destinations.html', title='目的地')
 
 # 目的地详情页面
 @bp.route('/destination/<slug>')
+@cache.cached(timeout=300, key_prefix='destination_')
 def destination_detail(slug):
     info = destinations_info.get(slug)
     if not info:
@@ -168,11 +175,13 @@ def destination_detail(slug):
 
 # 旅行贴士页面
 @bp.route('/tips')
+@cache.cached(timeout=300, key_prefix='tips')
 def tips():
     return render_template('main/tips.html', title='旅行贴士')
 
 # 关于我们页面
 @bp.route('/about')
+@cache.cached(timeout=300, key_prefix='about')
 def about():
     return render_template('main/about.html', title='关于我们')
 
@@ -244,29 +253,23 @@ def post(post_id):
             has_liked = bookmark.is_liked
     
     # 获取相关故事（同一位置或同一作者的其他已审核故事）
-    related_posts = []
-    if post.location:
-        # 查找同一地点的其他故事
-        location_posts = current_app.Post.query.filter(
-            current_app.Post.id != post_id,
-            current_app.Post.is_deleted == False,
-            current_app.Post.is_approved == True,
-            current_app.Post.location == post.location
-        ).order_by(current_app.Post.views.desc()).limit(3).all()
-        related_posts.extend(location_posts)
+    # 使用单个查询获取最多6篇相关帖子，然后筛选出3篇最相关的
+    # 这样可以减少数据库查询次数
+    related_posts = current_app.Post.query.filter(
+        current_app.Post.id != post_id,
+        current_app.Post.is_deleted == False,
+        current_app.Post.is_approved == True,
+        # 优先获取同一地点或同一作者的帖子
+        (current_app.Post.location == post.location) | \
+        (current_app.Post.user_id == post.user_id)
+    ).order_by(
+        # 按相关性排序：同一地点 > 同一作者 > 浏览量
+        (current_app.Post.location == post.location).desc(),
+        (current_app.Post.user_id == post.user_id).desc(),
+        current_app.Post.views.desc()
+    ).limit(6).all()
     
-    # 如果相关故事不足3个，添加作者的其他故事
-    if len(related_posts) < 3:
-        author_posts = current_app.Post.query.filter(
-            current_app.Post.id != post_id,
-            current_app.Post.is_deleted == False,
-            current_app.Post.is_approved == True,
-            current_app.Post.user_id == post.user_id,
-            ~current_app.Post.id.in_([p.id for p in related_posts]) if related_posts else True
-        ).order_by(current_app.Post.created_at.desc()).limit(3 - len(related_posts)).all()
-        related_posts.extend(author_posts)
-    
-    # 如果还不足3个，添加热门故事
+    # 如果还不足3个，添加热门帖子
     if len(related_posts) < 3:
         popular_posts = current_app.Post.query.filter(
             current_app.Post.id != post_id,
@@ -275,6 +278,9 @@ def post(post_id):
             ~current_app.Post.id.in_([p.id for p in related_posts]) if related_posts else True
         ).order_by(current_app.Post.views.desc()).limit(3 - len(related_posts)).all()
         related_posts.extend(popular_posts)
+    
+    # 确保只返回3篇相关帖子
+    related_posts = related_posts[:3]
     
     back_url = request.referrer or url_for('main.posts')
     return render_template('main/post.html', title=post.title, post=post, comments=all_comments, 

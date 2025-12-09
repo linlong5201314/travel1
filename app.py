@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
 from flask_wtf.csrf import CSRFProtect
+from flask_caching import Cache
 from datetime import datetime
 from config import DATABASE_URL, SECRET_KEY, SQLALCHEMY_TRACK_MODIFICATIONS
 
@@ -23,6 +24,14 @@ migrate = Migrate()
 login_manager = LoginManager()
 moment = Moment()
 csrf = CSRFProtect()
+cache = Cache()
+
+# 缓存配置
+cache_config = {
+    "CACHE_TYPE": "simple",  # 使用内存缓存，适合单机部署
+    "CACHE_DEFAULT_TIMEOUT": 300,  # 缓存过期时间为5分钟
+    "CACHE_THRESHOLD": 500  # 最多缓存500个项目
+}
 
 
 
@@ -46,6 +55,7 @@ def create_app():
     migrate.init_app(app, db)
     moment.init_app(app)
     csrf.init_app(app)
+    cache.init_app(app, config=cache_config)
     
     # 配置CSRF保护，使其支持AJAX请求
     app.config['WTF_CSRF_CHECK_DEFAULT'] = False  # 关闭默认的CSRF检查，我们将手动处理
@@ -118,7 +128,8 @@ def create_app():
         rating = db.Column(db.Float, default=0.0)  # 文章评分
         total_views = db.Column(db.Integer, default=0)  # 目的地总阅读量
         avg_rating = db.Column(db.Float, default=0.0)  # 目的地平均评分
-        comment_count = db.Column(db.Integer, default=0)  # 目的地评论数
+        comment_count = db.Column(db.Integer, default=0)  # 帖子评论数缓存
+        like_count_cache = db.Column(db.Integer, default=0)  # 帖子点赞数缓存
         growth_trend = db.Column(db.String(50), default='0%')  # 增长趋势
         
         # 外键关系
@@ -128,16 +139,36 @@ def create_app():
         author = db.relationship('User', backref=db.backref('posts', lazy='dynamic'))
         
         def increment_views(self):
-            self.views += 1
-            db.session.commit()
+            """异步增加阅读量，避免阻塞请求"""
+            from concurrent.futures import ThreadPoolExecutor
+            import threading
+            
+            def update_views():
+                # 在新线程中更新阅读量
+                with threading.Lock():
+                    # 获取最新的帖子数据
+                    post = Post.query.get(self.id)
+                    if post:
+                        post.views += 1
+                        db.session.commit()
+            
+            # 使用线程池异步执行
+            executor = ThreadPoolExecutor(max_workers=1)
+            executor.submit(update_views)
         
         def like_count(self):
             """获取帖子的点赞数量"""
-            return Like.query.filter_by(post_id=self.id).count()
+            return self.like_count_cache
         
-        def comment_count(self):
-            """获取帖子的评论数量"""
-            return Comment.query.filter_by(post_id=self.id, is_deleted=False).count()
+        def update_like_count(self):
+            """更新帖子的点赞数量"""
+            self.like_count_cache = Like.query.filter_by(post_id=self.id).count()
+            db.session.commit()
+        
+        def update_comment_count(self):
+            """更新帖子的评论数量"""
+            self.comment_count = Comment.query.filter_by(post_id=self.id, is_deleted=False).count()
+            db.session.commit()
     
     class Comment(db.Model):
         __tablename__ = 'comments'
@@ -214,6 +245,28 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+    
+    # 数据库事件监听器，用于更新帖子的点赞和评论计数
+    from sqlalchemy import event
+    
+    # 当Like记录被添加或删除时，更新帖子的点赞计数
+    @event.listens_for(Like, 'after_insert')
+    @event.listens_for(Like, 'after_delete')
+    def update_post_like_count(mapper, connection, target):
+        # 更新帖子的点赞计数
+        post = Post.query.get(target.post_id)
+        if post:
+            post.update_like_count()
+    
+    # 当Comment记录被添加、删除或更新时，更新帖子的评论计数
+    @event.listens_for(Comment, 'after_insert')
+    @event.listens_for(Comment, 'after_delete')
+    @event.listens_for(Comment, 'after_update')
+    def update_post_comment_count(mapper, connection, target):
+        # 更新帖子的评论计数
+        post = Post.query.get(target.post_id)
+        if post:
+            post.update_comment_count()
     
     # 注册蓝图
     from controllers.routes import bp as main_bp
