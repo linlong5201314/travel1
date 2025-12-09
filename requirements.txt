@@ -7,3 +7,4 @@ Flask-WTF
 Werkzeug
 python-dotenv
 gunicorn
+openpyxl
