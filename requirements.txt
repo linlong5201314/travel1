@@ -8,4 +8,3 @@ Werkzeug
 python-dotenv
 gunicorn
 openpyxl
-Flask-Caching
