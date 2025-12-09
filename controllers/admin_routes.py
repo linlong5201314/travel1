@@ -1,3 +1,4 @@
+import os
 from flask import render_template, redirect, url_for, flash, request, current_app, Blueprint, jsonify, Response
 from flask_login import current_user, login_required
 from datetime import datetime, timedelta
@@ -11,6 +12,10 @@ from openpyxl.utils import get_column_letter
 from io import BytesIO
 from sqlalchemy import or_
 from utility.file_utils import save_file
+from flask_caching import Cache
+
+# 初始化缓存实例
+cache = Cache()
 
 # 允许上传的文件类型
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'tiff', 'svg', 'heic', 'ico'}

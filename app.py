@@ -46,6 +46,12 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads')
     
+    # 优化静态文件处理，避免sendfile系统调用问题
+    app.config['USE_X_SENDFILE'] = False
+    
+    # 增加静态文件缓存时间
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
+    
     # 确保上传目录存在
     os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads/profiles'), exist_ok=True)
     os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads/posts'), exist_ok=True)
