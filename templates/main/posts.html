@@ -53,6 +53,17 @@
         color: white;
         border-color: #3498db;
     }
+    
+    /* Mobile pagination touch targets */
+    @media (max-width: 767px) {
+        .pagination-link {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
+            margin: 0 4px;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -64,11 +75,11 @@
         <p class="text-center text-gray-600 max-w-3xl mx-auto">探索世界各地的精彩旅行故事，获取灵感，规划您的下一次冒险</p>
         
         <!-- 搜索框 -->
-        <div class="max-w-2xl mx-auto mt-8">
-            <form action="{{ url_for('main.search') }}" method="get" class="flex items-center">
-                <input type="text" name="q" placeholder="搜索旅行故事、目的地..." class="flex-1 py-3 px-4 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" value="{{ request.args.get('q', '') }}">
-                <button type="submit" class="search-btn text-white px-6 rounded-r-lg transition-all">
-                    <i class="fas fa-search"></i>
+        <div class="max-w-2xl mx-auto mt-8 px-4">
+            <form action="{{ url_for('main.search') }}" method="get" class="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-0">
+                <input type="text" name="q" placeholder="搜索旅行故事、目的地..." class="flex-1 py-3 px-4 border border-gray-300 rounded-lg md:rounded-l-lg md:rounded-r-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent min-h-[44px]" value="{{ request.args.get('q', '') }}">
+                <button type="submit" class="search-btn text-white px-6 py-3 rounded-lg md:rounded-l-none md:rounded-r-lg transition-all min-h-[44px]">
+                    <i class="fas fa-search mr-2 md:mr-0"></i><span class="md:hidden">搜索</span>
                 </button>
             </form>
         </div>
@@ -93,7 +104,7 @@
     </div>
     
     {% if posts.items %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 post-grid">
         {% for post in posts.items %}
         <div class="post-card bg-white rounded-xl overflow-hidden shadow-sm">
             <div class="relative overflow-hidden">

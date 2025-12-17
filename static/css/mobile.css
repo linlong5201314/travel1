@@ -1,0 +1,2287 @@
+/* 环球旅记 - 移动端响应式样式 */
+
+/* ============================================
+   CSS Variables - Responsive Breakpoints
+   ============================================ */
+:root {
+    /* Breakpoint values */
+    --breakpoint-xs: 480px;
+    --breakpoint-sm: 768px;
+    --breakpoint-md: 1024px;
+    --breakpoint-lg: 1280px;
+    
+    /* Touch target minimum size */
+    --touch-target-min: 44px;
+    
+    /* Transition duration for mobile */
+    --mobile-transition: 300ms;
+    
+    /* Mobile spacing */
+    --mobile-gap: 16px;
+    --mobile-padding: 16px;
+    
+    /* Mobile typography */
+    --mobile-font-size-base: 16px;
+    --mobile-font-size-min: 14px;
+    --mobile-line-height: 1.6;
+}
+
+/* ============================================
+   Base Mobile Styles (< 768px)
+   ============================================ */
+@media (max-width: 767px) {
+    /* Body and typography - Requirements 4.4, 6.1, 6.3, 6.4 */
+    body {
+        font-size: var(--mobile-font-size-base);
+        line-height: var(--mobile-line-height);
+    }
+    
+    /* Ensure minimum 14px font size for body text (Requirement 4.4, 6.1) */
+    p, span, li, td, th, label {
+        font-size: max(var(--mobile-font-size-min), inherit);
+    }
+    
+    /* ============================================
+       Responsive Typography - Requirements 4.4, 6.1, 6.3, 6.4
+       ============================================ */
+    
+    /* Body text minimum font size and line height */
+    .post-content,
+    .prose,
+    article p,
+    .story-content,
+    .blog-content {
+        font-size: var(--mobile-font-size-base) !important;
+        line-height: var(--mobile-line-height) !important;
+    }
+    
+    /* Ensure all body text has minimum 14px font size */
+    .post-content p,
+    .prose p,
+    article p,
+    .story-text,
+    .card-text,
+    .description {
+        font-size: max(var(--mobile-font-size-min), 1rem) !important;
+        line-height: var(--mobile-line-height) !important;
+    }
+    
+    /* Post title font size - 1.5rem on mobile (Requirement 6.3) */
+    .post-title,
+    article h1,
+    .blog-title,
+    h1.text-4xl,
+    h1.text-5xl,
+    h1.md\:text-5xl,
+    .hero-overlay + div h1,
+    .relative.z-10 h1 {
+        font-size: 1.5rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    /* Post content headings */
+    .post-content h2,
+    .prose h2,
+    article h2 {
+        font-size: 1.25rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    .post-content h3,
+    .prose h3,
+    article h3 {
+        font-size: 1.125rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Story text minimum font size (Requirement 4.4) */
+    #stories p,
+    #stories .text-gray-600,
+    .story-excerpt,
+    .story-description {
+        font-size: max(var(--mobile-font-size-min), inherit) !important;
+        line-height: var(--mobile-line-height) !important;
+    }
+    
+    /* Card titles on mobile */
+    .card-title,
+    .destination-card h3,
+    .story-card h3,
+    .post-card h3 {
+        font-size: 1.125rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Ensure adequate line height for all text (Requirement 6.4) */
+    .post-content,
+    .prose,
+    article,
+    .story-content,
+    .blog-content,
+    .card-body {
+        line-height: var(--mobile-line-height) !important;
+    }
+    
+    /* Small text should still be readable */
+    .text-sm,
+    .text-xs,
+    small,
+    .meta,
+    .date,
+    .author-info {
+        font-size: max(12px, inherit) !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Touch target minimum size for interactive elements */
+    button,
+    .btn,
+    a.btn,
+    input[type="submit"],
+    input[type="button"],
+    [role="button"] {
+        min-height: var(--touch-target-min);
+        min-width: var(--touch-target-min);
+    }
+    
+    /* Navigation touch targets - ensure 44x44px minimum */
+    .nav-link,
+    .mobile-nav-link {
+        min-height: var(--touch-target-min);
+        min-width: var(--touch-target-min);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Mobile menu button touch target */
+    .mobile-menu-btn,
+    #mobile-menu-btn {
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Close menu button touch target */
+    .mobile-close-btn,
+    #close-menu-btn {
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Hide desktop navigation */
+    .desktop-nav,
+    .hide-on-mobile {
+        display: none !important;
+    }
+    
+    /* Show mobile menu button */
+    #mobile-menu-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+    }
+    
+    /* Mobile menu panel styles */
+    #mobile-menu .mobile-menu-panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+        height: 100vh;
+        width: 288px; /* 72 * 4 = 288px (w-72) */
+        max-width: 85vw;
+        background-color: white;
+        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+        transition: transform var(--mobile-transition) ease;
+        overflow-y: auto;
+        z-index: 51;
+        transform: translateX(100%);
+    }
+    
+    #mobile-menu.open .mobile-menu-panel {
+        transform: translateX(0);
+    }
+    
+    /* Mobile menu overlay */
+    #mobile-menu .mobile-menu-overlay {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--mobile-transition) ease, visibility var(--mobile-transition) ease;
+    }
+    
+    #mobile-menu.open .mobile-menu-overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Prevent body scroll when menu is open */
+    body.menu-open {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+    }
+    
+    /* Mobile menu items touch targets - 44x44px minimum */
+    #mobile-menu a,
+    #mobile-menu .mobile-menu-panel a {
+        min-height: var(--touch-target-min);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+    }
+    
+    /* Mobile menu navigation links */
+    #mobile-menu .flex-col > a,
+    #mobile-menu .mobile-menu-panel .flex-col > a {
+        min-height: var(--touch-target-min);
+        padding: 12px 16px;
+        margin: 2px 0;
+        border-radius: 8px;
+        transition: background-color var(--mobile-transition) ease;
+    }
+    
+    #mobile-menu .flex-col > a:hover,
+    #mobile-menu .flex-col > a:focus {
+        background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    /* Mobile menu buttons (login, register) */
+    #mobile-menu .btn {
+        min-height: var(--touch-target-min);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Container padding */
+    .container {
+        padding-left: var(--mobile-padding);
+        padding-right: var(--mobile-padding);
+    }
+    
+    /* Card grids - single column on mobile (< 768px) */
+    /* Requirements 3.1, 3.4: Single column layout with 16px gap */
+    .destination-grid,
+    .post-grid,
+    .card-grid,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3.xl\:grid-cols-4,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: var(--mobile-gap) !important;
+    }
+    
+    /* Card image heights - 200px on mobile (Requirement 3.2) */
+    .destination-card .destination-img,
+    .destination-card img,
+    .destination-card .relative.overflow-hidden img,
+    .destination-card .relative.overflow-hidden.h-80 {
+        height: 200px !important;
+        object-fit: cover;
+    }
+    
+    /* Override Tailwind h-80 class for destination cards on mobile */
+    .destination-card .h-80,
+    .destination-card .relative.overflow-hidden.h-80 {
+        height: 200px !important;
+    }
+    
+    /* ============================================
+       Travel Stories Section - Mobile Styles
+       Requirements: 4.1, 4.2, 4.3
+       ============================================ */
+    
+    /* Stack featured story and story list vertically (Requirement 4.1) */
+    #stories .flex.flex-col.lg\:flex-row,
+    section#stories .flex.flex-col.lg\:flex-row {
+        flex-direction: column !important;
+    }
+    
+    /* Make both columns full width on mobile */
+    #stories .w-full.lg\:w-3\/5,
+    #stories .w-full.lg\:w-2\/5 {
+        width: 100% !important;
+    }
+    
+    /* Featured story image height - 300px on mobile (Requirement 4.2) */
+    #stories .w-full.lg\:w-3\/5 img,
+    #stories .w-full.lg\:w-3\/5 .h-\[500px\] {
+        height: 300px !important;
+        object-fit: cover;
+    }
+    
+    /* Convert horizontal story items to vertical card layout (Requirement 4.3) */
+    #stories .w-full.lg\:w-2\/5 .flex.bg-white,
+    #stories .space-y-6 > div.flex {
+        flex-direction: column !important;
+    }
+    
+    /* Story item image - full width when vertical */
+    #stories .w-full.lg\:w-2\/5 .flex.bg-white .w-1\/3,
+    #stories .space-y-6 > div.flex .w-1\/3 {
+        width: 100% !important;
+    }
+    
+    #stories .w-full.lg\:w-2\/5 .flex.bg-white .w-1\/3 img,
+    #stories .space-y-6 > div.flex .w-1\/3 img {
+        height: 180px !important;
+        width: 100% !important;
+        object-fit: cover;
+    }
+    
+    /* Story item content - full width when vertical */
+    #stories .w-full.lg\:w-2\/5 .flex.bg-white .w-2\/3,
+    #stories .space-y-6 > div.flex .w-2\/3 {
+        width: 100% !important;
+    }
+    
+    /* Form elements full width */
+    .form-input,
+    .form-control,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select {
+        width: 100%;
+        min-height: var(--touch-target-min);
+        padding: 12px 16px;
+    }
+    
+    /* Submit buttons full width */
+    .form-button,
+    input[type="submit"],
+    button[type="submit"],
+    .btn-submit {
+        width: 100%;
+        min-height: var(--touch-target-min);
+    }
+    
+    /* ============================================
+       Animation & Performance Optimizations
+       Requirements: 12.1, 12.2
+       ============================================ */
+    
+    /* Transitions limited to 300ms or less (Requirement 12.1) */
+    * {
+        transition-duration: var(--mobile-transition) !important;
+    }
+    
+    /* Ensure specific transition properties also respect the limit */
+    *,
+    *::before,
+    *::after {
+        transition-timing-function: ease-out;
+    }
+    
+    /* Disable complex animations for performance (Requirement 12.2) */
+    .animate-float,
+    .animate-bounce,
+    .animate-pulse,
+    .animate-spin,
+    .animate-ping,
+    [class*="animate-"],
+    [class*="animation-"] {
+        animation: none !important;
+        animation-duration: 0s !important;
+    }
+    
+    /* Disable CSS keyframe animations on mobile for performance */
+    @keyframes float { from, to { transform: none; } }
+    @keyframes bounce { from, to { transform: none; } }
+    @keyframes pulse { from, to { opacity: 1; } }
+    
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+    
+    /* Optimize transform and opacity transitions for GPU acceleration */
+    .mobile-menu-panel,
+    .mobile-search-container,
+    #mobile-menu .mobile-menu-panel,
+    #mobile-search-panel .mobile-search-container {
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    
+    /* Ensure smooth but fast transitions for interactive elements */
+    button,
+    .btn,
+    a,
+    input,
+    select,
+    textarea {
+        transition-property: background-color, border-color, color, box-shadow, transform;
+        transition-duration: var(--mobile-transition);
+        transition-timing-function: ease-out;
+    }
+    
+    /* Disable hover animations on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+        *:hover {
+            transition-duration: 0ms !important;
+        }
+    }
+    
+    /* ============================================
+       Scroll-based Navbar Behavior
+       Requirements: 12.3
+       ============================================ */
+    
+    /* Navbar scroll hide/show animation */
+    #navbar,
+    nav#navbar,
+    header nav,
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        transition: transform var(--mobile-transition) ease-out !important;
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    
+    /* Navbar hidden state (applied via JavaScript) */
+    #navbar.navbar-hidden,
+    nav.navbar-hidden,
+    .navbar.navbar-hidden {
+        transform: translateY(-100%) !important;
+    }
+    
+    /* Navbar visible state */
+    #navbar.navbar-visible,
+    nav.navbar-visible,
+    .navbar.navbar-visible {
+        transform: translateY(0) !important;
+    }
+    
+    /* Ensure body has padding to account for fixed navbar */
+    body {
+        padding-top: 64px; /* Adjust based on navbar height */
+    }
+    
+    /* When menu is open, keep navbar visible */
+    body.menu-open #navbar,
+    body.menu-open nav#navbar,
+    body.menu-open .navbar {
+        transform: translateY(0) !important;
+    }
+}
+
+/* ============================================
+   Mobile Carousel Styles (< 768px)
+   ============================================ */
+@media (max-width: 767px) {
+    /* Carousel height - 70vh on mobile (Requirement 2.1) */
+    .carousel {
+        height: 70vh !important;
+        min-height: 400px;
+    }
+    
+    .carousel-inner {
+        height: 100%;
+    }
+    
+    .carousel-item {
+        height: 100%;
+    }
+    
+    /* Carousel caption typography (Requirement 2.2) */
+    .carousel-caption h2,
+    .carousel-caption .text-6xl,
+    .carousel-caption .md\:text-8xl {
+        font-size: 2rem !important;
+        line-height: 1.2;
+        margin-bottom: 0.75rem;
+    }
+    
+    .carousel-caption p,
+    .carousel-caption .text-xl,
+    .carousel-caption .md\:text-2xl {
+        font-size: 1rem !important;
+        line-height: 1.4;
+        margin-bottom: 1rem;
+    }
+    
+    /* Carousel caption positioning */
+    .carousel-caption {
+        width: 90% !important;
+        padding: 0 16px;
+    }
+    
+    /* Stack carousel buttons vertically (Requirement 2.3) */
+    .carousel-caption .flex,
+    .carousel-caption .flex.justify-center {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+    
+    .carousel-caption .flex > a,
+    .carousel-caption .flex > .btn {
+        width: 100% !important;
+        max-width: 280px;
+        margin: 0 !important;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    /* Remove horizontal spacing between buttons */
+    .carousel-caption .space-x-4 > * + * {
+        margin-left: 0 !important;
+    }
+    
+    /* Carousel control buttons - 44x44px minimum (Requirement 2.4) */
+    .carousel-control,
+    .carousel-prev,
+    .carousel-next {
+        width: var(--touch-target-min) !important;
+        height: var(--touch-target-min) !important;
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+    }
+    
+    .carousel-prev {
+        left: 10px;
+    }
+    
+    .carousel-next {
+        right: 10px;
+    }
+    
+    /* Hide scroll-down arrow on mobile (Requirement 2.5) */
+    .scroll-arrow,
+    #scrollToDestinations {
+        display: none !important;
+    }
+    
+    /* Search container in carousel */
+    .carousel .search-container {
+        max-width: 100%;
+        padding: 0 16px;
+    }
+    
+    .carousel .search-input {
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+    
+    .carousel .search-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+}
+
+/* ============================================
+   Small Mobile Styles (< 480px)
+   ============================================ */
+@media (max-width: 479px) {
+    /* Extra small screen adjustments */
+    .container {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+    
+    /* Tip cards single column on very small screens */
+    .tip-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Even smaller carousel caption on very small screens */
+    .carousel-caption h2,
+    .carousel-caption .text-6xl {
+        font-size: 1.75rem !important;
+    }
+    
+    .carousel-caption p,
+    .carousel-caption .text-xl {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* ============================================
+   Tablet Styles (768px - 1023px)
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* Two column layout for cards (Requirement 3.3) */
+    .destination-grid,
+    .post-grid,
+    .card-grid,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3.xl\:grid-cols-4,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--mobile-gap) !important;
+    }
+    
+    /* Tip cards two columns */
+    .tip-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Destination card image height on tablet - maintain 280px */
+    .destination-card .destination-img,
+    .destination-card img {
+        height: 280px;
+        object-fit: cover;
+    }
+}
+
+/* ============================================
+   Desktop Styles (>= 1024px)
+   ============================================ */
+@media (min-width: 1024px) {
+    /* Hide mobile menu button on desktop */
+    #mobile-menu-btn {
+        display: none !important;
+    }
+    
+    /* Show desktop navigation */
+    .desktop-nav {
+        display: flex !important;
+    }
+    
+    /* Three column layout for cards */
+    .destination-grid,
+    .post-grid,
+    .card-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+/* Full width on mobile */
+@media (max-width: 767px) {
+    .mobile-full-width {
+        width: 100% !important;
+    }
+    
+    .mobile-stack {
+        flex-direction: column !important;
+    }
+    
+    .mobile-center {
+        text-align: center !important;
+        justify-content: center !important;
+    }
+    
+    .mobile-hidden {
+        display: none !important;
+    }
+}
+
+/* Show only on mobile */
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .mobile-only {
+        display: block;
+    }
+}
+
+/* ============================================
+   Fallback for backdrop-filter
+   ============================================ */
+@supports not (backdrop-filter: blur(8px)) {
+    .mobile-nav-panel,
+    #mobile-menu > div {
+        background-color: rgba(255, 255, 255, 0.98);
+    }
+}
+
+/* ============================================
+   Blog Posts List Page - Mobile Responsive
+   Requirements: 8.2
+   ============================================ */
+@media (max-width: 767px) {
+    /* Post cards grid - single column on mobile (Requirement 8.2) */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3,
+    .post-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    /* Post card styling on mobile */
+    .post-card {
+        margin-bottom: 0;
+    }
+    
+    /* Post card image height on mobile */
+    .post-card .post-image,
+    .post-card img.post-image {
+        height: 200px !important;
+        object-fit: cover;
+    }
+    
+    /* Post card content padding */
+    .post-card .p-6 {
+        padding: 16px !important;
+    }
+    
+    /* Post card title */
+    .post-card h2 {
+        font-size: 1.125rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Post card description */
+    .post-card p.text-gray-600 {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Pagination - touch targets 44x44px minimum (Requirement 8.2) */
+    .pagination-link {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        margin: 0 4px !important;
+        font-size: 14px;
+    }
+    
+    /* Pagination container */
+    .flex.flex-wrap.items-center {
+        gap: 4px;
+        justify-content: center;
+    }
+    
+    /* Filter/sort buttons - touch targets */
+    .flex.items-center.space-x-2 a {
+        min-height: 44px !important;
+        padding: 10px 16px !important;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    /* Create post button full width on mobile */
+    a.inline-flex.items-center.bg-primary {
+        width: 100%;
+        justify-content: center;
+        margin-top: 12px;
+    }
+    
+    /* Filter section stack on mobile */
+    .flex.flex-wrap.justify-between.items-center.mb-8 {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px;
+    }
+    
+    .flex.flex-wrap.justify-between.items-center.mb-8 > .flex.items-center {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    /* Search form on posts page */
+    .max-w-2xl.mx-auto.mt-8 form.flex {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .max-w-2xl.mx-auto.mt-8 input[type="text"] {
+        border-radius: 8px !important;
+        min-height: 44px;
+    }
+    
+    .max-w-2xl.mx-auto.mt-8 button[type="submit"] {
+        border-radius: 8px !important;
+        min-height: 44px;
+        width: 100%;
+    }
+    
+    /* Page header adjustments */
+    .bg-gray-50.py-12.mb-8 {
+        padding: 24px 0 !important;
+        margin-bottom: 16px !important;
+    }
+    
+    .bg-gray-50.py-12.mb-8 h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    .bg-gray-50.py-12.mb-8 p {
+        font-size: 14px !important;
+        padding: 0 16px;
+    }
+}
+
+/* ============================================
+   Blog Post Detail Page - Mobile Responsive
+   Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
+   ============================================ */
+@media (max-width: 767px) {
+    /* Post hero section height adjustment */
+    section.relative.h-\[420px\],
+    .post-hero {
+        height: 280px !important;
+    }
+    
+    /* Post title - 1.5rem on mobile (Requirement 6.3) */
+    section.relative h1,
+    .post-hero h1,
+    .relative.z-10 h1.text-4xl {
+        font-size: 1.5rem !important;
+        line-height: 1.3 !important;
+        padding: 0 8px;
+    }
+    
+    /* Post content responsive typography - 16px base (Requirement 6.1) */
+    .post-content {
+        font-size: 16px !important;
+        line-height: 1.8 !important;
+    }
+    
+    .post-content p {
+        font-size: 16px !important;
+        line-height: 1.8 !important;
+        margin-bottom: 1.25rem;
+    }
+    
+    /* Post content headings on mobile */
+    .post-content h2 {
+        font-size: 1.25rem !important;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .post-content h3 {
+        font-size: 1.125rem !important;
+        margin-top: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Post images - scale to fit viewport maintaining aspect ratio (Requirement 6.2) */
+    .post-content img {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        object-fit: contain;
+        margin: 1rem 0;
+    }
+    
+    /* Post gallery images on mobile */
+    .grid.grid-cols-2.md\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .grid.grid-cols-2.md\:grid-cols-3 a.col-span-2.md\:col-span-3 {
+        grid-column: span 1 !important;
+    }
+    
+    .grid.grid-cols-2.md\:grid-cols-3 img {
+        height: 200px !important;
+        width: 100% !important;
+        object-fit: cover;
+    }
+    
+    /* Featured gallery image on mobile */
+    .grid.grid-cols-2.md\:grid-cols-3 a.col-span-2.md\:col-span-3 img {
+        height: 250px !important;
+    }
+    
+    /* Post metadata - stack vertically on mobile (Requirement 6.5) */
+    .post-meta,
+    section.relative .flex.flex-wrap.justify-center.gap-4,
+    .relative.z-10 .flex.flex-wrap.justify-center {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    
+    .post-meta span,
+    section.relative .flex.flex-wrap span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Post grid layout - stack sidebar below content on mobile */
+    .grid.lg\:grid-cols-12 {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    .grid.lg\:grid-cols-12 > article.lg\:col-span-8,
+    .grid.lg\:grid-cols-12 > aside.lg\:col-span-4 {
+        width: 100% !important;
+    }
+    
+    /* Post action buttons - ensure touch targets */
+    .action-btn,
+    .like-btn,
+    #like-btn,
+    #bookmark-btn {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        padding: 10px 16px !important;
+    }
+    
+    /* Share buttons - ensure touch targets */
+    .share-btn,
+    a.share-btn {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+    }
+    
+    /* Post action bar - stack on mobile */
+    .flex.items-center.justify-between.border-t.border-b {
+        flex-direction: column !important;
+        gap: 16px !important;
+        padding: 16px 0 !important;
+    }
+    
+    .flex.items-center.justify-between.border-t.border-b > .flex.items-center {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Share section centering on mobile */
+    .flex.items-center.space-x-2:has(.share-btn) {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    /* Author card on mobile */
+    .bg-white.rounded-xl.shadow-sm.p-6.text-center {
+        padding: 20px 16px !important;
+    }
+    
+    /* Related stories on mobile */
+    aside .space-y-4 a.flex {
+        padding: 8px 0;
+    }
+    
+    aside .space-y-4 .w-16.h-16 {
+        width: 60px !important;
+        height: 60px !important;
+        flex-shrink: 0;
+    }
+    
+    /* Back button touch target */
+    a.absolute.top-5.left-5 {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        padding: 10px 12px !important;
+    }
+    
+    /* Adequate line height for body text (Requirement 6.4) */
+    .post-content,
+    .prose,
+    .prose-lg {
+        line-height: 1.8 !important;
+    }
+    
+    /* Blockquotes on mobile */
+    .post-content blockquote {
+        padding-left: 12px;
+        margin: 1rem 0;
+        font-size: 15px;
+    }
+}
+
+/* ============================================
+   Mobile Search UI - Responsive
+   Requirements: 8.1, 8.2, 8.3
+   ============================================ */
+@media (max-width: 767px) {
+    /* Mobile search button - 44x44px touch target (Requirement 8.3) */
+    .mobile-search-btn,
+    #mobile-search-btn {
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: color var(--mobile-transition) ease;
+    }
+    
+    .mobile-search-btn:hover,
+    .mobile-search-btn:focus {
+        color: var(--primary-color, #3498db);
+    }
+    
+    /* Mobile search panel - expandable from top (Requirement 8.1) */
+    #mobile-search-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 60;
+        pointer-events: none;
+    }
+    
+    #mobile-search-panel.open {
+        pointer-events: auto;
+    }
+    
+    .mobile-search-container {
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 16px;
+        transform: translateY(-100%);
+        transition: transform var(--mobile-transition) ease;
+    }
+    
+    #mobile-search-panel.open .mobile-search-container {
+        transform: translateY(0);
+    }
+    
+    /* Mobile search input - 44px minimum height (Requirement 8.3) */
+    .mobile-search-input,
+    #mobile-search-input {
+        min-height: var(--touch-target-min) !important;
+        height: var(--touch-target-min);
+        padding: 12px 16px !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        border: 1px solid #d1d5db;
+        border-radius: 8px 0 0 8px;
+        flex: 1;
+        box-sizing: border-box;
+    }
+    
+    .mobile-search-input:focus {
+        outline: none;
+        border-color: var(--primary-color, #3498db);
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    /* Mobile search submit button - 44px minimum (Requirement 8.3) */
+    .mobile-search-submit {
+        min-width: var(--touch-target-min) !important;
+        min-height: var(--touch-target-min) !important;
+        height: var(--touch-target-min);
+        padding: 12px 16px !important;
+        border-radius: 0 8px 8px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Mobile search close button - 44px touch target */
+    .mobile-search-close,
+    #mobile-search-close {
+        min-width: var(--touch-target-min) !important;
+        min-height: var(--touch-target-min) !important;
+        padding: 10px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: background-color var(--mobile-transition) ease;
+    }
+    
+    .mobile-search-close:hover,
+    .mobile-search-close:focus {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Search overlay when panel is open */
+    #mobile-search-panel::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity var(--mobile-transition) ease, visibility var(--mobile-transition) ease;
+        z-index: -1;
+    }
+    
+    #mobile-search-panel.open::before {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* ============================================
+   Search Results Page - Mobile Responsive
+   Requirements: 8.2
+   ============================================ */
+@media (max-width: 767px) {
+    /* Search results grid - single column on mobile (Requirement 8.2) */
+    .search-results-grid,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    /* Search results page header */
+    .bg-gray-50.py-12.mb-8 h1 {
+        font-size: 1.5rem !important;
+        padding: 0 8px;
+    }
+    
+    /* Search form on results page - stack vertically */
+    .max-w-2xl.mx-auto.mt-8 form.flex {
+        flex-direction: row;
+    }
+    
+    .max-w-2xl.mx-auto.mt-8 input[type="text"],
+    .max-w-2xl.mx-auto.mt-8 input[type="search"] {
+        min-height: var(--touch-target-min) !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+        border-radius: 8px 0 0 8px !important;
+    }
+    
+    .max-w-2xl.mx-auto.mt-8 button[type="submit"] {
+        min-height: var(--touch-target-min) !important;
+        min-width: var(--touch-target-min) !important;
+        padding: 12px 16px !important;
+        border-radius: 0 8px 8px 0 !important;
+    }
+    
+    /* Search result cards on mobile */
+    .post-card {
+        margin-bottom: 0;
+    }
+    
+    .post-card .post-image {
+        height: 200px !important;
+        object-fit: cover;
+    }
+    
+    /* No results message styling */
+    .py-16.text-center {
+        padding: 48px 16px !important;
+    }
+    
+    .py-16.text-center h3 {
+        font-size: 1.125rem !important;
+    }
+    
+    .py-16.text-center p {
+        font-size: 14px !important;
+    }
+    
+    /* Browse all button - full width on mobile */
+    .py-16.text-center a.inline-flex {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   Authentication Forms - Mobile Responsive
+   Requirements: 5.1, 5.2, 5.3, 5.4
+   ============================================ */
+@media (max-width: 767px) {
+    /* Center form container on mobile (Requirement 5.3) */
+    .auth-form {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Form inputs full width with appropriate padding (Requirement 5.1) */
+    .auth-input,
+    .auth-form input[type="text"],
+    .auth-form input[type="email"],
+    .auth-form input[type="password"],
+    .auth-form input[type="tel"],
+    .auth-form textarea,
+    .auth-form select {
+        width: 100% !important;
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        box-sizing: border-box;
+    }
+    
+    /* Submit button full width (Requirement 5.4) */
+    .auth-submit,
+    .auth-form button[type="submit"],
+    .auth-form input[type="submit"] {
+        width: 100% !important;
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+    }
+    
+    /* Form container centering and margins (Requirement 5.3) */
+    .auth-form-container,
+    .w-full.max-w-md {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 16px;
+        margin: 0 auto;
+    }
+    
+    /* Profile page form adjustments */
+    .profile-form input,
+    .profile-form textarea,
+    .profile-form select {
+        width: 100% !important;
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+    }
+    
+    .profile-form button[type="submit"] {
+        width: 100% !important;
+        min-height: 44px !important;
+    }
+    
+    /* Profile page grid - stack vertically on mobile */
+    .profile-form .grid.grid-cols-1.md\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Profile avatar section centering */
+    .profile-form .flex.flex-col.items-center {
+        margin-bottom: 24px;
+    }
+    
+    /* Avatar upload button full width on mobile */
+    .profile-form label.cursor-pointer {
+        width: 100% !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+
+/* ============================================
+   Footer - Mobile Responsive
+   Requirements: 7.1, 7.2, 7.3, 7.4
+   ============================================ */
+@media (max-width: 767px) {
+    /* Footer container padding */
+    footer {
+        padding-top: 32px !important;
+        padding-bottom: 24px !important;
+    }
+    
+    /* Stack footer columns vertically (Requirement 7.1) */
+    footer .grid,
+    footer .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 32px !important;
+    }
+    
+    /* Center-align footer content (Requirement 7.2) */
+    footer .grid > div {
+        text-align: center !important;
+    }
+    
+    /* Center logo and social icons */
+    footer .grid > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    footer .grid > div:first-child a.flex {
+        justify-content: center;
+    }
+    
+    /* Center social icons container */
+    footer .flex.space-x-4 {
+        justify-content: center !important;
+    }
+    
+    /* Footer section headings */
+    footer h3 {
+        text-align: center !important;
+        margin-bottom: 16px !important;
+    }
+    
+    /* Footer links list - center aligned with 12px spacing (Requirement 7.3) */
+    footer ul {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    footer ul.space-y-2 {
+        gap: 12px !important;
+    }
+    
+    footer ul.space-y-2 > li {
+        margin: 0 !important;
+    }
+    
+    footer ul li {
+        margin-bottom: 0 !important;
+    }
+    
+    footer ul li a {
+        display: inline-block;
+        padding: 6px 0;
+        min-height: 32px;
+        line-height: 1.5;
+    }
+    
+    /* Newsletter form - stack vertically (Requirement 7.4) */
+    footer form.flex {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    
+    /* Newsletter input full width */
+    footer form input[type="email"] {
+        width: 100% !important;
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        border-radius: 8px !important;
+        font-size: 16px !important;
+    }
+    
+    /* Newsletter button full width */
+    footer form button[type="submit"] {
+        width: 100% !important;
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        border-radius: 8px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Newsletter description text */
+    footer .grid > div:last-child p {
+        text-align: center !important;
+        margin-bottom: 16px !important;
+    }
+    
+    /* Footer bottom copyright section */
+    footer .border-t {
+        padding-top: 24px !important;
+        margin-top: 24px !important;
+    }
+    
+    footer .border-t p {
+        text-align: center !important;
+        font-size: 14px !important;
+    }
+    
+    /* Social icons touch targets */
+    footer .flex.space-x-4 a {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+}
+
+
+/* ============================================
+   User Profile Page - Mobile Responsive
+   Requirements: 9.1, 9.3
+   ============================================ */
+@media (max-width: 767px) {
+    /* Profile header container */
+    .profile-header {
+        border-radius: 8px;
+    }
+    
+    /* Profile cover image - reduced height on mobile */
+    .profile-cover {
+        height: 150px !important;
+    }
+    
+    /* Center profile avatar on mobile (Requirement 9.1) */
+    .profile-avatar {
+        width: 100px !important;
+        height: 100px !important;
+        margin-top: -50px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        display: block !important;
+    }
+    
+    /* Stack profile information vertically (Requirement 9.1) */
+    .profile-header .flex.flex-col.md\:flex-row {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    /* Profile info section - center on mobile */
+    .profile-header .text-center.md\:text-left {
+        text-align: center !important;
+    }
+    
+    /* Profile name and location centering */
+    .profile-header .mt-4.md\:mt-6 {
+        text-align: center !important;
+    }
+    
+    .profile-header .mt-4.md\:mt-6 h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Bio section - full width on mobile */
+    .profile-header .flex-1.mt-6.md\:mt-0.md\:ml-8 {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 20px !important;
+    }
+    
+    /* About me box */
+    .profile-header .bg-white.p-4.rounded-lg {
+        padding: 16px !important;
+        text-align: center !important;
+    }
+    
+    /* Social stats - center on mobile */
+    .profile-header .flex.flex-wrap.justify-center.md\:justify-start {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    .social-stat {
+        padding: 8px 16px !important;
+        min-width: 80px;
+    }
+    
+    .social-stat .text-2xl {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Make action buttons full width on mobile (Requirement 9.3) */
+    .profile-header .mt-6.md\:mt-0.flex.justify-center.md\:justify-end {
+        width: 100% !important;
+        margin-top: 20px !important;
+        justify-content: center !important;
+    }
+    
+    .profile-header .mt-6.md\:mt-0.flex.justify-center.md\:justify-end a,
+    .profile-header a.bg-primary {
+        width: 100% !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 12px 16px !important;
+    }
+    
+    /* Tab navigation - scrollable on mobile */
+    .mb-6.border-b.border-gray-200 {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .mb-6.border-b.border-gray-200 .flex.flex-wrap {
+        flex-wrap: nowrap !important;
+        min-width: max-content;
+    }
+    
+    /* Tab buttons - touch targets */
+    .tab-btn {
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        white-space: nowrap;
+        font-size: 14px !important;
+    }
+    
+    /* Recent posts section header */
+    .flex.items-center.justify-between.mb-6 {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+    
+    .flex.items-center.justify-between.mb-6 h2 {
+        font-size: 1.25rem !important;
+    }
+    
+    /* Post cards grid - single column on mobile */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3.gap-6 {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    /* Post card styling on profile page */
+    .post-card {
+        border-radius: 12px;
+    }
+    
+    .post-card .post-image {
+        height: 200px !important;
+    }
+    
+    .post-card .p-4 {
+        padding: 16px !important;
+    }
+    
+    .post-card h3 {
+        font-size: 1rem !important;
+    }
+    
+    /* Empty state - full width button */
+    .bg-white.rounded-lg.p-8.text-center a.inline-block {
+        width: 100% !important;
+        max-width: 280px !important;
+        min-height: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* Popular locations grid - 2 columns on mobile */
+    .grid.grid-cols-2.md\:grid-cols-3.lg\:grid-cols-4.gap-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+    
+    /* Location card styling */
+    .grid.grid-cols-2.md\:grid-cols-3.lg\:grid-cols-4.gap-4 > div {
+        padding: 12px !important;
+    }
+    
+    .grid.grid-cols-2.md\:grid-cols-3.lg\:grid-cols-4.gap-4 h3 {
+        font-size: 14px !important;
+    }
+    
+    .grid.grid-cols-2.md\:grid-cols-3.lg\:grid-cols-4.gap-4 p {
+        font-size: 12px !important;
+    }
+}
+
+/* ============================================
+   User Posts Page - Mobile Responsive
+   Requirements: 9.2
+   ============================================ */
+@media (max-width: 767px) {
+    /* Page header - stack on mobile */
+    .flex.items-center.justify-between.mb-6 {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+    }
+    
+    .flex.items-center.justify-between.mb-6 h1 {
+        font-size: 1.5rem !important;
+        text-align: center !important;
+    }
+    
+    /* Create post button - full width on mobile */
+    .flex.items-center.justify-between.mb-6 a.bg-primary {
+        width: 100% !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* User posts grid - single column on mobile (Requirement 9.2) */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3.gap-6 {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    /* Post card image height */
+    .post-card .post-image {
+        height: 200px !important;
+        object-fit: cover;
+    }
+    
+    /* Post card content padding */
+    .post-card .p-6 {
+        padding: 16px !important;
+    }
+    
+    /* Post card title */
+    .post-card h3.text-xl {
+        font-size: 1.125rem !important;
+    }
+    
+    /* Post card actions - ensure touch targets */
+    .post-card .flex.space-x-2 a,
+    .post-card .flex.space-x-2 button {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        padding: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* Pagination - touch targets 44x44px */
+    .pagination-link {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        margin: 0 4px !important;
+    }
+    
+    /* Pagination container centering */
+    .mt-12.flex.justify-center .flex.flex-wrap.items-center {
+        gap: 4px;
+        justify-content: center;
+    }
+    
+    /* Empty state styling */
+    .bg-white.rounded-lg.p-8.text-center {
+        padding: 32px 16px !important;
+    }
+    
+    .bg-white.rounded-lg.p-8.text-center h3 {
+        font-size: 1.125rem !important;
+    }
+    
+    .bg-white.rounded-lg.p-8.text-center p {
+        font-size: 14px !important;
+    }
+    
+    /* Empty state button - full width */
+    .bg-white.rounded-lg.p-8.text-center a.inline-flex {
+        width: 100% !important;
+        max-width: 280px !important;
+        min-height: 44px !important;
+        justify-content: center !important;
+    }
+    
+    /* Delete modal - mobile friendly */
+    #deletePostModal .bg-white.rounded-xl {
+        margin: 16px !important;
+        padding: 20px !important;
+        max-width: calc(100% - 32px) !important;
+    }
+    
+    #deletePostModal h3 {
+        font-size: 1.125rem !important;
+    }
+    
+    #deletePostModal .flex.justify-end {
+        flex-direction: column-reverse !important;
+        gap: 12px !important;
+    }
+    
+    #deletePostModal button,
+    #deletePostModal .px-4.py-2 {
+        width: 100% !important;
+        min-height: 44px !important;
+        justify-content: center !important;
+    }
+}
+
+
+/* ============================================
+   Tips Page - Mobile Responsive
+   Requirements: 10.1, 10.2, 10.3
+   ============================================ */
+
+/* Mobile styles for tip cards (480px - 767px) - Two column grid (Requirement 10.1) */
+@media (min-width: 480px) and (max-width: 767px) {
+    /* Featured tips grid - two columns on mobile (Requirement 10.1) */
+    .tip-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+    }
+    
+    /* Latest tips grid - two columns on mobile */
+    .tip-grid-latest {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+    }
+    
+    /* Latest tip cards - stack vertically within each card */
+    .tip-grid-latest .tip-card {
+        flex-direction: column !important;
+    }
+    
+    .tip-grid-latest .tip-card img {
+        width: 100% !important;
+        height: 160px !important;
+        object-fit: cover;
+    }
+    
+    /* Tools grid - two columns on mobile */
+    .tip-tools-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 16px !important;
+    }
+}
+
+/* Small mobile styles (< 480px) - Single column grid (Requirement 10.2) */
+@media (max-width: 479px) {
+    /* Featured tips grid - single column on small mobile (Requirement 10.2) */
+    .tip-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    /* Latest tips grid - single column on small mobile */
+    .tip-grid-latest {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    /* Latest tip cards - stack vertically */
+    .tip-grid-latest .tip-card {
+        flex-direction: column !important;
+    }
+    
+    .tip-grid-latest .tip-card img {
+        width: 100% !important;
+        height: 180px !important;
+        object-fit: cover;
+    }
+    
+    /* Tools grid - single column on small mobile */
+    .tip-tools-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+}
+
+/* Common mobile styles for tips page (< 768px) */
+@media (max-width: 767px) {
+    /* Tips page header */
+    .bg-gray-50.py-12.mb-8 h1 {
+        font-size: 1.75rem !important;
+    }
+    
+    .bg-gray-50.py-12.mb-8 p {
+        font-size: 14px !important;
+        padding: 0 8px;
+    }
+    
+    /* Category filter buttons - scrollable on mobile */
+    .flex.flex-wrap.justify-center.gap-3.mb-12 {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start !important;
+        padding-bottom: 8px;
+        margin-left: -16px;
+        margin-right: -16px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    /* Category buttons - touch targets */
+    .category-btn {
+        min-height: 44px !important;
+        padding: 10px 20px !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    
+    /* Tip card styling on mobile */
+    .tip-card {
+        border-radius: 12px;
+    }
+    
+    /* Tip card image height on mobile */
+    .tip-card img {
+        height: 180px !important;
+        object-fit: cover;
+    }
+    
+    /* Tip card content padding */
+    .tip-card .p-6 {
+        padding: 16px !important;
+    }
+    
+    /* Tip card title */
+    .tip-card h3 {
+        font-size: 1rem !important;
+        line-height: 1.4 !important;
+        margin-bottom: 8px !important;
+    }
+    
+    /* Tip card description */
+    .tip-card p.text-gray-600 {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Tip card category badge */
+    .tip-card .text-xs.px-3.py-1 {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+    }
+    
+    /* Tip card read more link - touch target */
+    .tip-card a.text-primary {
+        min-height: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 8px 0 !important;
+    }
+    
+    /* Section headings */
+    .mb-16 h2.text-2xl {
+        font-size: 1.25rem !important;
+        margin-bottom: 16px !important;
+    }
+    
+    /* Tools section styling */
+    .bg-gray-50.rounded-xl.p-8.md\:p-12 {
+        padding: 24px 16px !important;
+        border-radius: 12px !important;
+    }
+    
+    .bg-gray-50.rounded-xl h2 {
+        font-size: 1.25rem !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .bg-gray-50.rounded-xl > p {
+        font-size: 14px !important;
+        margin-bottom: 24px !important;
+    }
+    
+    /* Tool cards - consistent icon sizes (Requirement 10.3) */
+    .tip-tools-grid .bg-white {
+        padding: 20px 16px !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Tool icon container - consistent size (Requirement 10.3) */
+    .tip-tools-grid .w-16.h-16 {
+        width: 56px !important;
+        height: 56px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    /* Tool icon size - consistent (Requirement 10.3) */
+    .tip-tools-grid .text-2xl {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Tool card title */
+    .tip-tools-grid h3 {
+        font-size: 1rem !important;
+        margin-bottom: 8px !important;
+    }
+    
+    /* Tool card description */
+    .tip-tools-grid p.text-gray-600 {
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+        margin-bottom: 12px !important;
+    }
+    
+    /* Tool card link - touch target */
+    .tip-tools-grid a.text-primary {
+        min-height: 44px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        padding: 8px 0 !important;
+    }
+    
+    /* FAQ section styling */
+    .space-y-4 {
+        gap: 12px !important;
+    }
+    
+    /* FAQ button - touch target */
+    .faq-btn {
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+    }
+    
+    .faq-btn span {
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* FAQ answer content */
+    .faq-answer {
+        padding: 16px !important;
+    }
+    
+    .faq-answer p {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    /* Latest tip cards - horizontal layout adjustments */
+    .tip-grid-latest .tip-card.flex.flex-col.md\:flex-row {
+        flex-direction: column !important;
+    }
+    
+    .tip-grid-latest .tip-card .w-full.md\:w-2\/5 {
+        width: 100% !important;
+    }
+    
+    .tip-grid-latest .tip-card .w-full.md\:w-2\/5 img {
+        width: 100% !important;
+        height: 160px !important;
+    }
+}
+
+/* Tablet styles for tips page (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* Featured tips grid - two columns on tablet */
+    .tip-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+    
+    /* Tools grid - two columns on tablet */
+    .tip-tools-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+}
+
+/* ============================================
+   Admin Dashboard - Mobile Responsive Styles
+   Requirements: 11.1, 11.2, 11.3, 11.4
+   ============================================ */
+@media (max-width: 767px) {
+    /* Admin table container - horizontal scrolling (Requirement 11.2) */
+    .table-responsive,
+    .overflow-x-auto,
+    .admin-table-container {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -12px;
+        padding: 0 12px;
+    }
+    
+    /* Admin data tables - enable horizontal scroll (Requirement 11.2) */
+    .data-table,
+    table.data-table,
+    .admin-table {
+        min-width: 600px !important;
+        width: max-content;
+    }
+    
+    /* Table cells padding adjustment for mobile */
+    .data-table th,
+    .data-table td,
+    .table-header th,
+    .table-body td {
+        padding: 12px 10px !important;
+        font-size: 0.875rem;
+    }
+    
+    /* Admin form inputs - full width on mobile (Requirement 11.4) */
+    .form-input,
+    .form-control,
+    .form-select,
+    .search-input,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="number"],
+    textarea,
+    select {
+        width: 100% !important;
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        box-sizing: border-box;
+    }
+    
+    /* Admin action buttons - 44x44px minimum (Requirement 11.3) */
+    .action-btn {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        width: 44px !important;
+        height: 44px !important;
+    }
+    
+    /* Admin primary/secondary buttons */
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-success,
+    .btn-warning {
+        min-height: 44px !important;
+        padding: 12px 20px !important;
+    }
+    
+    /* Search form layout on mobile */
+    .search-form {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    
+    .search-form .search-input-group {
+        width: 100% !important;
+        flex-direction: column !important;
+    }
+    
+    .search-form .search-select {
+        border-radius: 8px !important;
+        border-right: 1px solid #e2e8f0 !important;
+        margin-bottom: 8px;
+    }
+    
+    .search-form .search-input {
+        border-radius: 8px !important;
+        border-right: 1px solid #e2e8f0 !important;
+    }
+    
+    .search-form .search-btn {
+        border-radius: 8px !important;
+        width: 100% !important;
+        min-height: 44px !important;
+    }
+    
+    .search-form .reset-btn {
+        width: 100% !important;
+        min-height: 44px !important;
+    }
+    
+    /* Filter bar on mobile */
+    .filter-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+    
+    .filter-links {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+    
+    .filter-link {
+        min-height: 44px !important;
+        padding: 10px 16px !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Content header on mobile */
+    .content-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+    }
+    
+    .content-header .btn-primary {
+        width: 100% !important;
+        justify-content: center;
+    }
+    
+    /* Search bar in content header */
+    .search-bar {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 12px !important;
+    }
+    
+    .search-bar form {
+        width: 100%;
+    }
+    
+    .search-bar .flex {
+        width: 100%;
+    }
+    
+    .search-bar .search-input {
+        flex: 1;
+        border-radius: 8px 0 0 8px !important;
+    }
+    
+    .search-bar .search-btn {
+        min-width: 44px !important;
+        min-height: 44px !important;
+    }
+    
+    /* Pagination on mobile */
+    .pagination {
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+    }
+    
+    .pagination-item,
+    .pagination-arrow {
+        min-width: 44px !important;
+        min-height: 44px !important;
+        width: 44px !important;
+        height: 44px !important;
+    }
+    
+    /* Modal adjustments for mobile */
+    .modal-container {
+        width: 95% !important;
+        max-width: none !important;
+        margin: 16px auto !important;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        padding: 16px !important;
+    }
+    
+    .modal-body {
+        padding: 16px !important;
+    }
+    
+    .modal-footer {
+        padding: 16px !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .modal-footer button,
+    .modal-footer .btn {
+        width: 100% !important;
+        min-height: 44px !important;
+    }
+    
+    /* Form groups in modals */
+    .form-group {
+        margin-bottom: 16px !important;
+    }
+    
+    /* Card styles on mobile */
+    .card {
+        border-radius: 12px !important;
+    }
+    
+    .card-header {
+        padding: 16px !important;
+    }
+    
+    .card-body {
+        padding: 16px !important;
+    }
+    
+    /* User edit wrapper on mobile */
+    .user-edit-wrapper {
+        flex-direction: column !important;
+        padding: 16px !important;
+        gap: 16px !important;
+    }
+    
+    .user-info-card,
+    .edit-form-card {
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 20px !important;
+    }
+    
+    /* Edit form title on mobile */
+    .edit-form-title {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Search card on mobile */
+    .search-card-body {
+        padding: 16px !important;
+    }
+    
+    .search-card-body .grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    /* Comment content on mobile */
+    .comment-content {
+        max-width: 100% !important;
+    }
+    
+    /* User info in tables */
+    .user-info {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+    
+    .user-avatar {
+        margin-right: 0 !important;
+        margin-bottom: 4px !important;
+    }
+    
+    /* Status badges */
+    .status-badge,
+    .role-badge {
+        font-size: 0.7rem !important;
+        padding: 4px 8px !important;
+    }
+    
+    /* Empty state on mobile */
+    .empty-state {
+        padding: 24px 16px !important;
+    }
+    
+    .empty-state-icon {
+        font-size: 2.5rem !important;
+    }
+    
+    .empty-state-text {
+        font-size: 1rem !important;
+    }
+}
+
+/* Admin tablet styles (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* Table still needs horizontal scroll on tablet for very wide tables */
+    .table-responsive,
+    .overflow-x-auto {
+        overflow-x: auto;
+    }
+    
+    /* Search form two columns on tablet */
+    .search-form {
+        flex-wrap: wrap;
+    }
+    
+    .search-form .search-input-group {
+        flex: 1;
+        min-width: 200px;
+    }
+}

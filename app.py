@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
 from flask_wtf.csrf import CSRFProtect
+from flask_compress import Compress
 from datetime import datetime
 from config import DATABASE_URL, SECRET_KEY, SQLALCHEMY_TRACK_MODIFICATIONS
 
@@ -23,6 +24,7 @@ migrate = Migrate()
 login_manager = LoginManager()
 moment = Moment()
 csrf = CSRFProtect()
+compress = Compress()
 
 
 
@@ -40,8 +42,11 @@ def create_app():
     # 优化静态文件处理，避免sendfile系统调用问题
     app.config['USE_X_SENDFILE'] = False
     
-    # 增加静态文件缓存时间
-    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 3600
+    # 增加静态文件缓存时间 (1天 = 86400秒)
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400
+    
+    # 启用响应压缩（需要在生产环境中配置）
+    app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/javascript', 'application/javascript', 'application/json']
     
     # 确保上传目录存在
     os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads/profiles'), exist_ok=True)
@@ -52,6 +57,7 @@ def create_app():
     migrate.init_app(app, db)
     moment.init_app(app)
     csrf.init_app(app)
+    compress.init_app(app)  # 启用响应压缩
     
     # 配置CSRF保护，使其支持AJAX请求
     app.config['WTF_CSRF_CHECK_DEFAULT'] = False  # 关闭默认的CSRF检查，我们将手动处理

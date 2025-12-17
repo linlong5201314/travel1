@@ -54,7 +54,7 @@
     <div class="mb-16">
         <h2 class="text-2xl font-bold mb-8 text-dark">精选旅行贴士</h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="tip-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- 贴士1：行李打包 -->
             <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm">
                 <img src="{{ url_for('static', filename='img/packing.gif') }}" alt="行李打包技巧" class="w-full h-68 object-cover">
@@ -115,7 +115,7 @@
     <div class="mb-16">
         <h2 class="text-2xl font-bold mb-8 text-dark">最新旅行贴士</h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="tip-grid tip-grid-latest grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- 贴士4：安全旅行 -->
             <div class="tip-card bg-white rounded-xl overflow-hidden shadow-sm flex flex-col md:flex-row">
                 <img src="{{ url_for('static', filename='img/safety.jpg') }}" alt="安全旅行技巧" class="w-full md:w-2/5 h-48 md:h-auto object-cover">
@@ -203,7 +203,7 @@
         <h2 class="text-2xl font-bold mb-6 text-dark text-center">实用旅行工具</h2>
         <p class="text-gray-600 mb-10 text-center max-w-3xl mx-auto">这些工具和资源将帮助您规划和管理旅行，让您的旅程更加顺利</p>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="tip-tools-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- 工具1：行李清单 -->
             <div class="bg-white rounded-lg p-6 text-center hover:shadow-md transition-all">
                 <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">

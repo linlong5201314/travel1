@@ -82,16 +82,16 @@
     <div class="profile-header mb-8 shadow-sm">
         <div class="profile-cover" {% if user.cover_image %}style="background-image: url({{ url_for('static', filename='uploads/covers/' + user.cover_image) }})"{% endif %}></div>
         
-        <div class="px-6 py-4 pb-6">
-            <div class="flex flex-col md:flex-row">
-                <div class="text-center md:text-left">
+        <div class="px-4 md:px-6 py-4 pb-6">
+            <div class="flex flex-col md:flex-row profile-info-container">
+                <div class="text-center md:text-left profile-main-info">
                     {% if user.avatar_url %}
                     <img src="{{ url_for('static', filename='uploads/profiles/' + user.avatar_url) }}" alt="{{ user.username }}" class="profile-avatar rounded-full object-cover mx-auto md:mx-0">
                     {% else %}
                     <img src="{{ url_for('static', filename='img/default_avatar.png') }}" alt="{{ user.username }}" class="profile-avatar rounded-full object-cover mx-auto md:mx-0">
                     {% endif %}
                     
-                    <div class="mt-4 md:mt-6">
+                    <div class="mt-4 md:mt-6 profile-name-info">
                         <h1 class="text-2xl font-bold text-gray-800">{{ user.username }}</h1>
                         <p class="text-gray-600">
                             <i class="fas fa-map-marker-alt text-primary mr-1"></i>
@@ -103,15 +103,15 @@
                     </div>
                 </div>
                 
-                <div class="flex-1 mt-6 md:mt-0 md:ml-8">
+                <div class="flex-1 mt-6 md:mt-0 md:ml-8 profile-details">
                     {% if user.bio %}
-                    <div class="bg-white p-4 rounded-lg shadow-sm mb-4">
+                    <div class="bg-white p-4 rounded-lg shadow-sm mb-4 profile-bio">
                         <h3 class="text-lg font-semibold mb-2">关于我</h3>
                         <p>{{ user.bio }}</p>
                     </div>
                     {% endif %}
                     
-                    <div class="flex flex-wrap justify-center md:justify-start mt-4">
+                    <div class="flex flex-wrap justify-center md:justify-start mt-4 profile-stats">
                         <div class="social-stat text-center">
                             <div class="text-2xl font-bold text-gray-800">{{ posts_count }}</div>
                             <div class="text-gray-600 text-sm">旅行故事</div>
@@ -128,8 +128,8 @@
                 </div>
                 
                 {% if current_user.is_authenticated and current_user.id == user.id %}
-                <div class="mt-6 md:mt-0 flex justify-center md:justify-end items-start">
-                    <a href="{{ url_for('auth.profile') }}" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-all">
+                <div class="mt-6 md:mt-0 flex justify-center md:justify-end items-start profile-actions">
+                    <a href="{{ url_for('auth.profile') }}" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-all profile-edit-btn">
                         <i class="fas fa-edit mr-1"></i> 编辑个人资料
                     </a>
                 </div>

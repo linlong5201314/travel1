@@ -65,10 +65,10 @@
 
 {% block content %}
 <div class="container mx-auto px-4 md:px-8 py-8">
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-col md:flex-row items-center justify-between mb-6 user-posts-header">
         <h1 class="text-2xl font-bold text-gray-800">{% if user %}{{ user.username }} 的博客{% else %}我的博客{% endif %}</h1>
         {% if current_user.is_authenticated and (not user or current_user.id == user.id) %}
-        <a href="{{ url_for('main.create_post') }}" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-all">
+        <a href="{{ url_for('main.create_post') }}" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-all create-post-btn">
             <i class="fas fa-plus mr-2"></i> 发布新故事
         </a>
         {% endif %}
@@ -100,7 +100,7 @@
     
     <!-- 博客列表 -->
     {% if posts.items %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 user-posts-grid">
         {% for post in posts.items %}
         <div class="post-card bg-white rounded-xl overflow-hidden shadow-sm">
             <div class="relative overflow-hidden">

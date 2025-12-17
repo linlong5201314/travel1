@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Mobile responsive styles -->
+    <link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet">
     
     <!-- Tailwind 配置 -->
     <script>
@@ -195,6 +197,145 @@
         .user-menu-btn:hover {
             background: #f0f7ff;
         }
+        
+        /* ============================================
+           Admin Mobile Responsive Styles
+           Requirements: 11.1, 11.3
+           ============================================ */
+        @media (max-width: 767px) {
+            /* Hide desktop sidebar on mobile (Requirement 11.1) */
+            .sidebar {
+                display: none !important;
+            }
+            
+            /* Remove left margin on mobile since sidebar is hidden */
+            .flex-1.md\:ml-64 {
+                margin-left: 0 !important;
+            }
+            
+            /* Mobile menu button - 44x44px minimum touch target (Requirement 11.3) */
+            #mobile-menu-button {
+                min-width: 44px !important;
+                min-height: 44px !important;
+                width: 44px;
+                height: 44px;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                padding: 10px;
+            }
+            
+            /* Mobile sidebar styles (Requirement 11.1) */
+            #mobile-sidebar {
+                display: flex !important;
+                flex-direction: column;
+            }
+            
+            #mobile-sidebar.open {
+                transform: translateX(0) !important;
+            }
+            
+            /* Mobile sidebar navigation items - 44x44px minimum (Requirement 11.3) */
+            #mobile-sidebar .sidebar-item {
+                min-height: 44px;
+                padding: 12px 16px;
+                display: flex;
+                align-items: center;
+            }
+            
+            /* Sidebar overlay */
+            #sidebar-overlay {
+                z-index: 15;
+            }
+            
+            /* Admin action buttons - 44x44px minimum (Requirement 11.3) */
+            .action-btn,
+            .btn-primary,
+            .btn-secondary,
+            .btn-danger,
+            .btn-success,
+            .btn-warning {
+                min-width: 44px !important;
+                min-height: 44px !important;
+            }
+            
+            /* User menu button touch target */
+            .user-menu-btn {
+                min-height: 44px;
+                padding: 8px 12px;
+            }
+            
+            /* User dropdown positioning on mobile */
+            #user-dropdown {
+                right: 0;
+                left: auto;
+                min-width: 200px;
+            }
+            
+            /* Header adjustments for mobile */
+            header.header-gradient {
+                padding: 8px 12px;
+            }
+            
+            /* Breadcrumb text smaller on mobile */
+            .flex.items-center.space-x-2.text-gray-500.text-sm {
+                font-size: 0.75rem;
+                margin-left: 8px !important;
+            }
+            
+            /* Main content padding on mobile */
+            main.flex-1.overflow-y-auto {
+                padding: 12px;
+            }
+            
+            /* Container padding on mobile */
+            .container.mx-auto {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            
+            /* Footer padding on mobile */
+            footer.py-4.px-6 {
+                padding: 12px;
+            }
+            
+            /* Modal adjustments for mobile */
+            .modal-container {
+                width: 95%;
+                max-width: none;
+                margin: 16px;
+            }
+            
+            /* Modal form inputs full width */
+            .modal-body .form-input,
+            .modal-body .form-select {
+                width: 100%;
+            }
+            
+            /* Modal buttons */
+            .modal-footer {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .modal-footer button,
+            .modal-footer .btn {
+                width: 100%;
+                min-height: 44px;
+            }
+        }
+        
+        /* Tablet styles for admin */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            /* Sidebar narrower on tablet */
+            .sidebar {
+                width: 200px;
+            }
+            
+            .flex-1.md\:ml-64 {
+                margin-left: 200px;
+            }
+        }
     </style>
     {% block head_extra %}
     {% block styles %}{% endblock %}
@@ -254,8 +395,8 @@
         <!-- 顶部导航 -->
         <header class="header-gradient p-4 shadow-sm">
             <div class="container mx-auto flex justify-between items-center">
-                <!-- 移动端菜单按钮 -->
-                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+                <!-- 移动端菜单按钮 - 44x44px minimum touch target (Requirement 11.3) -->
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-gray-100 flex items-center justify-center" style="min-width: 44px; min-height: 44px;">
                     <i class="fas fa-bars text-xl text-gray-600"></i>
                 </button>
                 
@@ -356,10 +497,16 @@
     <!-- 移动端侧边栏 -->
     <div id="mobile-sidebar" class="sidebar h-full w-64 fixed left-0 top-0 bottom-0 z-20 transform -translate-x-full transition-transform duration-300 md:hidden">
         <!-- 与上面的侧边栏内容相同 -->
-        <!-- 品牌标志 -->
-        <div class="py-6 px-4 flex items-center">
-            <i class="fas fa-globe-asia text-3xl mr-3 text-primary-500"></i>
-            <h1 class="text-2xl sidebar-brand">环球旅记</h1>
+        <!-- 品牌标志和关闭按钮 -->
+        <div class="py-6 px-4 flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas fa-globe-asia text-3xl mr-3 text-primary-500"></i>
+                <h1 class="text-2xl sidebar-brand">环球旅记</h1>
+            </div>
+            <!-- Close button - 44x44px minimum touch target (Requirement 11.3) -->
+            <button id="mobile-sidebar-close" class="p-2 rounded-lg hover:bg-gray-100 flex items-center justify-center" style="min-width: 44px; min-height: 44px;">
+                <i class="fas fa-times text-xl text-gray-600"></i>
+            </button>
         </div>
         
         <!-- 侧边栏导航 -->
@@ -423,16 +570,35 @@
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileSidebar = document.getElementById('mobile-sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const mobileSidebarClose = document.getElementById('mobile-sidebar-close');
+            
+            function openMobileSidebar() {
+                mobileSidebar.classList.remove('-translate-x-full');
+                mobileSidebar.classList.add('open');
+                sidebarOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileSidebar() {
+                mobileSidebar.classList.add('-translate-x-full');
+                mobileSidebar.classList.remove('open');
+                sidebarOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
             
             mobileMenuButton.addEventListener('click', function() {
-                mobileSidebar.classList.toggle('-translate-x-full');
-                sidebarOverlay.classList.toggle('hidden');
+                if (mobileSidebar.classList.contains('-translate-x-full')) {
+                    openMobileSidebar();
+                } else {
+                    closeMobileSidebar();
+                }
             });
             
-            sidebarOverlay.addEventListener('click', function() {
-                mobileSidebar.classList.add('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-            });
+            sidebarOverlay.addEventListener('click', closeMobileSidebar);
+            
+            if (mobileSidebarClose) {
+                mobileSidebarClose.addEventListener('click', closeMobileSidebar);
+            }
             
             // 自动隐藏闪现消息
             const flashMessages = document.querySelectorAll('.flash-message');

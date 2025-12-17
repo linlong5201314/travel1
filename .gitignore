@@ -39,6 +39,5 @@ venv/
 env/
 .env/
 
-# Railway配置
-railway.json
-railway.toml
+# Node modules (测试用)
+node_modules/

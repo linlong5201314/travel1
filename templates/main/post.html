@@ -74,9 +74,9 @@
 
 {% block content %}
 <!-- HERO -->
-<section class="relative h-[420px] w-full">
+<section class="relative h-[420px] md:h-[420px] w-full post-hero">
     <!-- 返回按钮 -->
-    <a href="{{ back_url }}" class="absolute top-5 left-5 z-20 flex items-center bg-white/90 hover:bg-primary text-dark hover:text-white px-3 py-2 rounded-full shadow-lg transition-all">
+    <a href="{{ back_url }}" class="absolute top-5 left-5 z-20 flex items-center bg-white/90 hover:bg-primary text-dark hover:text-white px-3 py-2 rounded-full shadow-lg transition-all post-back-btn">
         <i class="fas fa-arrow-left mr-2"></i><span class="hidden sm:inline">返回</span>
     </a>
     {% if post.featured_image %}
@@ -86,8 +86,8 @@
     {% endif %}
     <div class="absolute inset-0 hero-overlay"></div>
     <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-5 text-shadow-lg">{{ post.title }}</h1>
-        <div class="flex flex-wrap justify-center gap-4 text-sm opacity-90">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-5 text-shadow-lg post-title">{{ post.title }}</h1>
+        <div class="flex flex-wrap justify-center gap-4 text-sm opacity-90 post-meta">
             <span class="flex items-center"><i class="far fa-calendar-alt mr-1"></i>{{ post.created_at.strftime('%Y-%m-%d') }}</span>
             {% if post.location %}
             <span class="flex items-center"><i class="fas fa-map-marker-alt mr-1"></i>{{ post.location }}</span>
@@ -127,7 +127,7 @@
             </div>
 
             <!-- 操作按钮 -->
-            <div class="flex items-center justify-between border-t border-b border-gray-200 py-6 mb-12">
+            <div class="flex flex-col md:flex-row items-center justify-between border-t border-b border-gray-200 py-6 mb-12 gap-4 post-actions">
                 <div class="flex items-center space-x-4">
                     <!-- 点赞按钮 -->
                     <button id="like-btn" class="like-btn action-btn flex items-center space-x-2 px-4 py-2 rounded-lg border border-gray-200 hover:border-primary {{ 'active text-red-500' if has_liked else 'text-gray-600' }}">
@@ -142,13 +142,13 @@
                 </div>
 
                 <!-- 分享按钮 -->
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 flex-wrap justify-center post-share">
                     <span class="text-gray-600 mr-2">分享:</span>
                     {% set post_url = url_for('main.post', post_id=post.id, _external=True) %}
-                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ post_url }}" id="wechat-share" target="_blank" class="share-btn flex items-center justify-center w-10 h-10 rounded-full text-gray-500 bg-gray-200 hover:bg-green-500 hover:text-white"><i class="fab fa-weixin"></i></a>
-                    <a href="https://service.weibo.com/share/share.php?title={{ post.title }}&url={{ post_url }}" id="weibo-share" target="_blank" class="share-btn flex items-center justify-center w-10 h-10 rounded-full text-gray-500 bg-gray-200 hover:bg-red-500 hover:text-white"><i class="fab fa-weibo"></i></a>
-                    <a href="https://www.douyin.com/" id="tiktok-share" target="_blank" class="share-btn flex items-center justify-center w-10 h-10 rounded-full text-gray-500 bg-gray-200 hover:bg-black hover:text-white"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://www.bilibili.com/blackboard/share?share_source=copy_link&title={{ post.title }}&url={{ post_url }}" id="bilibili-share" target="_blank" class="share-btn flex items-center justify-center w-10 h-10 rounded-full text-gray-500 bg-gray-200 hover:bg-blue-500 hover:text-white"><i class="fab fa-bilibili"></i></a>
+                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ post_url }}" id="wechat-share" target="_blank" class="share-btn flex items-center justify-center w-11 h-11 rounded-full text-gray-500 bg-gray-200 hover:bg-green-500 hover:text-white"><i class="fab fa-weixin"></i></a>
+                    <a href="https://service.weibo.com/share/share.php?title={{ post.title }}&url={{ post_url }}" id="weibo-share" target="_blank" class="share-btn flex items-center justify-center w-11 h-11 rounded-full text-gray-500 bg-gray-200 hover:bg-red-500 hover:text-white"><i class="fab fa-weibo"></i></a>
+                    <a href="https://www.douyin.com/" id="tiktok-share" target="_blank" class="share-btn flex items-center justify-center w-11 h-11 rounded-full text-gray-500 bg-gray-200 hover:bg-black hover:text-white"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.bilibili.com/blackboard/share?share_source=copy_link&title={{ post.title }}&url={{ post_url }}" id="bilibili-share" target="_blank" class="share-btn flex items-center justify-center w-11 h-11 rounded-full text-gray-500 bg-gray-200 hover:bg-blue-500 hover:text-white"><i class="fab fa-bilibili"></i></a>
                 </div>
             </div>
 

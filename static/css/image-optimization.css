@@ -1,0 +1,88 @@
+/* ============================================
+   图片优化样式 - Image Optimization Styles
+   ============================================ */
+
+/* 骨架屏动画 */
+@keyframes skeleton-loading {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+}
+
+/* 图片加载中的骨架屏效果 */
+img.lazy-loading,
+[data-bg].lazy-loading {
+    background: linear-gradient(90deg, #f0f0f0 0px, #e8e8e8 40px, #f0f0f0 80px);
+    background-size: 200px 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* 图片淡入效果 */
+img {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+img.lazy-loaded,
+img[src]:not([src=""]) {
+    opacity: 1;
+}
+
+/* 图片加载失败样式 */
+img.lazy-error {
+    opacity: 1;
+    background-color: #f5f5f5;
+}
+
+/* 确保图片不超出容器 */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 卡片图片优化 - GPU 加速 */
+.destination-card img,
+.post-card img,
+.story-card img,
+.carousel-item {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* 轮播图背景加载占位 */
+.carousel-item[data-bg] {
+    background-color: #e0e0e0;
+    background-size: cover;
+    background-position: center;
+}
+
+/* 移动端优化 */
+@media (max-width: 767px) {
+    img {
+        transition: opacity 0.2s ease-in-out;
+    }
+    
+    /* 禁用移动端图片悬停效果以提升性能 */
+    .destination-card:hover .destination-img,
+    .post-card:hover .post-image {
+        transform: none !important;
+    }
+    
+    img.lazy-loading,
+    [data-bg].lazy-loading {
+        animation-duration: 2s;
+    }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+    img {
+        transition: none;
+    }
+    
+    img.lazy-loading,
+    [data-bg].lazy-loading {
+        animation: none;
+        background: #f0f0f0;
+    }
+}

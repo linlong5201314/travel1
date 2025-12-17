@@ -8,6 +8,10 @@ load_dotenv()
 # 本地开发时使用SQLite，Railway部署时使用PostgreSQL
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///global_travel_blog.db')
 
+# Railway PostgreSQL URL 使用 postgres:// 前缀，但 SQLAlchemy 需要 postgresql://
+if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
 # 应用配置
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev_key_for_global_travel_blog')
 SQLALCHEMY_TRACK_MODIFICATIONS = False

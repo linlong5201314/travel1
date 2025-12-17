@@ -4,7 +4,9 @@ Flask-Migrate
 Flask-Login
 Flask-Moment
 Flask-WTF
+Flask-Compress
 Werkzeug
 python-dotenv
 gunicorn
 openpyxl
+psycopg2-binary
