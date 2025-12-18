@@ -1076,8 +1076,9 @@
         font-size: 16px !important; /* Prevents zoom on iOS */
         border: 1px solid #d1d5db;
         border-radius: 8px 0 0 8px;
-        flex: 1;
-        min-width: 0; /* 允许输入框收缩 */
+        flex: 1 1 auto !important; /* 让输入框尽可能占用空间 */
+        width: 100% !important;
+        min-width: 0 !important; /* 允许输入框收缩 */
         box-sizing: border-box;
     }
     
@@ -1087,18 +1088,20 @@
         box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
     }
     
-    /* Mobile search submit button - 优化大小比例 */
+    /* Mobile search submit button - 固定小尺寸 */
     .mobile-search-submit {
-        min-width: var(--touch-target-min) !important;
-        max-width: 50px !important; /* 限制最大宽度 */
+        width: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important; /* 固定宽度 */
         min-height: var(--touch-target-min) !important;
         height: var(--touch-target-min);
-        padding: 12px !important;
+        padding: 0 !important;
         border-radius: 0 8px 8px 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
     }
     
     /* 移动端搜索表单布局优化 */
@@ -1106,19 +1109,19 @@
         display: flex;
         align-items: center;
         gap: 0;
+        width: 100%;
     }
     
-    #mobile-search-panel .mobile-search-input {
-        flex: 1;
-        min-width: 150px;
-    }
-    
-    /* Mobile search close button - 44px touch target */
+    /* Mobile search close button - 固定小尺寸 */
     .mobile-search-close,
     #mobile-search-close {
-        min-width: var(--touch-target-min) !important;
+        width: 44px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
         min-height: var(--touch-target-min) !important;
-        padding: 10px !important;
+        height: var(--touch-target-min);
+        padding: 0 !important;
+        margin-left: 8px !important;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1126,6 +1129,8 @@
         border: none;
         cursor: pointer;
         border-radius: 8px;
+        flex-shrink: 0 !important;
+        flex-grow: 0 !important;
         transition: background-color var(--mobile-transition) ease;
     }
     
