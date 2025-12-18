@@ -3,6 +3,10 @@
 {% block title %}环球旅记{% endblock %}
 
 {% block styles %}
+<!-- 预加载轮播图图片 -->
+<link rel="preload" as="image" href="{{ url_for('static', filename='img/1.jpg') }}" fetchpriority="high">
+<link rel="preload" as="image" href="{{ url_for('static', filename='img/2.jpg') }}">
+<link rel="preload" as="image" href="{{ url_for('static', filename='img/4.jpg') }}">
 <style>
     /* 首页特定样式 */
     .hero-section {

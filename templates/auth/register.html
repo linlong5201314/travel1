@@ -29,14 +29,65 @@
       }
     }
   </script>
+  <style>
+    /* 轮播背景样式 */
+    .carousel-bg {
+      position: relative;
+      overflow: hidden;
+    }
+    .carousel-bg-item {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    .carousel-bg-item.active {
+      opacity: 1;
+    }
+    /* 移动端轮播背景 */
+    .mobile-carousel-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+    .mobile-carousel-bg .carousel-bg-item {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    .mobile-carousel-bg .carousel-bg-item.active {
+      opacity: 1;
+    }
+    .mobile-carousel-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+    }
+  </style>
 </head>
 
 <body class="font-inter bg-light">
+  <!-- 移动端轮播背景 -->
+  <div class="mobile-carousel-bg md:hidden" id="mobile-bg-carousel">
+    <div class="carousel-bg-item active" style="background-image: url('/static/img/1.jpg');"></div>
+    <div class="carousel-bg-item" style="background-image: url('/static/img/2.jpg');"></div>
+    <div class="carousel-bg-item" style="background-image: url('/static/img/4.jpg');"></div>
+  </div>
+
   <!-- 注册页面主体 -->
   <div class="min-h-screen flex flex-col md:flex-row">
-    <!-- 左侧图片区域 -->
-    <div class="md:w-1/2 bg-cover bg-center hidden md:block" style="background-image: url('/static/img/3.jpg');">
-      <div class="h-full w-full bg-black/40 flex flex-col justify-center items-center text-white p-10">
+    <!-- 左侧图片区域 - 桌面端轮播背景 -->
+    <div class="md:w-1/2 bg-cover bg-center hidden md:block carousel-bg" id="desktop-bg-carousel">
+      <div class="carousel-bg-item active" style="background-image: url('/static/img/1.jpg');"></div>
+      <div class="carousel-bg-item" style="background-image: url('/static/img/2.jpg');"></div>
+      <div class="carousel-bg-item" style="background-image: url('/static/img/4.jpg');"></div>
+      <div class="h-full w-full bg-black/40 flex flex-col justify-center items-center text-white p-10 relative z-10">
         <a href="/" class="flex items-center space-x-2 mb-8">
           <i class="fas fa-globe-americas text-primary text-3xl"></i>
           <span class="text-2xl font-bold">环球旅记</span>
@@ -47,8 +98,8 @@
     </div>
     
     <!-- 右侧注册表单 -->
-    <div class="md:w-1/2 flex items-center justify-center p-6">
-      <div class="w-full max-w-md">
+    <div class="md:w-1/2 flex items-center justify-center p-6 relative z-10">
+      <div class="w-full max-w-md bg-white md:bg-transparent rounded-xl md:rounded-none p-6 md:p-0 shadow-lg md:shadow-none">
         <!-- 移动端 Logo -->
         <div class="md:hidden flex justify-center mb-8">
           <a href="/" class="flex items-center space-x-2">
@@ -139,5 +190,39 @@
       </div>
     </div>
   </div>
+
+  <!-- 轮播背景脚本 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 桌面端轮播
+      const desktopItems = document.querySelectorAll('#desktop-bg-carousel .carousel-bg-item');
+      // 移动端轮播
+      const mobileItems = document.querySelectorAll('#mobile-bg-carousel .carousel-bg-item');
+      let currentIndex = 0;
+      
+      function nextSlide() {
+        // 桌面端
+        if (desktopItems.length > 0) {
+          desktopItems[currentIndex].classList.remove('active');
+        }
+        // 移动端
+        if (mobileItems.length > 0) {
+          mobileItems[currentIndex].classList.remove('active');
+        }
+        
+        currentIndex = (currentIndex + 1) % Math.max(desktopItems.length, mobileItems.length);
+        
+        if (desktopItems.length > 0) {
+          desktopItems[currentIndex].classList.add('active');
+        }
+        if (mobileItems.length > 0) {
+          mobileItems[currentIndex].classList.add('active');
+        }
+      }
+      
+      // 每5秒切换一次
+      setInterval(nextSlide, 5000);
+    });
+  </script>
 </body>
 </html> 
