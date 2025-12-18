@@ -312,14 +312,14 @@
             <form action="{{ url_for('main.search') }}" class="flex items-center">
                 <input 
                     id="mobile-search-input"
-                    class="mobile-search-input flex-1 py-3 px-4 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
+                    class="mobile-search-input border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
                     type="search" 
                     name="q" 
                     placeholder="搜索旅行故事、目的地..." 
                     value="{{ request.args.get('q', '') }}"
                     autocomplete="off">
                 <button 
-                    class="mobile-search-submit search-btn text-white px-4 py-3 rounded-r-lg font-medium flex items-center justify-center"
+                    class="mobile-search-submit search-btn text-white rounded-r-lg"
                     type="submit"
                     aria-label="搜索">
                     <i class="fas fa-search"></i>
@@ -327,9 +327,9 @@
                 <button 
                     id="mobile-search-close"
                     type="button"
-                    class="mobile-search-close ml-2 p-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    class="mobile-search-close text-gray-500 hover:text-gray-700 focus:outline-none"
                     aria-label="关闭搜索">
-                    <i class="fas fa-times text-xl"></i>
+                    <i class="fas fa-times"></i>
                 </button>
             </form>
         </div>
